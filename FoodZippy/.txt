@@ -1,0 +1,43 @@
+Step-by-step fix
+
+1. Add the missing asset catalog to the project
+• In Xcode, open the Project Navigator (⌘1).
+• Right-click the app’s main group (likely named “FoodZippy”).
+• Choose “Add Files to ‘FoodZippy’…”
+• Navigate to:
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets
+• Select Assets.xcassets.
+• In the dialog:
+   • Check “Copy items if needed” (recommended if you want Xcode to manage a copy).
+   • Ensure your app target is checked under “Add to targets”.
+• Click Add.
+
+2. If you see a blue folder reference instead of an asset catalog icon
+• In the Project Navigator, if Assets.xcassets is inside a blue folder (folder reference), Xcode may not treat it as an asset catalog.
+• Right-click that blue folder > Delete > “Remove Reference” (do NOT move to Trash).
+• Re-add only Assets.xcassets using the steps in (1). It should now display the asset catalog icon.
+
+3. Verify target and build settings
+• Select your app target > Build Settings.
+• Search for “Asset Catalog App Icon Set Name” and confirm it matches the App Icon set inside Assets.xcassets (often AppIcon).
+• If you use launch images (less common now), verify that setting too or remove it if unused.
+
+4. Ensure you’re in the right project/workspace and navigator
+• Make sure you opened the correct .xcworkspace or .xcodeproj that corresponds to the path on disk.
+• Clear any navigator filter (click the search/filter bar at the bottom of the navigator and clear it).
+• Expand the correct FoodZippy group.
+
+5. Clean and restart
+• Clean build folder: Shift+Cmd+K
+• Quit and relaunch Xcode.
+
+If it’s still not appearing
+• Confirm the folder exists on disk in Finder at that exact path and is named exactly Assets.xcassets (case-sensitive matters on some file systems).
+• Check if the assets are part of a Swift Package; if so, they will appear under the Package, not under your app’s group, and are accessed with Image("Name", bundle: .module).
+
+If you want, share:
+• A screenshot of Finder at that path showing Assets.xcassets.
+• A screenshot of your Xcode Project Navigator around where you expect it.
+• Whether you’re opening a workspace or project.
+
+With that, I can pinpoint the exact snag and guide you through the one or two steps specific to your setup.

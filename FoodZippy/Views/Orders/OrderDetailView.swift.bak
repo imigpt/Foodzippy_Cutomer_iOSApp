@@ -1,0 +1,841 @@
+// OrderDetailView.swift
+// Matches Android OrderActivity - order info, items, bill breakdown, status
+
+import SwiftUI
+
+struct OrderDetailView: View {
+    let orderId: String
+    
+    @StateObject private var viewModel = OrderViewModel()
+    @Environment(\.dismiss) private var dismiss
+    @State private var showRating = false
+    @State private var showCancelConfirm = false
+    @State private var showTracker = false
+    
+    var body: some View {
+        Group {
+            if viewModel.isLoading {
+                VStack {
+                    Spacer()
+                    ProgressView()
+                    Text("Loading order...")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .padding(.top, 8)
+                    Spacer()
+                }
+            } else if let order = viewModel.orderDetail {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        // Status header
+                        statusHeader(order)
+                        
+                        // Schedule info
+                        if order.isScheduled == "1" {
+                            scheduleInfo(order)
+                        }
+                        
+                        // Restaurant info
+                        restaurantInfo(order)
+                        
+                        // Order items
+                        orderItemsSection(order)
+                        
+                        // Bill details
+                        billSection(order)
+                        
+                        // Delivery address
+                        addressSection(order)
+                        
+                        // Delivery partner
+                        if let riderName = order.riderName, !riderName.isEmpty {
+                            deliveryPartnerSection(riderName: riderName)
+                        }
+                        
+                        // Actions
+                        actionsSection(order)
+                        
+                        Spacer().frame(height: 20)
+                    }
+                    .padding(.vertical)
+                }
+            } else {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 40))
+                        .foregroundColor(.gray)
+                    Text("Could not load order details")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+        }
+        .navigationTitle("Order #\(orderId)")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showRating) {
+            RatingSheet(orderId: orderId, onComplete: {
+                showRating = false
+            })
+        }
+        .alert("Cancel Order", isPresented: $showCancelConfirm) {
+            Button("Yes, Cancel", role: .destructive) {
+                Task { await viewModel.cancelOrder(orderId: orderId) }
+            }
+            Button("No", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to cancel this order?")
+        }
+        .navigationDestination(isPresented: $showTracker) {
+            OrderTrackingView(orderId: orderId)
+        }
+        .task {
+            await viewModel.loadOrderDetail(orderId: orderId)
+        }
+    }
+    
+    // MARK: - Status Header
+    
+    private func statusHeader(_ order: OrderDetail) -> some View {
+        VStack(spacing: 8) {
+            HStack {
+                Image(systemName: statusIcon(order.oStatus ?? ""))
+                    .font(.title2)
+                    .foregroundColor(statusColor(order.oStatus ?? ""))
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(statusText(order.oStatus ?? ""))
+                        .font(.headline)
+                        .fontWeight(.bold)
+                    Text("Order ID: \(orderId)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    if let date = order.orderCompleteDate, !date.isEmpty {
+                        Text(date)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                Spacer()
+            }
+        }
+        .padding()
+        .background(statusColor(order.oStatus ?? "").opacity(0.08))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Schedule Info
+    
+    private func scheduleInfo(_ order: OrderDetail) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "calendar.badge.clock")
+                .foregroundColor(.appAccent)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Scheduled Order")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                
+                if let date = order.scheduleDisplayDate, let time = order.scheduleDisplayTime {
+                    Text("\(date) at \(time)")
+                        .font(.caption)
+                        .foregroundColor(.appGreen)
+                }
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.appAccent.opacity(0.08))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Restaurant Info
+    
+    private func restaurantInfo(_ order: OrderDetail) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "storefront.fill")
+                .font(.title3)
+                .foregroundColor(.appPrimary)
+                .frame(width: 40, height: 40)
+                .background(Color.appPrimary.opacity(0.1))
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(order.restName ?? "")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                Text(order.restAddress ?? "")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Order Items
+    
+    private func orderItemsSection(_ order: OrderDetail) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Items")
+                .font(.subheadline)
+                .fontWeight(.bold)
+            
+            ForEach(order.orderItemsList ?? [], id: \.itemName) { item in
+                HStack {
+                    VegIndicator(isVeg: (item.type ?? "1"))
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.itemName ?? "")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                        
+                        if let addon = item.itemAddon, !addon.isEmpty {
+                            Text(addon)
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    Text("x\(item.qty ?? "1")")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    Text("\(SessionManager.shared.currency)\(item.itemTotal ?? "0")")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                
+                if item.itemName != order.orderItemsList?.last?.itemName {
+                    Divider()
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Bill Section
+    
+    private func billSection(_ order: OrderDetail) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Bill Details")
+                .font(.subheadline)
+                .fontWeight(.bold)
+            
+            BillRow(title: "Item Total", value: Double(order.subtotal ?? "0") ?? 0)
+            
+            if let dc = Double(order.dCharge ?? "0"), dc > 0 {
+                BillRow(title: "Delivery Charge", value: dc)
+            }
+            
+            if let rc = Double(order.restCharge ?? "0"), rc > 0 {
+                BillRow(title: "Packaging Charge", value: rc)
+            }
+            
+            if let tax = Double(order.tax ?? "0"), tax > 0 {
+                BillRow(title: "Taxes", value: tax)
+            }
+            
+            if let tip = Double(order.riderTip ?? "0"), tip > 0 {
+                BillRow(title: "Tip", value: tip)
+            }
+            
+            if let coupon = Double(order.couAmt ?? "0"), coupon > 0 {
+                BillRow(title: "Coupon Discount", value: -coupon, isGreen: true)
+            }
+            
+            if let wallet = Double(order.wallAmt ?? "0"), wallet > 0 {
+                BillRow(title: "Wallet", value: -wallet, isGreen: true)
+            }
+            
+            Divider()
+            
+            HStack {
+                Text("Grand Total")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                Spacer()
+                Text("\(SessionManager.shared.currency)\(order.orderTotal ?? "0")")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+            }
+            
+            HStack {
+                Text("Paid via")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                Text(order.pMethodName ?? "")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.appBlack)
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Address
+    
+    private func addressSection(_ order: OrderDetail) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "mappin.circle.fill")
+                .foregroundColor(.appPrimary)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Delivery Address")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                Text(order.custAddress ?? "")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Delivery Partner
+    
+    private func deliveryPartnerSection(riderName: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "person.circle.fill")
+                .font(.title2)
+                .foregroundColor(.appAccent)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Delivery Partner")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                Text(riderName)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Actions
+    
+    private func actionsSection(_ order: OrderDetail) -> some View {
+        VStack(spacing: 10) {
+            let status = order.oStatus ?? ""
+            
+            // Track order (for active orders)
+            if status == "Pending" || status == "Accepted" || status == "On the way" || status == "Preparing" {
+                Button {
+                    showTracker = true
+                } label: {
+                    HStack {
+                        Image(systemName: "location.fill")
+                        Text("Track Order")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color.appGreen)
+                    .cornerRadius(12)
+                }
+            }
+            
+            // Rate order (for completed)
+            if status == "Completed" || status == "Delivered" {
+                Button {
+                    showRating = true
+                } label: {
+                    HStack {
+                        Image(systemName: "star.fill")
+                        Text("Rate Order")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color.appAccent)
+                    .cornerRadius(12)
+                }
+            }
+            
+            // Cancel order (for pending)
+            if status == "Pending" {
+                Button {
+                    showCancelConfirm = true
+                } label: {
+                    HStack {
+                        Image(systemName: "xmark.circle")
+                        Text("Cancel Order")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.appRed)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.appRed, lineWidth: 1)
+                    )
+                }
+            }
+            
+            // Reorder (for completed / cancelled)
+            if status == "Completed" || status == "Delivered" || status == "Cancelled" {
+                Button {
+                    Task { await viewModel.reorder(orderId: orderId) }
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.counterclockwise")
+                        Text("Reorder")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.appPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.appPrimary, lineWidth: 1)
+                    )
+                }
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Helpers
+    
+    private func statusIcon(_ status: String) -> String {
+        switch status {
+        case "Pending": return "clock.fill"
+        case "Accepted", "Preparing": return "flame.fill"
+        case "On the way": return "bicycle"
+        case "Completed", "Delivered": return "checkmark.circle.fill"
+        case "Cancelled": return "xmark.circle.fill"
+        default: return "circle.fill"
+        }
+    }
+    
+    private func statusColor(_ status: String) -> Color {
+        switch status {
+        case "Pending": return .appAccent
+        case "Accepted", "Preparing": return .blue
+        case "On the way": return .appGreen
+        case "Completed", "Delivered": return .appGreen
+        case "Cancelled": return .appRed
+        default: return .gray
+        }
+    }
+    
+    private func statusText(_ status: String) -> String {
+        switch status {
+        case "Pending": return "Order Placed"
+        case "Accepted": return "Order Accepted"
+        case "Preparing": return "Preparing Your Food"
+        case "On the way": return "On the Way"
+        case "Completed", "Delivered": return "Order Delivered"
+        case "Cancelled": return "Order Cancelled"
+        default: return status
+        }
+    }
+}
+
+// MARK: - Order Tracking View
+
+struct OrderTrackingView: View {
+    let orderId: String
+    
+    @StateObject private var viewModel = OrderViewModel()
+    @State private var timer: Timer?
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Map placeholder
+            ZStack {
+                Color.gray.opacity(0.1)
+                
+                if let mapInfo = viewModel.mapInfo {
+                    VStack(spacing: 8) {
+                        Image(systemName: "map.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.4))
+                        Text("Live tracking")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        
+                        if let riderLat = mapInfo.riderLat, let riderLng = mapInfo.riderLng {
+                            Text("Rider: \(riderLat), \(riderLng)")
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                } else {
+                    VStack {
+                        ProgressView()
+                        Text("Loading map...")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            .frame(height: 300)
+            
+            // Status progress
+            VStack(spacing: 16) {
+                if let order = viewModel.orderDetail {
+                    // Progress steps
+                    OrderProgressView(status: order.oStatus ?? "")
+                    
+                    Divider()
+                    
+                    // ETA
+                    if let eta = viewModel.mapInfo?.estimatedTime, !eta.isEmpty {
+                        HStack {
+                            Image(systemName: "clock")
+                                .foregroundColor(.appGreen)
+                            Text("Estimated delivery: \(eta)")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Spacer()
+                        }
+                    }
+                    
+                    // Rider info
+                    if let riderName = order.riderName, !riderName.isEmpty {
+                        HStack(spacing: 12) {
+                            Image(systemName: "person.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.appAccent)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(riderName)
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                Text("Delivery Partner")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Spacer()
+                            
+                            // Call button
+                            if let phone = viewModel.mapInfo?.riderPhone, !phone.isEmpty {
+                                Button {
+                                    if let url = URL(string: "tel://\(phone)") {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } label: {
+                                    Image(systemName: "phone.fill")
+                                        .foregroundColor(.white)
+                                        .frame(width: 40, height: 40)
+                                        .background(Color.appGreen)
+                                        .cornerRadius(20)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .padding()
+            
+            Spacer()
+        }
+        .navigationTitle("Track Order")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.loadOrderDetail(orderId: orderId)
+            await viewModel.loadMapInfo(orderId: orderId)
+            // Start polling every 10 seconds
+            startPolling()
+        }
+        .onDisappear {
+            timer?.invalidate()
+        }
+    }
+    
+    private func startPolling() {
+        timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+            Task {
+                await viewModel.loadMapInfo(orderId: orderId)
+            }
+        }
+    }
+}
+
+// MARK: - Order Progress View
+
+struct OrderProgressView: View {
+    let status: String
+    
+    private let steps = ["Placed", "Accepted", "Preparing", "On the way", "Delivered"]
+    
+    private var activeIndex: Int {
+        switch status {
+        case "Pending": return 0
+        case "Accepted": return 1
+        case "Preparing": return 2
+        case "On the way": return 3
+        case "Completed", "Delivered": return 4
+        default: return 0
+        }
+    }
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
+                VStack(spacing: 4) {
+                    ZStack {
+                        Circle()
+                            .fill(index <= activeIndex ? Color.appGreen : Color.gray.opacity(0.3))
+                            .frame(width: 24, height: 24)
+                        
+                        if index < activeIndex {
+                            Image(systemName: "checkmark")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                        } else if index == activeIndex {
+                            Circle()
+                                .fill(Color.white)
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+                    
+                    Text(step)
+                        .font(.system(size: 9))
+                        .foregroundColor(index <= activeIndex ? .appGreen : .gray)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                
+                if index < steps.count - 1 {
+                    Rectangle()
+                        .fill(index < activeIndex ? Color.appGreen : Color.gray.opacity(0.3))
+                        .frame(height: 2)
+                        .frame(maxWidth: .infinity)
+                        .offset(y: -10)
+                }
+            }
+        }
+        .padding(.horizontal, 8)
+    }
+}
+
+// MARK: - Rating Sheet
+
+struct RatingSheet: View {
+    let orderId: String
+    let onComplete: () -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var rating: Int = 0
+    @State private var reviewText = ""
+    @State private var isSubmitting = false
+    
+    private let emojis = ["😡", "😕", "😐", "😊", "🤩"]
+    private let labels = ["Terrible", "Bad", "Okay", "Good", "Amazing"]
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Spacer()
+                
+                Text("How was your order?")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                // Emoji rating
+                HStack(spacing: 16) {
+                    ForEach(1...5, id: \.self) { index in
+                        Button {
+                            withAnimation { rating = index }
+                        } label: {
+                            VStack(spacing: 4) {
+                                Text(emojis[index - 1])
+                                    .font(.system(size: rating == index ? 40 : 28))
+                                
+                                Text(labels[index - 1])
+                                    .font(.caption2)
+                                    .foregroundColor(rating == index ? .appBlack : .gray)
+                            }
+                            .opacity(rating == 0 || rating == index ? 1.0 : 0.4)
+                        }
+                    }
+                }
+                
+                // Review text
+                TextField("Write a review (optional)", text: $reviewText, axis: .vertical)
+                    .font(.subheadline)
+                    .padding()
+                    .background(Color.gray.opacity(0.08))
+                    .cornerRadius(12)
+                    .lineLimit(3...6)
+                    .padding(.horizontal)
+                
+                Spacer()
+                
+                // Submit
+                Button {
+                    Task {
+                        isSubmitting = true
+                        await submitRating()
+                        isSubmitting = false
+                        onComplete()
+                        dismiss()
+                    }
+                } label: {
+                    if isSubmitting {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text("Submit Rating")
+                            .fontWeight(.bold)
+                    }
+                }
+                .font(.subheadline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(rating > 0 ? Color.appGreen : Color.gray)
+                .cornerRadius(12)
+                .padding(.horizontal)
+                .disabled(rating == 0 || isSubmitting)
+            }
+            .padding()
+            .navigationTitle("Rate Order")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Skip") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+    
+    private func submitRating() async {
+        let uid = SessionManager.shared.user?.id ?? ""
+        do {
+            let _ = try await APIService.shared.submitRating(
+                uid: uid, orderId: orderId,
+                rating: String(rating), review: reviewText
+            )
+        } catch {}
+    }
+}
+
+// MARK: - Order History View
+
+struct OrderHistoryView: View {
+    @StateObject private var viewModel = ProfileViewModel()
+    
+    var body: some View {
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            } else if viewModel.orders.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "bag")
+                        .font(.system(size: 48))
+                        .foregroundColor(.gray.opacity(0.4))
+                    Text("No orders yet")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            } else {
+                List(viewModel.orders, id: \.orderId) { order in
+                    NavigationLink {
+                        OrderDetailView(orderId: order.orderId ?? "")
+                    } label: {
+                        OrderHistoryRow(order: order)
+                    }
+                }
+                .listStyle(.plain)
+            }
+        }
+        .navigationTitle("Order History")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.loadOrderHistory()
+        }
+    }
+}
+
+struct OrderHistoryRow: View {
+    let order: OrderHistoryItem
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(order.restName ?? "")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                Spacer()
+                Text("\(SessionManager.shared.currency)\(order.orderTotal ?? "0")")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+            }
+            
+            Text(order.orderItems ?? "")
+                .font(.caption)
+                .foregroundColor(.gray)
+                .lineLimit(1)
+            
+            HStack {
+                Text(order.orderDate ?? "")
+                    .font(.caption2)
+                    .foregroundColor(.gray)
+                
+                Spacer()
+                
+                Text(order.oStatus ?? "")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundColor(statusColor(order.oStatus ?? ""))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(statusColor(order.oStatus ?? "").opacity(0.1))
+                    .cornerRadius(4)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+    
+    private func statusColor(_ status: String) -> Color {
+        switch status {
+        case "Completed", "Delivered": return .appGreen
+        case "Cancelled": return .appRed
+        case "Pending": return .appAccent
+        default: return .blue
+        }
+    }
+}

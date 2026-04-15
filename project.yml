@@ -1,0 +1,49 @@
+name: FoodZippy
+options:
+  bundleIdPrefix: com.foodzippy
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.foodzippy.customer
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    SWIFT_STRICT_CONCURRENCY: minimal
+
+targets:
+  FoodZippy:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: FoodZippy
+        excludes:
+          - "**/*.md"
+    resources:
+      - path: FoodZippy/Assets.xcassets
+      - path: FoodZippy/Info.plist
+    info:
+      path: FoodZippy/Info.plist
+    settings:
+      base:
+        PRODUCT_NAME: FoodZippy
+        PRODUCT_BUNDLE_IDENTIFIER: com.foodzippy.customer
+        INFOPLIST_FILE: FoodZippy/Info.plist
+        SWIFT_VERSION: "5.9"
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""
+        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+    entitlements:
+      path: FoodZippy/FoodZippy.entitlements
+    dependencies:
+      - sdk: CoreLocation.framework
+        embed: false
+        implicit: true
+
+packages: {}

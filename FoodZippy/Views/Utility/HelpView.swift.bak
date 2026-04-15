@@ -1,0 +1,128 @@
+// HelpView.swift
+// Matches Android HelpActivity
+
+import SwiftUI
+
+struct HelpView: View {
+    @State private var helpPages: [HelpPage] = []
+    @State private var isLoading = true
+    
+    var body: some View {
+        Group {
+            if isLoading {
+                VStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+            } else {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Contact card
+                        VStack(spacing: 12) {
+                            Image(systemName: "headphones.circle.fill")
+                                .font(.system(size: 48))
+                                .foregroundColor(.appPrimary)
+                            
+                            Text("Need Help?")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                            
+                            Text("We're here to help you with any issues")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            HStack(spacing: 16) {
+                                // Phone
+                                Button {
+                                    if let url = URL(string: "tel://1800123456") {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } label: {
+                                    VStack(spacing: 4) {
+                                        Image(systemName: "phone.fill")
+                                            .font(.title3)
+                                        Text("Call Us")
+                                            .font(.caption)
+                                    }
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 70)
+                                    .background(Color.appGreen)
+                                    .cornerRadius(12)
+                                }
+                                
+                                // Email
+                                Button {
+                                    if let url = URL(string: "mailto:support@foodzippy.com") {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } label: {
+                                    VStack(spacing: 4) {
+                                        Image(systemName: "envelope.fill")
+                                            .font(.title3)
+                                        Text("Email")
+                                            .font(.caption)
+                                    }
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 70)
+                                    .background(Color.appAccent)
+                                    .cornerRadius(12)
+                                }
+                                
+                                // WhatsApp
+                                Button {
+                                    if let url = URL(string: "https://wa.me/911800123456") {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } label: {
+                                    VStack(spacing: 4) {
+                                        Image(systemName: "message.fill")
+                                            .font(.title3)
+                                        Text("WhatsApp")
+                                            .font(.caption)
+                                    }
+                                    .foregroundColor(.white)
+                                    .frame(width: 80, height: 70)
+                                    .background(Color.appGreen)
+                                    .cornerRadius(12)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+                        
+                        // Help pages
+                        ForEach(helpPages, id: \.id) { page in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(page.title ?? "")
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                
+                                Text(page.content ?? "")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+        .navigationTitle("Help & Support")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            do {
+                let response = try await APIService.shared.getHelpPages()
+                helpPages = response.pages ?? []
+            } catch {}
+            isLoading = false
+        }
+    }
+}

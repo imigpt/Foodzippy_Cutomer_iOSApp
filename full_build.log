@@ -1,0 +1,447 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -scheme FoodZippy -destination "generic/platform=iOS Simulator" build
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  GTMSessionFetcher: https://github.com/google/gtm-session-fetcher.git @ 4.5.0
+  leveldb: https://github.com/firebase/leveldb.git @ 1.22.5
+  GoogleDataTransport: https://github.com/google/GoogleDataTransport.git @ 10.1.0
+  GoogleAdsOnDeviceConversion: https://github.com/googleads/google-ads-on-device-conversion-ios-sdk @ 2.3.0
+  SwiftProtobuf: https://github.com/apple/swift-protobuf.git @ 1.36.1
+  InteropForGoogle: https://github.com/google/interop-ios-for-google-sdks.git @ 101.0.0
+  abseil: https://github.com/google/abseil-cpp-binary.git @ 1.2024072200.0
+  GoogleAppMeasurement: https://github.com/google/GoogleAppMeasurement.git @ 11.15.0
+  nanopb: https://github.com/firebase/nanopb.git @ 2.30910.0
+  Firebase: https://github.com/firebase/firebase-ios-sdk.git @ 11.15.0
+  GoogleUtilities: https://github.com/google/GoogleUtilities.git @ 8.1.0
+  Promises: https://github.com/google/promises.git @ 2.4.0
+  AppCheck: https://github.com/google/app-check.git @ 11.2.0
+  gRPC: https://github.com/google/grpc-binary.git @ 1.69.1
+
+2026-04-09 14:29:40.603 xcodebuild[34466:195717] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'FoodZippy' in project 'FoodZippy' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -o /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache
+
+Copy /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/FoodZippy.swiftmodule/x86_64-apple-ios-simulator.abi.json /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy.abi.json (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy.abi.json /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/FoodZippy.swiftmodule/x86_64-apple-ios-simulator.abi.json
+
+Copy /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/FoodZippy.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy.abi.json (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy.abi.json /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/FoodZippy.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+SwiftDriver FoodZippy normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name FoodZippy -Onone -enforce-exclusivity\=checked @/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator -F /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache -output-file-map /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy_const_extract_protocols.json -Xcc -iquote -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-generated-files.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-own-target-headers.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-project-headers.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources-normal/x86_64 -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources/x86_64 -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/x86_64/FoodZippy-Swift.h -working-directory /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp -experimental-emit-module-separately -disable-cmo
+
+SwiftDriver FoodZippy normal arm64 com.apple.xcode.tools.swift.compiler (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name FoodZippy -Onone -enforce-exclusivity\=checked @/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios16.0-simulator -g -module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator -F /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache -output-file-map /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy_const_extract_protocols.json -Xcc -iquote -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-generated-files.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-own-target-headers.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-project-headers.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources-normal/arm64 -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources/arm64 -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy-Swift.h -working-directory /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp -experimental-emit-module-separately -disable-cmo
+
+SwiftCompile normal arm64 Compiling\ Constants.swift,\ HelpView.swift,\ HomeModels.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Constants.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/HelpView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/HomeModels.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Constants.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/HelpView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/HomeModels.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ HomeView.swift,\ HomeViewModel.swift,\ IntroView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/HomeView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/HomeViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Intro/IntroView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/HomeView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/HomeViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Intro/IntroView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ AppState.swift,\ AuthViewModel.swift,\ CartItem.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/AppState.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/AuthViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/CartItem.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/AppState.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/AuthViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/AuthViewModel.swift:167:21: warning: result of 'try?' is unused
+                    try? await APIService.shared.saveToken(userId: user.id ?? "", token: token)
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/CartItem.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ OrderDetailView.swift,\ OrderViewModel.swift,\ OtpVerificationView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Orders/OrderDetailView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/OrderViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/OtpVerificationView.swift (in target 'FoodZippy' from project 'FoodZippy')
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Orders/OrderDetailView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/OrderViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/OtpVerificationView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ FoodZippy (in target 'FoodZippy' from project 'FoodZippy')
+
+EmitSwiftModule normal arm64 (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ CartManager.swift,\ CartView.swift,\ CartViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/CartManager.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+Failed frontend command:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Services/APIService.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Address.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Address/AddressListView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/AppState.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/AuthViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/CartItem.swift -primary-file /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/CartManager.swift -primary-file /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift -primary-file /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Constants.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Extensions.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/FaqView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/FavouritesView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/FoodZippyApp.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/ForgotPasswordView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/HelpView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/HomeModels.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/HomeView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/HomeViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Intro/IntroView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/LocationManager.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/LoginView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Main/MainTabView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/MenuItem.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Miscellaneous.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Order.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Orders/OrderDetailView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/OrderViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/OtpVerificationView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Payment.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Profile/ProfileView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/ProfileViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/ReferralView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/RefundsView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Restaurant.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Restaurant/RestaurantDetailView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/RestaurantListView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/RestaurantRowView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/RestaurantViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/RootView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Search/SearchView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/SearchViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Services/ServiceViews.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/SessionManager.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/SignupView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Splash/SplashView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/SubscriptionViews.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/User.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/WalletView.swift /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources/GeneratedAssetSymbols.swift -supplementary-output-file-map /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/supplementaryOutputs-5 -target arm64-apple-ios16.0-simulator -module-can-import-version DeveloperToolsSupport 23.0.4 23.0.4 -module-can-import-version SwiftUI 7.2.5.1 7.2.5 -module-can-import-version UIKit 9126.2.4.1 9126.2.4 -disable-cross-import-overlay-search -swift-module-cross-import MapKit /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/MapKit.framework/Modules/MapKit.swiftcrossimport/SwiftUI.swiftoverlay -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libFoundationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#FoundationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libObservationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#ObservationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libPreviewsMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#PreviewsMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libSwiftMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#SwiftMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libSwiftUIMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#SwiftUIMacros -disable-implicit-swift-modules -Xcc -fno-implicit-modules -Xcc -fno-implicit-module-maps -explicit-swift-module-map-file /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy-dependencies-2.json -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -I /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator -F /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FoodZippy_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp -enable-anonymous-context-mangled-names -file-compilation-dir /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -ivfsstatcache -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-generated-files.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-own-target-headers.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/FoodZippy-project-headers.hmap -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources-normal/arm64 -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources/arm64 -Xcc -I/Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/DerivedSources -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name FoodZippy -frontend-parseable-output -disable-clang-spi -target-sdk-version 26.2 -target-sdk-name iphonesimulator26.2 -clang-target arm64-apple-ios26.2-simulator -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -o /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartManager.o -o /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.o -o /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.o -index-unit-output-path /FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartManager.o -index-unit-output-path /FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.o -index-unit-output-path /FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.o -index-store-path /Users/tanayshrivastava/Library/Developer/Xcode/DerivedData/FoodZippy-aeepidptfylssogwiptcdtkydmpn/Index.noindex/DataStore -index-system-modules
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/CartManager.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:53:38: error: value of type 'CartViewModel' has no dynamic member 'orderType' using key path from root type 'CartViewModel'
+                        if viewModel.orderType == "delivery" {
+                           ~~~~~~~~~ ^~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:53:28: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                        if viewModel.orderType == "delivery" {
+                           ^
+                           $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:53:48: error: referencing operator function '==' on 'StringProtocol' requires that 'Binding<Subject>' conform to 'StringProtocol'
+                        if viewModel.orderType == "delivery" {
+                                               ^
+Swift.StringProtocol:1:11: note: where 'Self' = 'Binding<Subject>'
+extension StringProtocol {
+          ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:118:42: error: cannot convert value of type 'Binding<Date>' to expected argument type 'Binding<String?>'
+                selectedDate: $viewModel.scheduleDate,
+                                         ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:118:42: note: arguments to generic parameter 'Value' ('Date' and 'String?') are expected to be equal
+                selectedDate: $viewModel.scheduleDate,
+                                         ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:119:42: error: cannot convert value of type 'Binding<String>' to expected argument type 'Binding<String?>'
+                selectedTime: $viewModel.scheduleTime,
+                                         ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:119:42: note: arguments to generic parameter 'Value' ('String' and 'String?') are expected to be equal
+                selectedTime: $viewModel.scheduleTime,
+                                         ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:135:92: error: argument passed to call that takes no arguments
+            await viewModel.loadCartData(restId: cartManager.cartItems.first?.restaurantId ?? "")
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:183:17: error: initializer 'init(_:)' requires that 'Binding<Subject>' conform to 'StringProtocol'
+                Text(viewModel.restaurantName)
+                ^
+SwiftUI.Text.init:2:8: note: where 'S' = 'Binding<Subject>'
+public init<S>(_ content: S) where S : StringProtocol}
+       ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:183:32: error: value of type 'CartViewModel' has no dynamic member 'restaurantName' using key path from root type 'CartViewModel'
+                Text(viewModel.restaurantName)
+                     ~~~~~~~~~ ^~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:183:22: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                Text(viewModel.restaurantName)
+                     ^
+                     $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:229:89: error: value of type 'CartViewModel' has no dynamic member 'orderType' using key path from root type 'CartViewModel'
+                OrderTypeChip(title: "Delivery", icon: "bicycle", isSelected: viewModel.orderType == "delivery") {
+                                                                              ~~~~~~~~~ ^~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:229:79: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                OrderTypeChip(title: "Delivery", icon: "bicycle", isSelected: viewModel.orderType == "delivery") {
+                                                                              ^
+                                                                              $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:229:99: error: referencing operator function '==' on 'StringProtocol' requires that 'Binding<Subject>' conform to 'StringProtocol'
+                OrderTypeChip(title: "Delivery", icon: "bicycle", isSelected: viewModel.orderType == "delivery") {
+                                                                                                  ^
+Swift.StringProtocol:1:11: note: where 'Self' = 'Binding<Subject>'
+extension StringProtocol {
+          ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:230:31: error: value of type 'CartViewModel' has no dynamic member 'orderType' using key path from root type 'CartViewModel'
+                    viewModel.orderType = "delivery"
+                    ~~~~~~~~~ ^~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:230:21: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                    viewModel.orderType = "delivery"
+                    ^
+                    $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:230:43: error: cannot assign value of type 'String' to type 'Binding<Subject>'
+                    viewModel.orderType = "delivery"
+                                          ^~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:267:35: error: cannot call value of non-function type 'Binding<Subject>'
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                                  ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:267:35: error: value of type 'CartViewModel' has no dynamic member 'recalculateBill' using key path from root type 'CartViewModel'
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                        ~~~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:267:25: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                        ^
+                        $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:318:27: error: value of type 'CartViewModel' has no dynamic member 'recalculateBill' using key path from root type 'CartViewModel'
+                viewModel.recalculateBill(items: cartManager.cartItems)
+                ~~~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:318:17: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                viewModel.recalculateBill(items: cartManager.cartItems)
+                ^
+                $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:318:27: error: cannot call value of non-function type 'Binding<Subject>'
+                viewModel.recalculateBill(items: cartManager.cartItems)
+                          ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:337:47: error: initializer for conditional binding must have Optional type, not 'Date'
+                    if viewModel.isScheduled, let date = viewModel.scheduleDate, let time = viewModel.scheduleTime {
+                                              ^          ~~~~~~~~~~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:337:82: error: initializer for conditional binding must have Optional type, not 'String'
+                    if viewModel.isScheduled, let date = viewModel.scheduleDate, let time = viewModel.scheduleTime {
+                                                                                 ^          ~~~~~~~~~~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:393:35: error: value of type 'CartViewModel' has no dynamic member 'recalculateBill' using key path from root type 'CartViewModel'
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                        ~~~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:393:25: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                        ^
+                        $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:393:35: error: cannot call value of non-function type 'Binding<Subject>'
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                                  ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:430:26: error: value of type 'CartViewModel' has no dynamic member 'orderType' using key path from root type 'CartViewModel'
+            if viewModel.orderType == "delivery" {
+               ~~~~~~~~~ ^~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:430:16: error: referencing subscript 'subscript(dynamicMember:)' requires wrapper 'ObservedObject<CartViewModel>.Wrapper'
+            if viewModel.orderType == "delivery" {
+               ^
+               $
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:430:36: error: referencing operator function '==' on 'StringProtocol' requires that 'Binding<Subject>' conform to 'StringProtocol'
+            if viewModel.orderType == "delivery" {
+                                   ^
+Swift.StringProtocol:1:11: note: where 'Self' = 'Binding<Subject>'
+extension StringProtocol {
+          ^
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:523:59: error: value of type 'Address' has no member 'atype'
+                    Image(systemName: addressIcon(address.atype ?? ""))
+                                                  ~~~~~~~ ^~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:569:37: error: value of type 'PaymentItem' has no member 'title'
+                        Text(method.title ?? "")
+                             ~~~~~~ ^~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:649:51: error: argument passed to call that takes no arguments
+                        await viewModel.placeOrder(
+                                                  ^
+                                                  
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:702:38: error: type 'Int' cannot be used as a boolean; test for '!= 0' instead
+            VegIndicator(isVeg: item.isVeg ? "1" : "0")
+                                     ^
+                                (          != 0)
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:801:45: error: value of type 'PaymentItem' has no member 'title'
+                                Text(method.title ?? "")
+                                     ~~~~~~ ^~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:911:40: error: value of type 'CouponListResponse' has no member 'coupons'
+                    coupons = response.coupons ?? []
+                              ~~~~~~~~ ^~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:922:45: error: value of type 'SessionManager' has no member 'user'
+            let uid = SessionManager.shared.user?.id ?? ""
+                      ~~~~~~~~~~~~~~~~~~~~~ ^~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:926:17: error: argument 'couponCode' must precede argument 'uid'
+                couponCode: code, orderTotal: String(format: "%.2f", total)
+~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift:963:35: error: value of type 'Coupon' has no member 'couTitle'
+            if let title = coupon.couTitle, !title.isEmpty {
+                           ~~~~~~ ^~~~~~~~
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ RestaurantDetailView.swift,\ RestaurantListView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Restaurant/RestaurantDetailView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/RestaurantListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Restaurant/RestaurantDetailView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/RestaurantListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ APIService.swift,\ Address.swift,\ AddressListView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Services/APIService.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Address.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Address/AddressListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Services/APIService.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Address.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Address/AddressListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftEmitModule normal x86_64 Emitting\ module\ for\ FoodZippy (in target 'FoodZippy' from project 'FoodZippy')
+
+EmitSwiftModule normal x86_64 (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppState.swift, AuthViewModel.swift, CartItem.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 Compiling\ Payment.swift,\ ProfileView.swift,\ RestaurantDetailView.swift,\ RestaurantListView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Payment.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Profile/ProfileView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Restaurant/RestaurantDetailView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/RestaurantListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Payment.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Profile/ProfileView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Restaurant/RestaurantDetailView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/RestaurantListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 Compiling\ HomeModels.swift,\ HomeView.swift,\ HomeViewModel.swift,\ IntroView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/HomeModels.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/HomeView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/HomeViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Intro/IntroView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/HomeModels.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Home/HomeView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/HomeViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Intro/IntroView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling HomeView.swift, HomeViewModel.swift, IntroView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 Compiling\ CartViewModel.swift,\ Constants.swift,\ FavouritesView.swift,\ HelpView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Constants.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/FavouritesView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/HelpView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Constants.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/FavouritesView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/HelpView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 Compiling\ MainTabView.swift,\ ProfileViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Main/MainTabView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/ProfileViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Main/MainTabView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/ProfileViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal x86_64 Compiling HomeModels.swift, HomeView.swift, HomeViewModel.swift, IntroView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 Compiling\ SplashView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Splash/SplashView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Splash/SplashView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling MainTabView.swift, ProfileViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 Compiling\ SignupView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/SignupView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/SignupView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling SplashView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 Compiling\ ServiceViews.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Services/ServiceViews.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Services/ServiceViews.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling SignupView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 Compiling\ ForgotPasswordView.swift,\ LoginView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/ForgotPasswordView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/LoginView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/ForgotPasswordView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Auth/LoginView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling ServiceViews.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 Compiling\ APIService.swift,\ Address.swift,\ AddressListView.swift,\ AppState.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Services/APIService.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Address.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Address/AddressListView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/AppState.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Services/APIService.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Models/Address.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Address/AddressListView.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftCompile normal x86_64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/AppState.swift (in target 'FoodZippy' from project 'FoodZippy')
+    cd /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling ForgotPasswordView.swift, LoginView.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+SwiftCompile normal x86_64 Compiling\ RootView.swift,\ SearchView.swift,\ SearchViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/App/RootView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Search/SearchView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/SearchViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+
+** BUILD FAILED **
+
+
+The following build commands failed:
+	SwiftCompile normal arm64 Compiling\ CartManager.swift,\ CartView.swift,\ CartViewModel.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Utils/CartManager.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift (in target 'FoodZippy' from project 'FoodZippy')
+	SwiftCompile normal arm64 /Users/tanayshrivastava/Desktop/Foodzippy\ iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift (in target 'FoodZippy' from project 'FoodZippy')
+	Building project FoodZippy with scheme FoodZippy
+(3 failures)

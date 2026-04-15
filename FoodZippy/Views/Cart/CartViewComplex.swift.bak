@@ -1,0 +1,1045 @@
+// CartView.swift
+// Matches Android CartActivity - full cart with bill, payment, address, tips, coupon, schedule, place order
+
+import SwiftUI
+
+struct CartView: View {
+    @EnvironmentObject var appState: AppState
+    @StateObject private var viewModel = CartViewModel()
+    @StateObject private var cartManager = CartManager.shared
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var showAddressList = false
+    @State private var showPaymentSheet = false
+    @State private var showCouponSheet = false
+    @State private var showTipSheet = false
+    @State private var showScheduleSheet = false
+    @State private var showOrderNote = false
+    @State private var orderNote = ""
+    @State private var navigateToOrderDetail = false
+    @State private var placedOrderId = ""
+    
+    var body: some View {
+        ZStack {
+            if cartManager.cartItems.isEmpty {
+                emptyCartView
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        // Restaurant info
+                        restaurantInfoSection
+                        
+                        // Cart items
+                        cartItemsSection
+                        
+                        // Order type selector (Delivery / Takeaway)
+                        orderTypeSection
+                        
+                        // Tip section
+                        tipSection
+                        
+                        // Schedule section
+                        if viewModel.isScheduled || true { // TODO: Fix canSchedule
+                            scheduleSection
+                        }
+                        
+                        // Coupon section
+                        couponSection
+                        
+                        // Bill details
+                        billSection
+                        
+                        // Delivery address
+                        // TODO: Add orderType to CartViewModel
+                        
+                        // Payment method
+                        paymentSection
+                        
+                        // Order note
+                        orderNoteSection
+                        
+                        // Bottom spacing
+                        Spacer().frame(height: 100)
+                    }
+                    .padding(.vertical)
+                }
+                
+                // Place Order Bar
+                VStack {
+                    Spacer()
+                    placeOrderBar
+                }
+            }
+            
+            // Loading overlay
+            if viewModel.isPlacingOrder {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.white)
+                    Text("Placing order...")
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                }
+            }
+        }
+        .navigationTitle("Cart")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showAddressList) {
+            NavigationStack {
+                AddressListView(selectionMode: true) { address in
+                    viewModel.selectedAddress = address
+                    showAddressList = false
+                }
+            }
+        }
+        .sheet(isPresented: $showPaymentSheet) {
+            PaymentMethodSheet(
+                paymentMethods: viewModel.paymentMethods,
+                selectedMethod: $viewModel.selectedPaymentMethod
+            )
+        }
+        .sheet(isPresented: $showCouponSheet) {
+            CouponListSheet(
+                restId: cartManager.cartItems.first?.restaurantId ?? "",
+                onApply: { coupon, amount in
+                    viewModel.appliedCoupon = coupon
+                    viewModel.couponDiscount = amount
+                    showCouponSheet = false
+                }
+            )
+        }
+        .sheet(isPresented: $showScheduleSheet) {
+            ScheduleSheet(
+                selectedDate: $viewModel.scheduleDate,
+                selectedTime: $viewModel.scheduleTime,
+                isScheduled: $viewModel.isScheduled
+            )
+        }
+        .navigationDestination(isPresented: $navigateToOrderDetail) {
+            OrderDetailView(orderId: placedOrderId)
+        }
+        .alert("Order Placed!", isPresented: $viewModel.orderPlaced) {
+            Button("View Order") {
+                placedOrderId = viewModel.placedOrderId
+                navigateToOrderDetail = true
+            }
+        } message: {
+            Text("Your order has been placed successfully!")
+        }
+        .task {
+            await viewModel.loadCartData()
+        }
+    }
+    
+    // MARK: - Empty Cart
+    
+    private var emptyCartView: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            Image(systemName: "cart")
+                .font(.system(size: 60))
+                .foregroundColor(.gray.opacity(0.4))
+            Text("Your cart is empty")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.appBlack)
+            Text("Add items from a restaurant to get started")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+            
+            Button {
+                dismiss()
+            } label: {
+                Text("Browse Restaurants")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 12)
+                    .background(Color.appPrimary)
+                    .cornerRadius(10)
+            }
+            Spacer()
+        }
+    }
+    
+    // MARK: - Restaurant Info
+    
+    private var restaurantInfoSection: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "storefront.fill")
+                .font(.title3)
+                .foregroundColor(.appPrimary)
+                .frame(width: 40, height: 40)
+                .background(Color.appPrimary.opacity(0.1))
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(cartManager.cartItems.first?.restaurantName ?? "Restaurant")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                Text(cartManager.cartItems.first?.restaurantName ?? "")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Cart Items
+    
+    private var cartItemsSection: some View {
+        VStack(spacing: 0) {
+            ForEach(cartManager.cartItems, id: \.id) { item in
+                CartItemRow(item: item)
+                if item.id != cartManager.cartItems.last?.id {
+                    Divider().padding(.leading, 40)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Order Type
+    
+    private var orderTypeSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Order Type")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(.gray)
+            
+            HStack(spacing: 10) {
+                OrderTypeChip(title: "Delivery", icon: "bicycle", isSelected: viewModel.orderType == "delivery") {
+                    viewModel.orderType = "delivery"
+                    viewModel.recalculateBill(items: cartManager.cartItems)
+                }
+                
+                OrderTypeChip(title: "Takeaway", icon: "bag", isSelected: viewModel.orderType == "takeaway") {
+                    viewModel.orderType = "takeaway"
+                    viewModel.recalculateBill(items: cartManager.cartItems)
+                }
+                
+                OrderTypeChip(title: "Drive-Thru", icon: "car", isSelected: viewModel.orderType == "drive_thru") {
+                    viewModel.orderType = "drive_thru"
+                    viewModel.recalculateBill(items: cartManager.cartItems)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Tip Section
+    
+    private var tipSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Tip your delivery partner")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.gray)
+                
+                Spacer()
+                
+                if viewModel.tipAmount > 0 {
+                    Button("Remove") {
+                        viewModel.tipAmount = 0
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                    }
+                    .font(.caption)
+                    .foregroundColor(.appPrimary)
+                }
+            }
+            
+            HStack(spacing: 8) {
+                ForEach([10, 20, 30, 50], id: \.self) { amount in
+                    Button {
+                        viewModel.tipAmount = Double(amount)
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                    } label: {
+                        Text("\(SessionManager.shared.currency)\(amount)")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(viewModel.tipAmount == Double(amount) ? .white : .appBlack)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(viewModel.tipAmount == Double(amount) ? Color.appGreen : Color.gray.opacity(0.1))
+                            .cornerRadius(16)
+                    }
+                }
+                
+                Button {
+                    showTipSheet = true
+                } label: {
+                    Text("Other")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.appBlack)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(16)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+        .alert("Enter Tip Amount", isPresented: $showTipSheet) {
+            TextField("Amount", text: Binding(
+                get: { viewModel.tipAmount > 0 ? String(Int(viewModel.tipAmount)) : "" },
+                set: { viewModel.tipAmount = Double($0) ?? 0 }
+            ))
+            .keyboardType(.numberPad)
+            
+            Button("Apply") {
+                viewModel.recalculateBill(items: cartManager.cartItems)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+    
+    // MARK: - Schedule Section
+    
+    private var scheduleSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "calendar.badge.clock")
+                    .foregroundColor(.appAccent)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Schedule Order")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                    
+                    if viewModel.isScheduled, let date = viewModel.scheduleDate, let time = viewModel.scheduleTime {
+                        Text("\(date) at \(time)")
+                            .font(.caption)
+                            .foregroundColor(.appGreen)
+                    } else {
+                        Text("Get it delivered now")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                Spacer()
+                
+                Button {
+                    showScheduleSheet = true
+                } label: {
+                    Text(viewModel.isScheduled ? "Change" : "Schedule")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.appPrimary)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Coupon Section
+    
+    private var couponSection: some View {
+        Button {
+            showCouponSheet = true
+        } label: {
+            HStack {
+                Image(systemName: "tag.fill")
+                    .foregroundColor(.appAccent)
+                
+                if let coupon = viewModel.appliedCoupon {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(coupon.couponCode ?? "")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.appGreen)
+                        Text("Saving \(SessionManager.shared.currency)\(String(format: "%.0f", viewModel.couponDiscount))")
+                            .font(.caption2)
+                            .foregroundColor(.appGreen)
+                    }
+                    
+                    Spacer()
+                    
+                    Button {
+                        viewModel.appliedCoupon = nil
+                        viewModel.couponDiscount = 0
+                        viewModel.recalculateBill(items: cartManager.cartItems)
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.gray)
+                    }
+                } else {
+                    Text("Apply Coupon")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.appBlack)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+            .padding(.horizontal)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - Bill Section
+    
+    private var billSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Bill Details")
+                .font(.subheadline)
+                .fontWeight(.bold)
+            
+            BillRow(title: "Item Total", value: viewModel.itemTotal)
+            
+            if viewModel.orderType == "delivery" {
+                BillRow(
+                    title: "Delivery Charge",
+                    value: viewModel.deliveryCharge,
+                    isGreen: viewModel.deliveryCharge == 0
+                )
+            }
+            
+            if viewModel.storeCharge > 0 {
+                BillRow(title: "Packaging / Service Charge", value: viewModel.storeCharge)
+            }
+            
+            if viewModel.taxAmount > 0 {
+                BillRow(title: "Taxes", value: viewModel.taxAmount)
+            }
+            
+            if viewModel.tipAmount > 0 {
+                BillRow(title: "Tip", value: viewModel.tipAmount)
+            }
+            
+            if viewModel.couponDiscount > 0 {
+                BillRow(title: "Coupon Discount", value: -viewModel.couponDiscount, isGreen: true)
+            }
+            
+            if viewModel.walletApplied > 0 {
+                BillRow(title: "Wallet", value: -viewModel.walletApplied, isGreen: true)
+            }
+            
+            Divider()
+            
+            HStack {
+                Text("Grand Total")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                Spacer()
+                Text("\(SessionManager.shared.currency)\(String(format: "%.2f", viewModel.grandTotal))")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+            }
+            
+            // Wallet toggle
+            if viewModel.walletBalance > 0 {
+                Divider()
+                Toggle(isOn: $viewModel.useWallet) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "wallet.pass")
+                            .foregroundColor(.appAccent)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Use Zippy Wallet")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                            Text("Balance: \(SessionManager.shared.currency)\(String(format: "%.2f", viewModel.walletBalance))")
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                .tint(.appGreen)
+                .onChange(of: viewModel.useWallet) { _, _ in
+                    viewModel.recalculateBill(items: cartManager.cartItems)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Address Section
+    
+    private var addressSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Deliver to")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.gray)
+                
+                Spacer()
+                
+                Button {
+                    showAddressList = true
+                } label: {
+                    Text("Change")
+                        .font(.caption)
+                        .foregroundColor(.appPrimary)
+                }
+            }
+            
+            if let address = viewModel.selectedAddress {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: addressIcon(address.atype ?? ""))
+                        .foregroundColor(.appPrimary)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(address.atype?.capitalized ?? "Address")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                        Text(address.fullAddress ?? address.address ?? "")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .lineLimit(2)
+                    }
+                }
+            } else {
+                Button {
+                    showAddressList = true
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.appPrimary)
+                        Text("Add Delivery Address")
+                            .font(.caption)
+                            .foregroundColor(.appPrimary)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Payment Section
+    
+    private var paymentSection: some View {
+        Button {
+            showPaymentSheet = true
+        } label: {
+            HStack {
+                Image(systemName: paymentIcon(viewModel.selectedPaymentMethod?.id ?? ""))
+                    .foregroundColor(.appPrimary)
+                
+                if let method = viewModel.selectedPaymentMethod {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(method.title ?? "")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.appBlack)
+                        if let subtitle = method.subtitle, !subtitle.isEmpty {
+                            Text(subtitle)
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                } else {
+                    Text("Select Payment Method")
+                        .font(.subheadline)
+                        .foregroundColor(.appBlack)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+            .padding(.horizontal)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - Order Note
+    
+    private var orderNoteSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "note.text")
+                    .foregroundColor(.gray)
+                
+                if showOrderNote {
+                    TextField("Add a note for the restaurant", text: $orderNote)
+                        .font(.caption)
+                } else {
+                    Button {
+                        showOrderNote = true
+                    } label: {
+                        Text("Add cooking instructions")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Place Order Bar
+    
+    private var placeOrderBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(SessionManager.shared.currency)\(String(format: "%.2f", viewModel.grandTotal))")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                    Text("Total")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                Button {
+                    Task {
+                        await viewModel.placeOrder(
+                            items: cartManager.cartItems,
+                            note: orderNote
+                        )
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("Place Order")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                        Image(systemName: "arrow.right")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 14)
+                    .background(Color.appGreen)
+                    .cornerRadius(12)
+                }
+                .disabled(viewModel.isPlacingOrder)
+            }
+            .padding()
+            .background(Color(UIColor.systemBackground))
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func addressIcon(_ type: String) -> String {
+        switch type.lowercased() {
+        case "home": return "house.fill"
+        case "work", "office": return "building.2.fill"
+        default: return "mappin.circle.fill"
+        }
+    }
+    
+    private func paymentIcon(_ id: String) -> String {
+        switch id.lowercased() {
+        case "cod", "cash": return "banknote"
+        case "razorpay", "stripe", "paypal": return "creditcard"
+        default: return "creditcard.fill"
+        }
+    }
+}
+
+// MARK: - Supporting Views
+
+struct CartItemRow: View {
+    let item: CartItem
+    @StateObject private var cartManager = CartManager.shared
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            VegIndicator(isVeg: item.isVeg ? "1" : "0")
+            
+            VStack(alignment: .leading, spacing: 3) {
+                Text(item.title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(2)
+                
+                // Addon titles
+                if !item.addonTitles.isEmpty {
+                    Text(item.addonTitles)
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                }
+                
+                Text("\(SessionManager.shared.currency)\(String(format: "%.0f", item.totalPrice))")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            // Quantity control
+            QuantityControl(
+                quantity: item.quantity,
+                onIncrease: { cartManager.incrementItem(productId: item.productId) },
+                onDecrease: { cartManager.decrementItem(productId: item.productId) }
+            )
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+struct BillRow: View {
+    let title: String
+    let value: Double
+    var isGreen: Bool = false
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.gray)
+            Spacer()
+            Text("\(value < 0 ? "-" : "")\(SessionManager.shared.currency)\(String(format: "%.2f", abs(value)))")
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(isGreen ? .appGreen : .appBlack)
+        }
+    }
+}
+
+struct OrderTypeChip: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.caption)
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .foregroundColor(isSelected ? .white : .appBlack)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(isSelected ? Color.appGreen : Color.gray.opacity(0.1))
+            .cornerRadius(16)
+        }
+    }
+}
+
+// MARK: - Payment Method Sheet
+
+struct PaymentMethodSheet: View {
+    let paymentMethods: [PaymentItem]
+    @Binding var selectedMethod: PaymentItem?
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(paymentMethods, id: \.id) { method in
+                    Button {
+                        selectedMethod = method
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: iconForPayment(method.id ?? ""))
+                                .font(.title3)
+                                .foregroundColor(.appPrimary)
+                                .frame(width: 36)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(method.title ?? "")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.appBlack)
+                                if let subtitle = method.subtitle, !subtitle.isEmpty {
+                                    Text(subtitle)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            if selectedMethod?.id == method.id {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.appGreen)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Payment Method")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+    
+    private func iconForPayment(_ id: String) -> String {
+        switch id.lowercased() {
+        case "cod", "1": return "banknote"
+        case "razorpay", "2": return "indianrupeesign.circle"
+        case "stripe", "3": return "creditcard"
+        case "paypal", "4": return "dollarsign.circle"
+        default: return "creditcard.fill"
+        }
+    }
+}
+
+// MARK: - Coupon List Sheet
+
+struct CouponListSheet: View {
+    let restId: String
+    let onApply: (Coupon, Double) -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var coupons: [Coupon] = []
+    @State private var isLoading = true
+    @State private var promoCode = ""
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Promo code input
+                HStack {
+                    TextField("Enter promo code", text: $promoCode)
+                        .font(.subheadline)
+                        .textInputAutocapitalization(.characters)
+                    
+                    Button("Apply") {
+                        Task { await applyCode(promoCode) }
+                    }
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.appPrimary)
+                    .disabled(promoCode.isEmpty)
+                }
+                .padding()
+                .background(Color.gray.opacity(0.05))
+                
+                Divider()
+                
+                if isLoading {
+                    ProgressView()
+                        .padding(.top, 40)
+                } else if coupons.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "tag.slash")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.4))
+                        Text("No coupons available")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.top, 40)
+                } else {
+                    List(coupons, id: \.couponId) { coupon in
+                        CouponRow(coupon: coupon) {
+                            Task { await applyCode(coupon.couponCode ?? "") }
+                        }
+                    }
+                    .listStyle(.plain)
+                }
+                
+                Spacer()
+            }
+            .navigationTitle("Coupons")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .task {
+                do {
+                    let response = try await APIService.shared.getCoupons(restId: restId)
+                    coupons = response.coupons ?? []
+                } catch {}
+                isLoading = false
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+    
+    private func applyCode(_ code: String) async {
+        guard !code.isEmpty else { return }
+        do {
+            let uid = SessionManager.shared.currentUser?.id ?? ""
+            let total = CartManager.shared.totalAmount
+            let response = try await APIService.shared.applyCoupon(
+                couponCode: code, uid: uid, restId: restId,
+                amount: String(format: "%.2f", total)
+            )
+            if let coupon = response.couponData,
+               let amount = Double(response.discountAmount ?? "0") {
+                onApply(coupon, amount)
+            }
+        } catch {}
+    }
+}
+
+struct CouponRow: View {
+    let coupon: Coupon
+    let onApply: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(coupon.couponCode ?? "")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.appPrimary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(style: StrokeStyle(lineWidth: 1, dash: [4]))
+                            .foregroundColor(.appPrimary.opacity(0.4))
+                    )
+                
+                Spacer()
+                
+                Button("APPLY", action: onApply)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.appPrimary)
+            }
+            
+            if let title = coupon.couponTitle, !title.isEmpty {
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            
+            if let desc = coupon.couDescription, !desc.isEmpty {
+                Text(desc)
+                    .font(.caption2)
+                    .foregroundColor(.gray)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Schedule Sheet
+
+struct ScheduleSheet: View {
+    @Binding var selectedDate: String?
+    @Binding var selectedTime: String?
+    @Binding var isScheduled: Bool
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var date = Date()
+    @State private var time = Date()
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                DatePicker("Date", selection: $date, in: Date()...Calendar.current.date(byAdding: .day, value: 7, to: Date())!, displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                
+                DatePicker("Time", selection: $time, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.wheel)
+                    .frame(height: 100)
+                
+                Button {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd"
+                    selectedDate = dateFormatter.string(from: date)
+                    
+                    let timeFormatter = DateFormatter()
+                    timeFormatter.dateFormat = "HH:mm"
+                    selectedTime = timeFormatter.string(from: time)
+                    
+                    isScheduled = true
+                    dismiss()
+                } label: {
+                    Text("Schedule Order")
+                        .font(.subheadline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.appGreen)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
+                
+                if isScheduled {
+                    Button {
+                        isScheduled = false
+                        selectedDate = nil
+                        selectedTime = nil
+                        dismiss()
+                    } label: {
+                        Text("Remove Schedule")
+                            .font(.caption)
+                            .foregroundColor(.appPrimary)
+                    }
+                }
+            }
+            .padding()
+            .navigationTitle("Schedule")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.large])
+    }
+}
