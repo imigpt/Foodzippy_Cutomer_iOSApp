@@ -1,0 +1,11 @@
+# Swift Package Manager
+.build/
+
+# Xcode
+DerivedData/
+*.xcworkspace
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
