@@ -260,60 +260,62 @@ struct FlashView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color(hex: "#FAFAFA").ignoresSafeArea()
+        NavigationStack {
+            ZStack(alignment: .top) {
+                Color(hex: "#FAFAFA").ignoresSafeArea()
 
-            ScrollView(showsIndicators: false) {
-                LazyVStack(spacing: 20) {
-                    heroBanner
-                    brandsSection
-                    categoriesSection
-                    bannersSection
-                    flashRestaurantsSection
-                }
-                .padding(.bottom, 24)
-            }
-            .refreshable { await viewModel.refresh() }
-
-            if let dish = selectedDishForDetail {
-                SpringBottomSheetOverlay(onDismissed: {
-                    selectedDishForDetail = nil
-                    if let queuedDish = queuedCustomizationDish {
-                        queuedCustomizationDish = nil
-                        if selectedDishForCustomization == nil {
-                            selectedDishForCustomization = queuedDish
-                        }
+                ScrollView(showsIndicators: false) {
+                    LazyVStack(spacing: 20) {
+                        heroBanner
+                        brandsSection
+                        categoriesSection
+                        bannersSection
+                        flashRestaurantsSection
                     }
-                }) { dismiss in
-                    DishDetailSheetView(
-                        dish: dish,
-                        cartViewModel: cartViewModel,
-                        onClose: dismiss,
-                        onRequestCustomization: { customDish in
-                            queuedCustomizationDish = customDish
-                            dismiss()
-                        }
-                    )
+                    .padding(.bottom, 24)
                 }
-                .zIndex(10)
-            }
+                .refreshable { await viewModel.refresh() }
 
-            if selectedDishForDetail == nil, let dish = selectedDishForCustomization {
-                SpringBottomSheetOverlay(onDismissed: {
-                    selectedDishForCustomization = nil
-                }) { dismiss in
-                    CustomisationSheetView(
-                        dish: dish,
-                        cartViewModel: cartViewModel,
-                        onClose: dismiss
-                    )
+                if let dish = selectedDishForDetail {
+                    SpringBottomSheetOverlay(onDismissed: {
+                        selectedDishForDetail = nil
+                        if let queuedDish = queuedCustomizationDish {
+                            queuedCustomizationDish = nil
+                            if selectedDishForCustomization == nil {
+                                selectedDishForCustomization = queuedDish
+                            }
+                        }
+                    }) { dismiss in
+                        DishDetailSheetView(
+                            dish: dish,
+                            cartViewModel: cartViewModel,
+                            onClose: dismiss,
+                            onRequestCustomization: { customDish in
+                                queuedCustomizationDish = customDish
+                                dismiss()
+                            }
+                        )
+                    }
+                    .zIndex(10)
                 }
-                .zIndex(11)
+
+                if selectedDishForDetail == nil, let dish = selectedDishForCustomization {
+                    SpringBottomSheetOverlay(onDismissed: {
+                        selectedDishForCustomization = nil
+                    }) { dismiss in
+                        CustomisationSheetView(
+                            dish: dish,
+                            cartViewModel: cartViewModel,
+                            onClose: dismiss
+                        )
+                    }
+                    .zIndex(11)
+                }
             }
+            .task { await viewModel.loadIfNeeded() }
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationBarBackButtonHidden(true)
         }
-        .task { await viewModel.loadIfNeeded() }
-        .toolbar(.hidden, for: .navigationBar)
-        .navigationBarBackButtonHidden(true)
     }
 
     private var heroBanner: some View {
@@ -630,8 +632,8 @@ private struct BrandItemView: View {
                 }
             }
             .frame(width: brandWidth)
+            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
     }
 }
 
@@ -735,7 +737,9 @@ struct RestaurantFlashCardView: View {
 
                 Spacer()
 
-                Button(action: onViewItems) {
+                NavigationLink {
+                    RestaurantView()
+                } label: {
                     HStack(spacing: 4) {
                         Text("View items")
                             .font(.system(size: 18, weight: .bold))

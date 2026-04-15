@@ -7,17 +7,20 @@ struct MainTabView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cartManager: CartManager
 
-    private var bottomSafeInset: CGFloat {
-        (UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .first?.windows.first(where: { $0.isKeyWindow })?
-            .safeAreaInsets.bottom ?? 0)
+    private var topSafeAreaColor: Color {
+        appState.selectedTab == .home
+            ? Color(red: 0.13, green: 0.02, blue: 0.24)
+            : Color.white
+    }
+
+    private var statusBarColorScheme: ColorScheme {
+        appState.selectedTab == .home ? .dark : .light
     }
 
     private var selectedTabBinding: Binding<AppState.TabItem> {
         Binding(
             get: { appState.selectedTab },
-            set: { appState.selectedTab = $0 }	
+            set: { appState.selectedTab = $0 }
         )
     }
 
@@ -41,33 +44,44 @@ struct MainTabView: View {
             ReorderView()
         }
     }
-    
-    var body: some View {
-        ZStack {
-            currentTabContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .background(Color.white)
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
-                if !cartManager.isEmpty {
-                    CartBarView()
-                        .padding(.horizontal, 10)
-                        .padding(.top, 8)
-                        .transition(.move(edge: .bottom))
-                }
 
-                CustomBottomTabBar(
-                    selectedTab: selectedTabBinding,
-                    bottomInset: bottomSafeInset
-                )
-            }
-            .frame(maxWidth: .infinity, alignment: .bottom)
-            .background(Color.white.ignoresSafeArea(.container, edges: .bottom))
+    var body: some View {
+        GeometryReader { geo in
+            currentTabContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.white)
+                .overlay(alignment: .top) {
+                    topSafeAreaColor
+                        .frame(height: geo.safeAreaInsets.top)
+                        .ignoresSafeArea(.container, edges: .top)
+                }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    if !appState.hideMainTabBar {
+                        VStack(spacing: 0) {
+
+                            // CART BAR
+                            if !cartManager.isEmpty {
+                                CartBarView()
+                                    .padding(.horizontal, 12)
+                                    .padding(.bottom, 6)
+                                    .transition(.move(edge: .bottom))
+                            }
+
+                            // TAB BAR
+                            CustomBottomTabBar(
+                                selectedTab: selectedTabBinding
+                            )
+                        }
+                        .background(Color.white)
+                        .background(
+                            Color.white
+                                .ignoresSafeArea(.container, edges: .bottom)
+                        )
+                    }
+                }
+                .ignoresSafeArea(.keyboard, edges: .bottom)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white.ignoresSafeArea())
-        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .preferredColorScheme(statusBarColorScheme)
         .alert("Replace Cart?", isPresented: replaceCartAlertBinding) {
             Button("YES, START AFRESH", role: .destructive) {
                 cartManager.replaceCartWithPendingItem()
@@ -81,7 +95,6 @@ struct MainTabView: View {
 
 private struct CustomBottomTabBar: View {
     @Binding var selectedTab: AppState.TabItem
-    let bottomInset: CGFloat
 
     var body: some View {
         HStack(spacing: 0) {
@@ -90,16 +103,17 @@ private struct CustomBottomTabBar: View {
             tabButton(.zippy)
             tabButton(.takeaway)
         }
-        .padding(.horizontal, 0)
-        .padding(.top, 8)
-        .padding(.bottom, bottomInset)
+        .padding(.top, 6)
+        .padding(.bottom, 0)
         .background(
             Color.white
-                .shadow(color: .black.opacity(0.08), radius: 8, y: -2)
+                .shadow(color: .black.opacity(0.06), radius: 6, y: -2)
         )
+        .overlay(alignment: .top) {
+            Divider()
+        }
     }
 
-    @ViewBuilder
     private func tabButton(_ tab: AppState.TabItem) -> some View {
         Button {
             selectedTab = tab
@@ -108,11 +122,11 @@ private struct CustomBottomTabBar: View {
                 tabArtwork(for: tab)
 
                 Text(title(for: tab))
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(selectedTab == tab ? Color(hex: "#FF6200") : Color(hex: "#707070"))
+                    .font(.system(size: 10, weight: .medium)) // smaller text
+                    .foregroundColor(selectedTab == tab ? Color(hex: "#FF6200") : Color.gray)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 58)
+            .frame(height: 50) // slightly compact
         }
         .buttonStyle(.plain)
     }
@@ -120,49 +134,47 @@ private struct CustomBottomTabBar: View {
     @ViewBuilder
     private func tabArtwork(for tab: AppState.TabItem) -> some View {
         switch tab {
+
         case .home:
             Image(systemName: "takeoutbag.and.cup.and.straw.fill")
-                .font(.system(size: 23, weight: .semibold))
-                .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color(hex: "#9A9A9A"))
+                .font(.system(size: 20, weight: .semibold)) // 🔽 reduced
+                .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color.gray)
 
         case .dineIn:
             Text("99")
-                .font(.system(size: 20, weight: .black, design: .rounded))
-                .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color(hex: "#FF6B00"))
-                .frame(width: 36, height: 36)
+                .font(.system(size: 16, weight: .bold, design: .rounded)) // 🔽 reduced
+                .foregroundColor(Color(hex: "#FF6B00"))
+                .frame(width: 30, height: 30) // 🔽 smaller circle
                 .background(
-                    Circle()
-                        .fill(Color(hex: "#FFF3E8"))
+                    Circle().fill(Color(hex: "#FFF3E8"))
                 )
 
         case .zippy:
             ZStack(alignment: .bottomTrailing) {
                 Image(systemName: "heart.circle.fill")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color(hex: "#9A9A9A"))
+                    .font(.system(size: 22)) // 🔽 reduced
+                    .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color.gray)
 
-                if let badge = badge(for: tab) {
-                    Text(badge)
-                        .font(.system(size: 8, weight: .heavy))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(Color(hex: "#E23744")))
-                        .offset(x: 12, y: 8)
-                }
+                Text("NEW")
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 1)
+                    .background(Capsule().fill(Color.red))
+                    .offset(x: 8, y: 6) // adjusted
             }
 
         case .takeaway:
-            VStack(spacing: 2) {
+            VStack(spacing: 1) {
                 Text("unlock")
-                    .font(.system(size: 8, weight: .bold))
-                Text("66% OFF")
-                    .font(.system(size: 9, weight: .black))
+                    .font(.system(size: 7, weight: .bold))
+                Text("66%")
+                    .font(.system(size: 8, weight: .black))
             }
             .foregroundColor(.white)
-            .frame(width: 42, height: 42)
+            .frame(width: 34, height: 34) // 🔽 reduced
             .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                RoundedRectangle(cornerRadius: 8)
                     .fill(
                         LinearGradient(
                             colors: [Color(hex: "#2A2E78"), Color(hex: "#1E1F5D")],
@@ -180,13 +192,6 @@ private struct CustomBottomTabBar: View {
         case .dineIn: return "99 Store"
         case .zippy: return "EatRight"
         case .takeaway: return "Offers"
-        }
-    }
-
-    private func badge(for tab: AppState.TabItem) -> String? {
-        switch tab {
-        case .zippy: return "NEW"
-        default: return nil
         }
     }
 }
@@ -207,9 +212,9 @@ struct CartBarView: View {
                         .font(.subheadline)
                         .fontWeight(.bold)
                 }
-                
+
                 Spacer()
-                
+
                 HStack(spacing: 4) {
                     Text("VIEW CART")
                         .font(.subheadline)
@@ -222,13 +227,12 @@ struct CartBarView: View {
             .padding(.vertical, 14)
             .background(Color.appGreen)
             .cornerRadius(12)
-            .padding(.horizontal, 16)
             .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
         }
         .fullScreenCover(isPresented: $showCart) {
             NavigationStack {
                 CartView()
             }
-        }	
+        }
     }
 }

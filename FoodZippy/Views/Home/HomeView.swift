@@ -7,7 +7,7 @@ import SwiftUI
 
 // MARK: - Colour tokens (reference image)
 private extension Color {
-    static let hPurpleDark   = Color(hex: "#4A0072")
+    static let hPurpleDark   = Color(hex: "#3D13A4")
     static let hPurpleMid    = Color(hex: "#7B1FA2")
     static let hPurpleLight  = Color(hex: "#9C27B0")
     static let hYellow       = Color(hex: "#FFC107"	)
@@ -101,7 +101,8 @@ struct HomeView: View {
                     ]),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
-                ).ignoresSafeArea()
+                )
+                .ignoresSafeArea(.container, edges: .top)
 
                 ScrollViewReader { proxy in
                     ScrollView(showsIndicators: false) {
@@ -113,22 +114,22 @@ struct HomeView: View {
                         // ── Purple header block (gradient + tabs) ──────────────────
                         HeaderView(
                             viewModel: viewModel,
-                            onDineInTap: { navigateToDineIn = true }
+                            topSafeInset: geo.safeAreaInsets.top,
+                            onDineInTap: { navigateToDineIn = true },
+                            onFoodTap: {
+                                withAnimation(.easeInOut(duration: 0.25)) {
+                                    proxy.scrollTo(topAnchorId, anchor: .top)
+                                }
+                            }
                         )
 
                         // ── White content area ─────────────────────────────────────
                         VStack(spacing: 0) {
 
-                            // Search bar row
-                            SearchBarView(viewModel: viewModel)
-                                .padding(.horizontal, 12)
-                                .padding(.top, 14)
-                                .padding(.bottom, 0)
-
                             // CRAVE banner
                             BannerView()
                                 .padding(.horizontal, 12)
-                                .padding(.top, 14)
+                                .padding(.top, 6)
                                 .padding(.bottom, 0)
 
                             // Offer text below banner (inside purple area continues)
@@ -213,9 +214,6 @@ struct HomeView: View {
                             }
                         }
                     }
-                    .safeAreaInset(edge: .top, spacing: 0) {
-                        Color.clear.frame(height: 0)
-                    }
                 }
             }
         }
@@ -238,20 +236,19 @@ struct HomeView: View {
 
 private struct HeaderView: View {
     @ObservedObject var viewModel: HomeViewModel
+    let topSafeInset: CGFloat
     let onDineInTap: () -> Void
+    let onFoodTap: () -> Void
 
     var body: some View {
         ZStack(alignment: .top) {
-            // Background gradient
-            LinearGradient(
-                colors: [Color(hex: "#2B004F"), Color(hex: "#5A0FAF")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea(.container, edges: .top)
+            // Background color (matches category tabs)
+            Color(red: 0.13, green: 0.02, blue: 0.24)
+                .ignoresSafeArea(.container, edges: .top)
 
             VStack(spacing: 0) {
-                Spacer().frame(height: 10)
+                Color.clear
+                    .frame(height: topSafeInset)
 
                 // ── Location row ──────────────────────────────────────────────
                 HStack(alignment: .center, spacing: 0) {
@@ -314,11 +311,13 @@ private struct HeaderView: View {
                 }
                 .padding(.horizontal, 16)
 
-                Spacer().frame(height: 18)
+                SearchBarView(viewModel: viewModel)
+                    .padding(.horizontal, 12)
+                    .padding(.top, 14)
+                    .padding(.bottom, 12)
 
                 // ── Category tabs ──────────────────────────────────────────────
-                CategoryTabView(viewModel: viewModel, onDineInTap: onDineInTap)
-                    .padding(.bottom, 14)
+                CategoryTabView(viewModel: viewModel, onDineInTap: onDineInTap, onFoodTap: onFoodTap)
             }
         }
         .fixedSize(horizontal: false, vertical: true)
@@ -341,285 +340,194 @@ private struct HeaderView: View {
 
 // MARK: - Category tab row (Food / Take Away / Dine In / Subscription / Drive-thru)
 
+// MARK: - Category tab row — pixel-perfect match of reference screenshot
+
 private struct CategoryTabView: View {
     @ObservedObject var viewModel: HomeViewModel
     let onDineInTap: () -> Void
+    let onFoodTap: () -> Void
 
-    struct TabItem: Identifiable, Decodable {
-        let id: Int
-        let name: String
-        let emoji: String
-        let badge: String?
-    }
+    @State private var selectedTab = "Food"
+    @Namespace private var animation
 
-    private let tabs: [TabItem] = [
-        TabItem(id: 0, name: "Food", emoji: "🍔", badge: nil),
-        TabItem(id: 1, name: "Take Away", emoji: "📦", badge: nil),
-        TabItem(id: 2, name: "Dine In", emoji: "🍽️", badge: nil),
-        TabItem(id: 3, name: "Subscription", emoji: "⭐", badge: nil),
-        TabItem(id: 4, name: "Drive-thru", emoji: "🚗", badge: nil)
+    // Exact colours sampled from reference image
+    private let bgColor    = Color(hex: "#09041A")   // very dark background
+    private let activeColor = Color(hex: "#3D13A4")  // bright violet (selected card)
+    private let inactiveColor = Color.white.opacity(0.04)
+
+    private let categories: [(name: String, emoji: String)] = [
+        ("Food",          "🍔"),
+        ("Take Away",     "🛍️"),
+        ("Subscription",  "📦"),
+        ("Drive-Thru",    "🚗")
     ]
 
-    @State private var selectedTab = 0
-    @State private var glowPulse = false
-    @State private var shimmerShift = false
-    @Namespace private var tabNamespace
-
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .bottom, spacing: 10) {
-                ForEach(Array(tabs.enumerated()), id: \.element.id) { index, tab in
-                    CategoryCardView(
-                        tab: tab,
-                        isSelected: selectedTab == tab.id,
-                        glowPulse: glowPulse,
-                        shimmerShift: shimmerShift,
-                        waveOffset: waveOffset(for: index),
-                        namespace: tabNamespace
+        VStack(spacing: 0) {
+
+            // ── Tab row ────────────────────────────────────────────────────
+            HStack(alignment: .bottom, spacing: -28) {
+                ForEach(Array(categories.enumerated()), id: \.element.name) { index, category in
+                    TabCell(
+                        category: category,
+                        isSelected: selectedTab == category.name,
+                        activeColor: activeColor,
+                        inactiveColor: inactiveColor,
+                        animation: animation
                     )
+                    // The left-most tab has the highest natural zIndex, except for the selected tab which is forcefully pushed to the very front
+                    .zIndex(selectedTab == category.name ? 100 : Double(categories.count - index))
                     .onTapGesture {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        withAnimation(.interpolatingSpring(stiffness: 250, damping: 30)) {
-                            selectedTab = tab.id
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            selectedTab = category.name
                         }
-                        if tab.id == 2 {
-                            onDineInTap()
-                        }
+                        if category.name == "Food" { onFoodTap() }
+                        if category.name == "Drive-Thru" { onDineInTap() }
                     }
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.bottom, 2)
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-                glowPulse = true
-            }
+            .padding(.top, 10)
+            .padding(.bottom, 0)
+            .background(bgColor)
 
-            withAnimation(.linear(duration: 1.45).repeatForever(autoreverses: false)) {
-                shimmerShift = true
-            }
+            // ── Bottom connector strip ─────────
+            Rectangle()
+                .fill(Color(hex: "#3D13A4")) // Matches the active card colored line at the bottom
+                .frame(height: 6)
         }
-    }
-
-    private func waveOffset(for index: Int) -> CGFloat {
-        let offsets: [CGFloat] = [1, 4, 6, 8, 10]
-        return offsets.indices.contains(index) ? offsets[index] : 0
+        .background(bgColor)
     }
 }
 
-private struct CategoryCardView: View {
-    let tab: CategoryTabView.TabItem
-    let isSelected: Bool
-    let glowPulse: Bool
-    let shimmerShift: Bool
-    let waveOffset: CGFloat
-    let namespace: Namespace.ID
+// ── Single tab cell ──────────────────────────────────────────────────────────
 
-    @State private var iconScale: CGFloat = 1
-    @State private var iconRotation: Double = 0
-    @State private var badgeVisible = false
+private struct TabCell: View {
+    let category: (name: String, emoji: String)
+    let isSelected: Bool
+    let activeColor: Color
+    let inactiveColor: Color
+    var animation: Namespace.ID
+
+    // Dimensions exactly matching the provided image
+    private var cardHeight: CGFloat { 80 }
+    private var emojiSize:  CGFloat { isSelected ? 36 : 30  }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            SwiggyCategoryShape()
-                .fill(inactiveFill)
-                .background(
-                    SwiggyCategoryShape()
-                        .fill(.ultraThinMaterial)
-                        .opacity(0.18)
-                )
+        VStack(spacing: 0) {
 
-            if isSelected {
-                SwiggyCategoryShape()
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color(hex: "#A855F7").opacity(0.68),
-                                Color(hex: "#7B2CBF").opacity(0.54)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 2.4
-                    )
-                    .shadow(color: Color(hex: "#A855F7").opacity(0.42), radius: 8, y: 0)
-            }
+            // ── Emoji + optional badge ────────────────────────────────────
+            ZStack(alignment: .bottom) {
+                Text(category.emoji)
+                    .font(.system(size: emojiSize))
+                    .animation(.spring(response: 0.35, dampingFraction: 0.75), value: isSelected)
 
-            SwiggyCategoryShape()
-                .stroke(Color.white.opacity(isSelected ? 0.28 : 0.08), lineWidth: 1)
-                .background(
-                    SwiggyCategoryShape()
-                        .fill(Color.white.opacity(0.05))
-                        .blur(radius: 10)
-                        .opacity(isSelected ? 0.65 : 0.35)
-                )
-                .shadow(color: .black.opacity(0.12), radius: 7, y: 3)
-                .overlay(alignment: .bottom) {
-                    LinearGradient(
-                        colors: [Color.clear, Color(hex: "#2B004F").opacity(0.45)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: 28)
-                    .clipShape(SwiggyCategoryShape())
-                }
-
-            if isSelected {
-                SwiggyCategoryShape()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(hex: "#8B2CFF"), Color(hex: "#6712CF"), Color(hex: "#45107D")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                if category.name == "Instamart" {
+                    Text("8 mins")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color(hex: "#2B52F6")) // Swiggy instamart blue
                         )
-                    )
-                    .matchedGeometryEffect(id: "active-tab", in: namespace)
+                        .offset(y: 16)
+                }
+            }
+            .frame(height: 40)                    // fixed zone so label stays aligned
+
+            // ── Label ─────────────────────────────────────────────────────
+            Text(category.name)
+                .font(.system(size: 13, weight: isSelected ? .bold : .semibold))
+                .foregroundColor(isSelected ? .white : Color(hex: "#B0AEC0"))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .padding(.bottom, 6)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: cardHeight)
+        .background {
+            if isSelected {
+                ZStack {
+                    PlateauTabShape()
+                        .fill(activeColor)
+                    
+                    // Top glowing effect
+                    PlateauTabShape()
+                        .fill(
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color.white.opacity(0.35), Color.clear]),
+                                center: UnitPoint(x: 0.5, y: 0.0),
+                                startRadius: 0,
+                                endRadius: 50
+                            )
+                        )
+                }
+                .overlay(
+                    PlateauTabShape(isOpen: true)
+                        .stroke(Color.white.opacity(0.35), lineWidth: 1.5)
+                )
+                .matchedGeometryEffect(id: "activeTab", in: animation)
+            } else {
+                PlateauTabShape()
+                    .fill(inactiveColor)
                     .overlay(
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.0), Color.white.opacity(0.34), Color.white.opacity(0.0)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                        .rotationEffect(.degrees(14))
-                        .offset(x: shimmerShift ? 120 : -120)
-                        .blendMode(.screen)
+                        PlateauTabShape(isOpen: true)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
                     )
-                    .clipShape(SwiggyCategoryShape())
-                    .shadow(
-                        color: Color(hex: "#A855F7").opacity(glowPulse ? 0.26 : 0.18),
-                        radius: 12,
-                        y: 6
-                    )
-                    .transition(.opacity)
-            }
-
-            VStack(spacing: 7) {
-                Text(tab.emoji)
-                    .font(.system(size: isSelected ? 40 : 35))
-                    .scaleEffect(iconScale)
-                    .rotationEffect(.degrees(iconRotation))
-                    .opacity(isSelected ? 1 : 0.9)
-                    .padding(.top, isSelected ? 12 : 14)
-
-                Text(tab.name)
-                    .font(.system(size: 14.5, weight: isSelected ? .bold : .semibold))
-                    .foregroundColor(isSelected ? .white : .white.opacity(0.67))
-                    .opacity(isSelected ? 1 : 0.84)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.9)
-                    .padding(.bottom, 12)
-                    .animation(.easeInOut(duration: 0.25), value: isSelected)
-            }
-
-            if let badge = tab.badge {
-                Text(badge)
-                    .font(.system(size: 10.7, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                            .fill(Color(hex: "#0D5DFF"))
-                    )
-                    .shadow(color: Color(hex: "#0D5DFF").opacity(0.35), radius: 6, y: 2)
-                    .offset(y: badgeVisible ? 52 : 46)
-                    .opacity(badgeVisible ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.2), value: badgeVisible)
             }
         }
-        .frame(width: isSelected ? 112 : 95, height: isSelected ? 125 : 102)
-        .offset(y: waveOffset + (isSelected ? -9 : 0))
-        .scaleEffect(isSelected ? 1.12 : 0.95, anchor: .bottom)
-        .opacity(isSelected ? 1 : 0.8)
-        .animation(.easeInOut(duration: 0.25), value: isSelected)
-        .onAppear {
-            badgeVisible = true
-            if isSelected {
-                animateSelectedIcon()
-            }
-        }
-        .onChange(of: isSelected) { active in
-            if active {
-                animateSelectedIcon()
-                badgeVisible = false
-                withAnimation(.easeInOut(duration: 0.2).delay(0.02)) {
-                    badgeVisible = true
-                }
-            }
-        }
-    }
-
-    private var inactiveFill: LinearGradient {
-        return LinearGradient(
-            colors: [Color.white.opacity(0.10), Color.white.opacity(0.03), Color.black.opacity(0.15)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-
-    private func animateSelectedIcon() {
-        iconScale = 1
-        iconRotation = 0
-
-        withAnimation(.easeInOut(duration: 0.11)) {
-            iconScale = 1.2
-            iconRotation = 2.5
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.11) {
-            withAnimation(.easeInOut(duration: 0.09)) {
-                iconScale = 1.1
-                iconRotation = 0
-            }
-        }
+        .animation(.spring(response: 0.35, dampingFraction: 0.75), value: isSelected)
     }
 }
 
-private struct SwiggyCategoryShape: Shape {
+private struct PlateauTabShape: Shape {
+    var isOpen: Bool = false
+
     func path(in rect: CGRect) -> Path {
         var path = Path()
 
-        let radius: CGFloat = 28
-        let bulge: CGFloat = 10
-        let topY = rect.minY + bulge
+        let w = rect.width
+        let h = rect.height
 
-        path.move(to: CGPoint(x: rect.minX + radius, y: topY))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX - radius, y: topY),
-            control: CGPoint(x: rect.midX, y: rect.minY - 7)
-        )
+        let topInset = w * 0.18
+        let topCornerRadius: CGFloat = 16
+
+        // Bottom-left
+        path.move(to: CGPoint(x: 0, y: h))
+
+        // Left slanted straight edge up to curve
+        path.addLine(to: CGPoint(x: topInset, y: topCornerRadius))
+
+        // Top-left corner
         path.addArc(
-            center: CGPoint(x: rect.maxX - radius, y: topY + radius),
-            radius: radius,
-            startAngle: .degrees(-90),
-            endAngle: .degrees(0),
-            clockwise: false
-        )
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - radius))
-        path.addArc(
-            center: CGPoint(x: rect.maxX - radius, y: rect.maxY - radius),
-            radius: radius,
-            startAngle: .degrees(0),
-            endAngle: .degrees(90),
-            clockwise: false
-        )
-        path.addLine(to: CGPoint(x: rect.minX + radius, y: rect.maxY))
-        path.addArc(
-            center: CGPoint(x: rect.minX + radius, y: rect.maxY - radius),
-            radius: radius,
-            startAngle: .degrees(90),
-            endAngle: .degrees(180),
-            clockwise: false
-        )
-        path.addLine(to: CGPoint(x: rect.minX, y: topY + radius))
-        path.addArc(
-            center: CGPoint(x: rect.minX + radius, y: topY + radius),
-            radius: radius,
+            center: CGPoint(x: topInset + topCornerRadius, y: topCornerRadius),
+            radius: topCornerRadius,
             startAngle: .degrees(180),
             endAngle: .degrees(270),
             clockwise: false
         )
-        path.closeSubpath()
+
+        // Flat top edge
+        path.addLine(to: CGPoint(x: w - topInset - topCornerRadius, y: 0))
+
+        // Top-right corner
+        path.addArc(
+            center: CGPoint(x: w - topInset - topCornerRadius, y: topCornerRadius),
+            radius: topCornerRadius,
+            startAngle: .degrees(270),
+            endAngle: .degrees(0),
+            clockwise: false
+        )
+
+        // Right slanted straight edge back to bottom
+        path.addLine(to: CGPoint(x: w, y: h))
+
+        if !isOpen {
+            path.closeSubpath()
+        }
         return path
     }
 }

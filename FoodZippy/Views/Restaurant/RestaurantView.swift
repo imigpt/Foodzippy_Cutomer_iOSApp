@@ -2,51 +2,166 @@ import SwiftUI
 
 struct RestaurantView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var searchText = ""
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @EnvironmentObject private var appState: AppState
 
-    private let chips = ["Pure Veg", "EatRight", "Ratings 4.0+", "Bestseller", "Fast Delivery"]
-    private let topPicks: [TopPickDish] = [
+    @StateObject private var cartViewModel = AddToCartViewModel.shared
+
+    @State private var searchText = ""
+    @State private var isUnder199Filter = false
+    @State private var isVegFilter = false
+    @State private var isNonVegFilter = false
+    @State private var isMenuVisible = false
+    @State private var isLiked = false
+
+    @State private var selectedDishForDetail: AddToCartDish?
+    @State private var selectedDishForCustomization: AddToCartDish?
+
+    private let fastFoodItems: [FastFoodDish] = [
         .init(
-            name: "Shahi Paneer",
-            imageURL: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=1200&q=80",
-            oldPrice: "₹120",
-            offerPrice: "₹99",
+            name: "Fries + Sauce",
+            imageURL: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=900&q=80",
+            oldPrice: 169,
+            offerPrice: 139,
+            rating: 4.4,
+            ratingCount: 281,
             isVeg: true,
-            badge: nil
+            description: "Golden fries with chef special sauce.",
+            isCustomizable: false,
+            customisationOptions: []
         ),
         .init(
-            name: "Kadai Paneer",
-            imageURL: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=1200&q=80",
-            oldPrice: "₹140",
-            offerPrice: "₹99",
+            name: "Masala Fries",
+            imageURL: "https://images.unsplash.com/photo-1619881590738-a111d176d906?auto=format&fit=crop&w=900&q=80",
+            oldPrice: 189,
+            offerPrice: 149,
+            rating: 4.2,
+            ratingCount: 202,
             isVeg: true,
-            badge: "Bestseller"
+            description: "Crispy masala fries with peri peri seasoning.",
+            isCustomizable: false,
+            customisationOptions: []
+        ),
+        .init(
+            name: "Veg Manchurian",
+            imageURL: "https://images.unsplash.com/photo-1604908176997-431221e2d4cf?auto=format&fit=crop&w=900&q=80",
+            oldPrice: 229,
+            offerPrice: 189,
+            rating: 4.5,
+            ratingCount: 419,
+            isVeg: true,
+            description: "Indo-Chinese veggie dumplings in tangy sauce.",
+            isCustomizable: true,
+            customisationOptions: [
+                DishCustomisationOption(id: "half", title: "Half", additionalPrice: 0, isVeg: true),
+                DishCustomisationOption(id: "full", title: "Full", additionalPrice: 40, isVeg: true)
+            ]
+        ),
+        .init(
+            name: "Paneer Wrap",
+            imageURL: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80",
+            oldPrice: 249,
+            offerPrice: 199,
+            rating: 4.3,
+            ratingCount: 163,
+            isVeg: true,
+            description: "Grilled paneer wrap with crunchy veggies.",
+            isCustomizable: true,
+            customisationOptions: [
+                DishCustomisationOption(id: "regular", title: "Regular", additionalPrice: 0, isVeg: true),
+                DishCustomisationOption(id: "cheese", title: "Extra Cheese", additionalPrice: 30, isVeg: true)
+            ]
+        ),
+        .init(
+            name: "Crispy Burger",
+            imageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80",
+            oldPrice: 259,
+            offerPrice: 209,
+            rating: 4.6,
+            ratingCount: 357,
+            isVeg: false,
+            description: "Crunchy patty burger with signature sauce.",
+            isCustomizable: false,
+            customisationOptions: []
+        ),
+        .init(
+            name: "Cheese Pizza Slice",
+            imageURL: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80",
+            oldPrice: 279,
+            offerPrice: 219,
+            rating: 4.1,
+            ratingCount: 138,
+            isVeg: true,
+            description: "Classic cheese loaded pizza slice.",
+            isCustomizable: false,
+            customisationOptions: []
         )
     ]
 
+    private let menuItems: [MenuOverlayItem] = [
+        .init(title: "Fast Food", count: 6),
+        .init(title: "99 Store", count: 11),
+        .init(title: "Items starting at 169", count: 104),
+        .init(title: "Buy 1 Get 1 Free", count: 3),
+        .init(title: "Recommended", count: 20),
+        .init(title: "Combos for you", count: 5, badge: "NEW"),
+        .init(title: "Fries", count: 3),
+        .init(title: "Celebration Combo", count: 8)
+    ]
+
+    private var gridColumns: [GridItem] {
+        if horizontalSizeClass == .regular {
+            return [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)]
+        }
+        return [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    }
+
+    private var filteredItems: [FastFoodDish] {
+        fastFoodItems.filter { dish in
+            let matchesSearch = searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                || dish.name.localizedCaseInsensitiveContains(searchText)
+            let matchesPrice = !isUnder199Filter || dish.offerPrice <= 199
+            
+            let vegFilter = isVegFilter && !isNonVegFilter
+            let nonVegFilter = isNonVegFilter && !isVegFilter
+            let bothFilters = isVegFilter && isNonVegFilter
+            
+            let matchesVegFilter: Bool
+            if vegFilter {
+                matchesVegFilter = dish.isVeg
+            } else if nonVegFilter {
+                matchesVegFilter = !dish.isVeg
+            } else if bothFilters {
+                matchesVegFilter = true
+            } else {
+                matchesVegFilter = true
+            }
+            
+            return matchesSearch && matchesPrice && matchesVegFilter
+        }
+    }
+
     var body: some View {
         GeometryReader { geo in
-            let headerHeight = geo.size.height * 0.25
-
-            ZStack(alignment: .bottom) {
+            ZStack(alignment: .bottomTrailing) {
                 Color(hex: "#F4F4F5").ignoresSafeArea()
-
-                VStack(spacing: 0) {
-                    Color(hex: "#020817")
-                        .frame(height: headerHeight)
-                    Spacer(minLength: 0)
-                }
-                .ignoresSafeArea(edges: .top)
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 16) {
-                        customNavigationBar
-                            .padding(.top, geo.safeAreaInsets.top + 8)
-                            .padding(.horizontal, 18)
+                        ZStack(alignment: .top) {
+                            Color(hex: "#0F141E")
+                                .cornerRadius(34, corners: [.bottomLeft, .bottomRight])
 
-                        restaurantInfoCard
-                            .padding(.top, 10)
-                            .padding(.horizontal, 14)
+                            VStack(spacing: 14) {
+                                customNavigationBar
+                                    .padding(.top, geo.safeAreaInsets.top + 6)
+                                    .padding(.horizontal, 16)
+
+                                restaurantInfoCard
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                        .frame(height: 312)
 
                         searchBar
                             .padding(.horizontal, 16)
@@ -54,22 +169,67 @@ struct RestaurantView: View {
 
                         filterChips
 
-                        topPicksSection
+                        fastFoodSection
+                            .padding(.top, 4)
 
-                        Spacer(minLength: 140)
+                        Spacer(minLength: 120)
                     }
                 }
-                .padding(.top, 0)
 
                 floatingMenuButton
-                    .padding(.trailing, 18)
-                    .padding(.bottom, 110)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-
-                bottomCartBanner
+                    .padding(.trailing, 24)
+                    .padding(.bottom, 28)
             }
-            .navigationBarBackButtonHidden(true)
-            .toolbar(.hidden, for: .navigationBar)
+            .overlay {
+                if isMenuVisible {
+                    Color.black.opacity(0.18)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isMenuVisible = false
+                            }
+                        }
+
+                    menuOverlay
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            appState.hideMainTabBar = true
+        }
+        .onDisappear {
+            appState.hideMainTabBar = false
+        }
+        .sheet(item: $selectedDishForDetail) { dish in
+            DishDetailSheetView(
+                dish: dish,
+                cartViewModel: cartViewModel,
+                onClose: {
+                    selectedDishForDetail = nil
+                },
+                onRequestCustomization: { customDish in
+                    selectedDishForDetail = nil
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        selectedDishForCustomization = customDish
+                    }
+                }
+            )
+            .presentationDetents([.fraction(0.92), .large])
+            .presentationDragIndicator(.hidden)
+        }
+        .sheet(item: $selectedDishForCustomization) { dish in
+            CustomisationSheetView(
+                dish: dish,
+                cartViewModel: cartViewModel,
+                onClose: {
+                    selectedDishForCustomization = nil
+                }
+            )
+            .presentationDetents([.fraction(0.62), .large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -77,280 +237,415 @@ struct RestaurantView: View {
         HStack {
             Button(action: { dismiss() }) {
                 Image(systemName: "arrow.left")
-                    .font(.system(size: 28, weight: .medium))
+                    .font(.system(size: 20, weight: .medium))
                     .foregroundColor(.white)
             }
 
             Spacer()
 
             HStack(spacing: 12) {
-                Button(action: {}) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "person.badge.plus")
-                            .font(.system(size: 15, weight: .semibold))
-                        Text("GROUP ORDER")
-                            .font(.system(size: 16, weight: .bold))
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isLiked.toggle()
                     }
-                    .foregroundColor(.white.opacity(0.92))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .overlay(
-                        Capsule()
-                            .stroke(Color.white.opacity(0.55), lineWidth: 1.5)
-                    )
+                }) {
+                    Image(systemName: isLiked ? "heart.fill" : "heart")
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundColor(isLiked ? Color(hex: "#FF2D55") : .white)
+                        .frame(width: 44, height: 36)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.white.opacity(0.45), lineWidth: 1)
+                        )
                 }
 
                 Button(action: {}) {
                     Image(systemName: "ellipsis.vertical")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.9))
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.white)
                 }
             }
         }
     }
 
     private var restaurantInfoCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 4) {
                         Image(systemName: "leaf.fill")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(Color(hex: "#159A6E"))
+                            .font(.system(size: 12, weight: .bold))
                         Text("Pure Veg")
-                            .font(.system(size: 41/2, weight: .bold))
-                            .foregroundColor(Color(hex: "#159A6E"))
+                            .font(.system(size: 13, weight: .bold))
                     }
+                    .foregroundColor(Color(hex: "#1EA86F"))
 
                     Text("Shri Govindam Pavitra\nBhojnalaya")
-                        .font(.system(size: 22, weight: .black))
+                        .font(.system(size: 20, weight: .bold))
                         .foregroundColor(Color(hex: "#171A29"))
                         .lineSpacing(2)
 
-                    HStack(spacing: 10) {
+                    HStack(spacing: 8) {
                         Text("40–45 mins")
                         Text("|")
+                            .foregroundColor(Color.gray.opacity(0.5))
                         Text("Jagatpura")
                     }
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(Color(hex: "#8A8D94"))
                 }
 
-                Spacer(minLength: 10)
+                Spacer(minLength: 8)
 
                 VStack(alignment: .trailing, spacing: 6) {
                     HStack(spacing: 4) {
                         Text("3.8")
+                            .font(.system(size: 15, weight: .bold))
                         Image(systemName: "star.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 11, weight: .bold))
                     }
-                    .font(.system(size: 35/2, weight: .heavy))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
                     .background(Color(hex: "#1EA86F"))
                     .clipShape(Capsule())
 
                     Text("2.5K+ ratings")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 10, weight: .medium))
                         .foregroundColor(Color(hex: "#8A8D94"))
                 }
             }
 
             Divider()
-                .overlay(Color(hex: "#E7E7EA"))
+                .background(Color(hex: "#E7E7EA"))
 
             HStack(alignment: .center) {
                 HStack(spacing: 12) {
                     Circle()
-                        .fill(Color(hex: "#F6F0F5"))
-                        .frame(width: 36, height: 36)
+                        .fill(Color(hex: "#A11457").opacity(0.1))
+                        .frame(width: 32, height: 32)
                         .overlay(
                             Image(systemName: "triangle.fill")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(Color(hex: "#A11457"))
                         )
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Flat ₹150 off")
-                            .font(.system(size: 41/2, weight: .heavy))
+                            .font(.system(size: 15, weight: .bold))
                             .foregroundColor(Color(hex: "#171A29"))
                         Text("USE AXISREWARDS | ABOVE ₹500")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundColor(Color(hex: "#8A8D94"))
                     }
                 }
 
-                Spacer(minLength: 10)
+                Spacer()
 
-                VStack(alignment: .trailing, spacing: 8) {
+                VStack(alignment: .trailing, spacing: 6) {
                     Text("2/5")
-                        .font(.system(size: 37/2, weight: .black))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color(hex: "#F65A0A"))
 
-                    HStack(spacing: 6) {
-                        Circle().fill(Color(hex: "#D8D8DC")).frame(width: 8, height: 8)
-                        Circle().fill(Color(hex: "#F65A0A")).frame(width: 10, height: 10)
-                        Circle().fill(Color(hex: "#D8D8DC")).frame(width: 8, height: 8)
+                    HStack(spacing: 4) {
+                        Circle().fill(Color(hex: "#F65A0A")).frame(width: 6, height: 6)
+                        Circle().fill(Color(hex: "#D8D8DC")).frame(width: 5, height: 5)
+                        Circle().fill(Color(hex: "#D8D8DC")).frame(width: 5, height: 5)
                     }
                 }
             }
         }
-        .padding(22)
+        .padding(18)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: .black.opacity(0.14), radius: 20, x: 0, y: 10)
+        .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 5)
     }
 
     private var searchBar: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 17, weight: .medium))
                 .foregroundColor(Color(hex: "#6E7280"))
 
             TextField("Search for dishes", text: $searchText)
-                .font(.system(size: 20/2, weight: .medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundColor(Color(hex: "#4A4D55"))
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
 
             Divider()
-                .frame(height: 30)
-                .overlay(Color(hex: "#D0D2D8"))
+                .frame(height: 22)
+                .background(Color(hex: "#D0D2D8"))
 
             Button(action: {}) {
                 Image(systemName: "mic.fill")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .medium))
                     .foregroundColor(Color(hex: "#FC791A"))
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
         .background(Color(hex: "#EAEAF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private var filterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(chips, id: \.self) { chip in
-                    HStack(spacing: 8) {
-                        if chip == "Pure Veg" {
-                            Image(systemName: "leaf")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(Color(hex: "#159A6E"))
-                        } else if chip == "EatRight" {
-                            Image(systemName: "heart.circle.fill")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(Color(hex: "#4B4E57"))
-                        }
-
-                        Text(chip)
-                            .font(.system(size: 18/2*2, weight: .semibold))
-                            .foregroundColor(chip == "Pure Veg" ? Color(hex: "#159A6E") : Color(hex: "#4B4E57"))
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        isUnder199Filter.toggle()
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(Color(hex: "#D6D7DC"), lineWidth: 1)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }) {
+                    Text("Under Rs. 199")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(isUnder199Filter ? .white : Color(hex: "#4B4E57"))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(isUnder199Filter ? Color(hex: "#1EA86F") : Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(isUnder199Filter ? Color.clear : Color(hex: "#E0E0E0"), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        isVegFilter.toggle()
+                    }
+                }) {
+                    Text("Veg")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(isVegFilter ? .white : Color(hex: "#4B4E57"))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(isVegFilter ? Color(hex: "#1EA86F") : Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(isVegFilter ? Color.clear : Color(hex: "#E0E0E0"), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        isNonVegFilter.toggle()
+                    }
+                }) {
+                    Text("Non-Veg")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(isNonVegFilter ? .white : Color(hex: "#4B4E57"))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(isNonVegFilter ? Color(hex: "#D54141") : Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(isNonVegFilter ? Color.clear : Color(hex: "#E0E0E0"), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        isUnder199Filter = false
+                        isVegFilter = false
+                        isNonVegFilter = false
+                        searchText = ""
+                    }
+                }) {
+                    Text("Reset")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color(hex: "#4B4E57"))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color(hex: "#E0E0E0"), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+                Spacer(minLength: 0)
             }
             .padding(.horizontal, 16)
         }
     }
 
-    private var topPicksSection: some View {
+    private var fastFoodSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             Divider()
-                .overlay(Color(hex: "#DCDDDF"))
+                .background(Color(hex: "#DCDDDF"))
                 .padding(.horizontal, 16)
 
-            Text("Top Picks")
-                .font(.system(size: 40/2, weight: .black))
+            Text("Fast Food")
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(Color(hex: "#171A29"))
                 .padding(.horizontal, 16)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 14) {
-                    ForEach(topPicks) { dish in
-                        TopPickCard(dish: dish)
-                    }
+            LazyVGrid(columns: gridColumns, spacing: 12) {
+                ForEach(filteredItems) { dish in
+                    FastFoodCard(
+                        dish: dish,
+                        onAdd: { handleAddTap(for: dish) }
+                    )
                 }
-                .padding(.horizontal, 16)
+            }
+            .padding(.horizontal, 16)
+
+            if filteredItems.isEmpty {
+                Text("No items found")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.gray)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
             }
         }
     }
 
     private var floatingMenuButton: some View {
-        Button(action: {}) {
-            VStack(spacing: 8) {
-                Image(systemName: "list.bullet.rectangle.portrait")
-                    .font(.system(size: 28, weight: .medium))
+        Button(action: {
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
+                isMenuVisible.toggle()
+            }
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: "doc.text")
+                    .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.white)
                 Text("MENU")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.system(size: 11, weight: .bold))
                     .foregroundColor(.white)
             }
-            .frame(width: 108, height: 108)
-            .background(Color(hex: "#020817"))
+            .frame(width: 76, height: 76)
+            .background(Color(hex: "#010B1A"))
             .clipShape(Circle())
-            .shadow(color: .black.opacity(0.35), radius: 14, x: 0, y: 8)
+            .shadow(color: .black.opacity(0.24), radius: 10, x: 0, y: 5)
         }
     }
 
-    private var bottomCartBanner: some View {
-        VStack(spacing: 0) {
-            Color.white
-                .frame(height: 10)
+    private var menuOverlay: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            ForEach(menuItems) { item in
+                HStack(alignment: .center, spacing: 10) {
+                    Text(item.title)
+                        .font(.system(size: item.title == "Fast Food" || item.title == "99 Store" ? 18 : 17, weight: item.title == "Fast Food" || item.title == "99 Store" ? .bold : .medium))
+                        .foregroundColor(Color.white.opacity(0.97))
 
-            HStack {
-                Text("1 Item added")
-                    .font(.system(size: 19, weight: .bold))
-                    .foregroundColor(.white)
+                    if let badge = item.badge {
+                        Text(badge)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white.opacity(0.92))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.white.opacity(0.25))
+                            .clipShape(Capsule())
+                    }
 
-                Spacer()
+                    Spacer()
 
-                HStack(spacing: 8) {
-                    Text("View Cart")
-                        .font(.system(size: 19, weight: .bold))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 18, weight: .bold))
+                    Text("\(item.count)")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.95))
                 }
-                .foregroundColor(.white)
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 20)
-            .background(Color(hex: "#22A36D"))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .padding(.horizontal, 12)
-            .padding(.bottom, 10)
-            .background(Color.white)
         }
-        .ignoresSafeArea(edges: .bottom)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 24)
+        .frame(maxWidth: 580)
+        .background(Color(hex: "#010B1A"))
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .padding(.horizontal, 18)
+        .padding(.bottom, 120)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+    }
+
+    private func handleAddTap(for dish: FastFoodDish) {
+        let addDish = toAddToCartDish(dish)
+        if addDish.isCustomizable {
+            selectedDishForCustomization = addDish
+        } else {
+            selectedDishForDetail = addDish
+        }
+    }
+
+    private func toAddToCartDish(_ dish: FastFoodDish) -> AddToCartDish {
+        AddToCartDish(
+            id: dish.id,
+            restaurantId: "restaurant-shri-govindam",
+            restaurantName: "Shri Govindam",
+            title: dish.name,
+            imageURL: dish.imageURL,
+            description: dish.description,
+            basePrice: dish.offerPrice,
+            oldPrice: dish.oldPrice,
+            rating: dish.rating,
+            ratingCount: dish.ratingCount,
+            isVeg: dish.isVeg,
+            isCustomizable: dish.isCustomizable,	
+            customisationOptions: dish.customisationOptions
+        )
     }
 }
 
-private struct TopPickDish: Identifiable {
-    let id = UUID()
+private struct FastFoodDish: Identifiable {
+    let id = UUID().uuidString
     let name: String
     let imageURL: String
-    let oldPrice: String
-    let offerPrice: String
+    let oldPrice: Double
+    let offerPrice: Double
+    let rating: Double
+    let ratingCount: Int
     let isVeg: Bool
-    let badge: String?
+    let description: String
+    let isCustomizable: Bool
+    let customisationOptions: [DishCustomisationOption]
+
+    var ratingText: String { String(format: "%.1f", rating) }
+
+    var oldPriceText: String {
+        if oldPrice == floor(oldPrice) {
+            return "₹\(Int(oldPrice))"
+        }
+        return "₹\(String(format: "%.2f", oldPrice))"
+    }
+
+    var offerPriceText: String {
+        if offerPrice == floor(offerPrice) {
+            return "₹\(Int(offerPrice))"
+        }
+        return "₹\(String(format: "%.2f", offerPrice))"
+    }
 }
 
-private struct TopPickCard: View {
-    let dish: TopPickDish
+private struct MenuOverlayItem: Identifiable {
+    let id = UUID()
+    let title: String
+    let count: Int
+    let badge: String?
+
+    init(title: String, count: Int, badge: String? = nil) {
+        self.title = title
+        self.count = count
+        self.badge = badge
+    }
+}
+
+private struct FastFoodCard: View {
+    let dish: FastFoodDish
+    let onAdd: () -> Void
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        VStack(alignment: .leading, spacing: 8) {
             AsyncImage(url: URL(string: dish.imageURL)) { phase in
                 switch phase {
                 case .empty:
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .fill(Color.gray.opacity(0.16))
                         .overlay(ProgressView())
                 case .success(let image):
@@ -358,80 +653,90 @@ private struct TopPickCard: View {
                         .resizable()
                         .scaledToFill()
                 case .failure:
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .fill(Color.gray.opacity(0.18))
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.gray.opacity(0.2))
                         .overlay(Image(systemName: "photo").foregroundColor(.gray))
                 @unknown default:
                     EmptyView()
                 }
             }
-            .frame(width: 330, height: 330)
-            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .frame(height: 150)
+            .frame(maxWidth: .infinity)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
-            LinearGradient(
-                colors: [.black.opacity(0.72), .black.opacity(0.12), .clear],
-                startPoint: .bottom,
-                endPoint: .top
-            )
-            .frame(width: 330, height: 330)
-            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            HStack(spacing: 6) {
+                MiniVegIndicator(isVeg: dish.isVeg)
 
-            if let badge = dish.badge {
-                Text(badge)
-                    .font(.system(size: 16, weight: .heavy))
-                    .foregroundColor(Color(hex: "#F65A0A"))
-                    .shadow(color: .white.opacity(0.95), radius: 1)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.trailing, 10)
-                    .padding(.bottom, 128)
+                Text(dish.name)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(Color(hex: "#2A2D34"))
+                    .lineLimit(1)
             }
 
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 6) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
-                            .stroke(Color(hex: "#129A5E"), lineWidth: 1.6)
-                            .frame(width: 16, height: 16)
-                        Circle()
-                            .fill(Color(hex: "#129A5E"))
-                            .frame(width: 8, height: 8)
-                    }
+            HStack(spacing: 6) {
+                Text(dish.oldPriceText)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.gray)
+                    .strikethrough()
 
-                    Text(dish.name)
-                        .font(.system(size: 41/2, weight: .bold))
-                        .foregroundColor(.white)
-                        .lineLimit(1)
+                Text(dish.offerPriceText)
+                    .font(.system(size: 13, weight: .heavy))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2)
+                    .background(Color(hex: "#FFD938"))
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            }
 
-                    Text(dish.oldPrice)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.82))
-                        .strikethrough()
-
-                    Text(dish.offerPrice)
-                        .font(.system(size: 20, weight: .black))
-                        .foregroundColor(Color(hex: "#1D1D20"))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Color(hex: "#FFD938"))
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            HStack {
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 10, weight: .bold))
+                    Text("\(dish.ratingText) (\(dish.ratingCount))")
+                        .font(.system(size: 11, weight: .bold))
                 }
+                .foregroundColor(Color(hex: "#0B9F63"))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color(hex: "#E9F8F1"))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                 Spacer()
 
-                Button(action: {}) {
+                Button(action: onAdd) {
                     Text("ADD")
-                        .font(.system(size: 20/2*2, weight: .heavy))
+                        .font(.system(size: 13, weight: .bold))
                         .foregroundColor(Color(hex: "#1EA86F"))
-                        .frame(width: 148, height: 54)
+                        .frame(width: 68, height: 32)
                         .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(Color(hex: "#D8DBE2"), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 18)
-            .frame(width: 330)
+        }
+        .padding(10)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+    }
+}
+
+private struct MiniVegIndicator: View {
+    let isVeg: Bool
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .stroke(isVeg ? Color(hex: "#129A5E") : Color(hex: "#D54141"), lineWidth: 1.2)
+                .frame(width: 12, height: 12)
+
+            Circle()
+                .fill(isVeg ? Color(hex: "#129A5E") : Color(hex: "#D54141"))
+                .frame(width: 6, height: 6)
         }
     }
 }
@@ -439,5 +744,6 @@ private struct TopPickCard: View {
 #Preview {
     NavigationStack {
         RestaurantView()
+            .environmentObject(AppState.shared)
     }
 }
