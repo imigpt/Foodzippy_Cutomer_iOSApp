@@ -35,9 +35,13 @@ struct MainTabView: View {
     private var currentTabContent: some View {
         switch appState.selectedTab {
         case .home:
-            HomeView()
-        case .dineIn:
+            NavigationStack {
+                HomeView()
+            }
+        case .flash:
             FlashView()
+        case .dineIn:
+            DineInMainView()
         case .zippy:
             HighProteinView()
         case .takeaway:
@@ -99,6 +103,7 @@ private struct CustomBottomTabBar: View {
     var body: some View {
         HStack(spacing: 0) {
             tabButton(.home)
+            tabButton(.flash)
             tabButton(.dineIn)
             tabButton(.zippy)
             tabButton(.takeaway)
@@ -123,7 +128,7 @@ private struct CustomBottomTabBar: View {
 
                 Text(title(for: tab))
                     .font(.system(size: 10, weight: .medium)) // smaller text
-                    .foregroundColor(selectedTab == tab ? Color(hex: "#FF6200") : Color.gray)
+                    .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 50) // slightly compact
@@ -138,60 +143,41 @@ private struct CustomBottomTabBar: View {
         case .home:
             Image(systemName: "takeoutbag.and.cup.and.straw.fill")
                 .font(.system(size: 20, weight: .semibold)) // 🔽 reduced
-                .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color.gray)
+                .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
 
-        case .dineIn:
-            Text("99")
-                .font(.system(size: 16, weight: .bold, design: .rounded)) // 🔽 reduced
-                .foregroundColor(Color(hex: "#FF6B00"))
-                .frame(width: 30, height: 30) // 🔽 smaller circle
-                .background(
-                    Circle().fill(Color(hex: "#FFF3E8"))
-                )
+        case .flash:
+            Image(systemName: "bolt.circle.fill")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
 
-        case .zippy:
-            ZStack(alignment: .bottomTrailing) {
-                Image(systemName: "heart.circle.fill")
-                    .font(.system(size: 22)) // 🔽 reduced
-                    .foregroundColor(selectedTab == tab ? Color(hex: "#FF6B00") : Color.gray)
-
-                Text("NEW")
-                    .font(.system(size: 7, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 1)
-                    .background(Capsule().fill(Color.red))
-                    .offset(x: 8, y: 6) // adjusted
+        case .dineIn:  // "99 store"
+            ZStack {
+                Circle().strokeBorder(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray, lineWidth: 1.5)
+                    .frame(width: 22, height: 22)
+                Text("99")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
             }
 
-        case .takeaway:
-            VStack(spacing: 1) {
-                Text("unlock")
-                    .font(.system(size: 7, weight: .bold))
-                Text("66%")
-                    .font(.system(size: 8, weight: .black))
-            }
-            .foregroundColor(.white)
-            .frame(width: 34, height: 34) // 🔽 reduced
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(hex: "#2A2E78"), Color(hex: "#1E1F5D")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            )
+        case .zippy: // "EatRight"
+            Image(systemName: "heart.fill") // Approximating the heart icon
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
+
+        case .takeaway: // "Reorder"
+            Image(systemName: "repeat.circle.fill")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
         }
     }
 
     private func title(for tab: AppState.TabItem) -> String {
         switch tab {
         case .home: return "Food"
-        case .dineIn: return "99 Store"
+        case .flash: return "Bolt"
+        case .dineIn: return "99 store"
         case .zippy: return "EatRight"
-        case .takeaway: return "Offers"
+        case .takeaway: return "Reorder"
         }
     }
 }

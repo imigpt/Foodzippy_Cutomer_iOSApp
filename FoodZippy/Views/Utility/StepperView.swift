@@ -8,9 +8,9 @@ struct StepperView: View {
     var body: some View {
         HStack(spacing: 22) {
             Button(action: onDecrement) {
-                Image(systemName: "minus")
+                Image(systemName: quantity == 1 ? "trash" : "minus")
                     .font(.system(size: 19, weight: .bold))
-                    .foregroundColor(Color(hex: "#16A34A"))
+                    .foregroundColor(quantity == 1 ? Color(hex: "#D54141") : Color(hex: "#16A34A"))
             }
 
             Text("\(quantity)")

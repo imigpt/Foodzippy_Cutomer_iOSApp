@@ -66,12 +66,11 @@ struct DineInMainView: View {
     @State private var showQuickBook = false
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(red: 0.98, green: 0.98, blue: 0.99).ignoresSafeArea()
+        ZStack {
+            Color(red: 0.98, green: 0.98, blue: 0.99).ignoresSafeArea()
 
-                ScrollView {
-                    VStack(spacing: 18) {
+            ScrollView {
+                VStack(spacing: 18) {
                         // Header Section
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Dine-In Dining")
@@ -248,10 +247,9 @@ struct DineInMainView: View {
                             }
                         }
 
-                        Spacer(minLength: 20)
-                    }
-                    .padding(.vertical, 12)
+                    Spacer(minLength: 20)
                 }
+                .padding(.vertical, 12)
 
                 if dineInVM.isLoading {
                     VStack {
@@ -261,19 +259,19 @@ struct DineInMainView: View {
                     .background(Color.black.opacity(0.3))
                 }
             }
-            .navigationTitle("Dine-In Dining")
-            .navigationBarTitleDisplayMode(.inline)
-            .task { await dineInVM.loadIfNeeded() }
-            .refreshable { await dineInVM.refresh() }
-            .navigationDestination(isPresented: $showAllRestaurants) {
-                DineInBrowseView(viewModel: dineInVM)
-            }
-            .navigationDestination(isPresented: $showQuickBook) {
-                VStack {
-                    Text("Quick booking coming soon!")
-                        .font(.headline)
-                        .padding()
-                }
+        }
+        .navigationTitle("Dine-In Dining")
+        .navigationBarTitleDisplayMode(.inline)
+        .task { await dineInVM.loadIfNeeded() }
+        .refreshable { await dineInVM.refresh() }
+        .navigationDestination(isPresented: $showAllRestaurants) {
+            DineInBrowseView(viewModel: dineInVM)
+        }
+        .navigationDestination(isPresented: $showQuickBook) {
+            VStack {
+                Text("Quick booking coming soon!")
+                    .font(.headline)
+                    .padding()
             }
         }
     }
@@ -402,12 +400,11 @@ struct DineInBrowseView: View {
     @State private var searchText = ""
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(red: 0.98, green: 0.98, blue: 0.99).ignoresSafeArea()
+        ZStack {
+            Color(red: 0.98, green: 0.98, blue: 0.99).ignoresSafeArea()
 
-                ScrollView {
-                    VStack(spacing: 10) {
+            ScrollView {
+                VStack(spacing: 10) {
                         HStack(spacing: 8) {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.gray)
@@ -454,13 +451,12 @@ struct DineInBrowseView: View {
                             .padding(.vertical, 4)
                         }
 
-                        Spacer(minLength: 20)
-                    }
+                    Spacer(minLength: 20)
                 }
             }
-            .navigationTitle("Browse Restaurants")
-            .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationTitle("Browse Restaurants")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -491,12 +487,6 @@ struct DriveThruView: View {
     }
 }
 
-struct ReorderView: View {
-    var body: some View {
-        Text("Reorder Coming Soon")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
 
 #Preview {
     NavigationStack {

@@ -641,29 +641,38 @@ private struct FastFoodCard: View {
     let onAdd: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
+
+            // MARK: - Image
             AsyncImage(url: URL(string: dish.imageURL)) { phase in
                 switch phase {
                 case .empty:
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 16)
                         .fill(Color.gray.opacity(0.16))
                         .overlay(ProgressView())
+
                 case .success(let image):
                     image
                         .resizable()
                         .scaledToFill()
+
                 case .failure:
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 16)
                         .fill(Color.gray.opacity(0.2))
-                        .overlay(Image(systemName: "photo").foregroundColor(.gray))
+                        .overlay(
+                            Image(systemName: "photo")
+                                .foregroundColor(.gray)
+                        )
+
                 @unknown default:
                     EmptyView()
                 }
             }
-            .frame(height: 150)
             .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .frame(height: 124)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
 
+            // MARK: - Title
             HStack(spacing: 6) {
                 MiniVegIndicator(isVeg: dish.isVeg)
 
@@ -671,56 +680,75 @@ private struct FastFoodCard: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(hex: "#2A2D34"))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
+            .frame(height: 20)
 
+            // MARK: - Price
             HStack(spacing: 6) {
                 Text(dish.oldPriceText)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.gray)
                     .strikethrough()
+                    .lineLimit(1)
 
                 Text(dish.offerPriceText)
                     .font(.system(size: 13, weight: .heavy))
                     .foregroundColor(.black)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
                     .background(Color(hex: "#FFD938"))
-                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-            }
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .lineLimit(1)
 
-            HStack {
-                HStack(spacing: 4) {
+                Spacer(minLength: 0)
+            }
+            .frame(height: 22)
+
+            // MARK: - Bottom Row
+            HStack(spacing: 8) {
+
+                // Rating
+                HStack(spacing: 3) {
                     Image(systemName: "star.fill")
                         .font(.system(size: 10, weight: .bold))
-                    Text("\(dish.ratingText) (\(dish.ratingCount))")
+
+                    Text("\(dish.ratingText)")
                         .font(.system(size: 11, weight: .bold))
+                        .lineLimit(1)
                 }
                 .foregroundColor(Color(hex: "#0B9F63"))
                 .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
                 .background(Color(hex: "#E9F8F1"))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                Spacer()
+                Spacer(minLength: 0)
 
+                // ADD Button
                 Button(action: onAdd) {
                     Text("ADD")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundColor(Color(hex: "#1EA86F"))
-                        .frame(width: 68, height: 32)
+                        .frame(minWidth: 56)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
                         .background(Color.white)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            RoundedRectangle(cornerRadius: 10)
                                 .stroke(Color(hex: "#D8DBE2"), lineWidth: 1)
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 .buttonStyle(.plain)
             }
+
+            Spacer(minLength: 0)
         }
         .padding(10)
+        .frame(maxWidth: .infinity, maxHeight: 320, alignment: .topLeading)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
     }
 }
