@@ -8,7 +8,7 @@ import SwiftUI
 // MARK: - Colour tokens (reference image)
 // Additional imports
 // (DishDetailSheetView and CustomisationSheetView are imported from Views)
-private extension Color {
+extension Color {
     static let hPurpleDark   = Color(hex: "#3D13A4")
     static let hPurpleMid    = Color(hex: "#7B1FA2")
     static let hPurpleLight  = Color(hex: "#9C27B0")
@@ -29,6 +29,7 @@ struct HomeView: View {
     @State private var navigateToRestaurantView = false
     @State private var navigateToDineIn = false
     @State private var navigateToFlash = false
+    @State private var navigateToAddressList = false
     @State private var scrollResetToken = UUID()
     @State private var selectedDishForDetail: AddToCartDish?
     @State private var selectedDishForCustomization: AddToCartDish?
@@ -141,6 +142,7 @@ struct HomeView: View {
                             HeaderView(
                                 viewModel: viewModel,
                                 topSafeInset: geo.safeAreaInsets.top,
+                                onAddressTap: { navigateToAddressList = true },
                                 onDineInTap: { navigateToDineIn = true },
                                 onFoodTap: {
                                     withAnimation(.easeInOut(duration: 0.25)) {
@@ -280,6 +282,12 @@ struct HomeView: View {
         .navigationDestination(isPresented: $navigateToFlash) {
             FlashView()
         }
+        .navigationDestination(isPresented: $navigateToAddressList) {
+            AddressListView(selectionMode: true) { selectedAddress in
+                SessionManager.shared.saveAddress(selectedAddress)
+                Task { await viewModel.refresh() }
+            }
+        }
         .sheet(item: $selectedDishForDetail) { dish in
             DishDetailSheetView(
                 dish: dish,
@@ -313,6 +321,7 @@ struct HomeView: View {
     private struct HeaderView: View {
         @ObservedObject var viewModel: HomeViewModel
         let topSafeInset: CGFloat
+        let onAddressTap: () -> Void
         let onDineInTap: () -> Void
         let onFoodTap: () -> Void
         
@@ -329,28 +338,31 @@ struct HomeView: View {
                     // ── Location row ──────────────────────────────────────────────
                     HStack(alignment: .center, spacing: 0) {
                         // Location
-                        HStack(alignment: .top, spacing: 6) {
-                            Image(systemName: "location.fill")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.top, 2)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack(spacing: 4) {
-                                    Text(locationTitle)
-                                        .font(.system(size: 18, weight: .semibold))
-                                        .foregroundColor(.white)
-                                    Image(systemName: "chevron.down")
-                                        .font(.system(size: 12, weight: .bold))
-                                        .foregroundColor(.white.opacity(0.9))
+                        Button(action: onAddressTap) {
+                            HStack(alignment: .top, spacing: 6) {
+                                Image(systemName: "location.fill")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.top, 2)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack(spacing: 4) {
+                                        Text(locationTitle)
+                                            .font(.system(size: 18, weight: .semibold))
+                                            .foregroundColor(.white)
+                                        Image(systemName: "chevron.down")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.9))
+                                    }
+                                    Text(locationSubtitle)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(Color.white.opacity(0.58))
+                                        .lineLimit(2)
+                                        .fixedSize(horizontal: false, vertical: true)
                                 }
-                                Text(locationSubtitle)
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(Color.white.opacity(0.58))
-                                    .lineLimit(2)
-                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
+                        .buttonStyle(.plain)
                         
                         Spacer()
                         

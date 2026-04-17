@@ -75,7 +75,7 @@ struct CartView: View {
             .toolbarBackground(Color(hex: "#E23744"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbar { cartToolbarContent }
+            .toolbar(content: { cartToolbarContent })
             .task {
                 viewModel.loadCart()
                 await viewModel.loadCartData()

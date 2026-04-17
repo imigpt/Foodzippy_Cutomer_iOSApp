@@ -16,6 +16,7 @@ struct AddressListView: View {
     @State private var showAddAddress = false
     @State private var showDeleteConfirm = false
     @State private var addressToDelete: Address?
+    @State private var searchText = ""
 
     init(selectionMode: Bool = false, onSelect: ((Address) -> Void)? = nil) {
         self.selectionMode = selectionMode
@@ -23,134 +24,117 @@ struct AddressListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(hex: "#F5F5F5").ignoresSafeArea()
-
-                if isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    VStack(spacing: 0) {
-                        // Action Tiles Row — Use Current Location / Add New Address
-                        HStack(spacing: 10) {
-                            ActionTile(
-                                icon: "location.fill",
-                                title: "Use Current\nLocation"
-                            ) {
-                                useCurrentLocation()
-                            }
-
-                            ActionTile(
-                                icon: "plus.circle.fill",
-                                title: "Add New\nAddress"
-                            ) {
-                                showAddAddress = true
-                            }
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.top, 12)
-                        .padding(.bottom, 8)
-
-                        if addresses.isEmpty {
-                            VStack(spacing: 16) {
-                                Spacer()
-                                Image(systemName: "mappin.slash")
-                                    .font(.system(size: 48))
-                                    .foregroundColor(.gray.opacity(0.4))
-                                Text("No saved addresses")
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundColor(.gray)
-                                Text("Add an address to get started")
-                                    .font(.system(size: 13))
-                                    .foregroundColor(.gray.opacity(0.7))
-                                Spacer()
-                            }
-                        } else {
-                            // Saved addresses section header
-                            HStack {
-                                Text("Saved Addresses")
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundColor(Color(hex: "#888888"))
-                                    .textCase(.uppercase)
-                                Spacer()
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 6)
-
-                            List {
-                                ForEach(addresses, id: \.id) { address in
-                                    Button {
-                                        if selectionMode {
-                                            onSelect?(address)
-                                            dismiss()
-                                        }
-                                    } label: {
-                                        AddressItemRow(address: address, selectionMode: selectionMode)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .listRowSeparator(.hidden)
-                                    .listRowBackground(Color.white)
-                                    .listRowInsets(EdgeInsets(top: 4, leading: 14, bottom: 4, trailing: 14))
-                                    .swipeActions(edge: .trailing) {
-                                        Button(role: .destructive) {
-                                            addressToDelete = address
-                                            showDeleteConfirm = true
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
-                                    }
-                                }
-                            }
-                            .listStyle(.plain)
-                            .background(Color(hex: "#F5F5F5"))
-                        }
-                    }
+        VStack(spacing: 0) {
+            // Custom Navigation Bar
+            HStack {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.black)
                 }
+                Spacer()
+                Text("Subscription")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(.black)
+                Spacer()
+                Image(systemName: "person.crop.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(.black)
             }
-            .navigationTitle(selectionMode ? "Select Location" : "My Addresses")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color(hex: "#E23744"), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
-                    }
-                }
-                if !selectionMode {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button { showAddAddress = true } label: {
-                            Image(systemName: "plus")
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
+            .padding(.bottom, 16)
+            
+            // Search Bar
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.gray)
+                TextField("Search subscription restaurants", text: $searchText)
+                    .foregroundColor(.black)
             }
-            .sheet(isPresented: $showAddAddress) {
-                AddressPickerView { newAddress in
-                    addresses.insert(newAddress, at: 0)
-                    showAddAddress = false
-                    if selectionMode {
-                        onSelect?(newAddress)
-                        dismiss()
+            .padding()
+            .background(Color.white)
+            .cornerRadius(20)
+            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 20)
+            
+            // Action Tiles
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ActionTileView(icon: "location.north.circle", iconColor: .orange, title: "Use Current\nLocation") {
+                        useCurrentLocation()
+                    }
+                    ActionTileView(icon: "plus.app", iconColor: .teal, title: "Add New\nAddress") {
+                        showAddAddress = true
+                    }
+                    ActionTileView(icon: "message.fill", iconColor: .green, title: "Request\nAddress") {
+                        // Request Address Action
                     }
                 }
+                .padding(.horizontal, 16)
             }
-            .alert("Delete Address", isPresented: $showDeleteConfirm) {
-                Button("Delete", role: .destructive) {
-                    if let address = addressToDelete {
-                        Task { await deleteAddress(address) }
-                    }
+            .padding(.bottom, 30)
+            
+            Spacer()
+            
+            // Empty State Illustration
+            VStack(spacing: 16) {
+                ZStack {
+                    Image(systemName: "map")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 150, height: 150)
+                        .foregroundColor(.gray.opacity(0.3))
+                    Image(systemName: "magnifyingglass")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .foregroundColor(.gray)
+                        .overlay(
+                            Image(systemName: "questionmark")
+                                .font(.system(size: 30, weight: .bold))
+                                .foregroundColor(.gray)
+                        )
                 }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("Are you sure you want to delete this address?")
+                
+                Text("You don't have any saved addresses")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.gray)
+                
+                Text("Add a new address and continue ordering")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
             }
-            .task { await loadAddresses() }
+            
+            Spacer()
+            Spacer()
         }
+        .background(Color(hex: "#F1EDFF").ignoresSafeArea())
+        .navigationBarHidden(true)
+        .sheet(isPresented: $showAddAddress) {
+            AddressPickerView { newAddress in
+                addresses.insert(newAddress, at: 0)
+                showAddAddress = false
+                if selectionMode {
+                    onSelect?(newAddress)
+                    dismiss()
+                }
+            }
+        }
+        .alert("Delete Address", isPresented: $showDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                if let address = addressToDelete {
+                    Task { await deleteAddress(address) }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to delete this address?")
+        }
+        .task { await loadAddresses() }
     }
 
     private func useCurrentLocation() {
@@ -193,29 +177,29 @@ struct AddressListView: View {
     }
 }
 
-// MARK: - Action Tile (Use Current Location / Add New)
-private struct ActionTile: View {
+// MARK: - Action Tile View (Horizontal Scroll)
+private struct ActionTileView: View {
     let icon: String
+    let iconColor: Color
     let title: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
                 Image(systemName: icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(Color(hex: "#E23744"))
+                    .font(.system(size: 28))
+                    .foregroundColor(iconColor)
                 Text(title)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.black)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 80)
+            .frame(width: 110, height: 120)
             .background(Color.white)
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
     }
 }

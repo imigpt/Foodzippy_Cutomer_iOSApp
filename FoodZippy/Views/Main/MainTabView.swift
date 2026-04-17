@@ -181,7 +181,7 @@ private struct MainBottomTabBar: View {
     private func title(for tab: AppState.TabItem) -> String {
         switch tab {
         case .home: return "Food"
-        case .flash: return "Bolt"
+        case .flash: return "Flash"
         case .highProtein: return "High Prot"
         case .reorder: return "Reorder"
         case .Subscription: return "Subscription"

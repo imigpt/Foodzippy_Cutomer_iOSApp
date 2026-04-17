@@ -15,8 +15,6 @@
 		0B0799A57524787083583725 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A97E6AAB232731A6088B78D /* WalletView.swift */; };
 		0B59C953DFCF0EB08C3DE904 /* AddToCartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B99910A3417663D14994D6 /* AddToCartViewModel.swift */; };
 		0F0EF3730EC3D8440481B536 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78893E1CCFBAC3A794FDE1 /* Address.swift */; };
-		130B3E1807EB50AF7A58082E /* SubscriptionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F11A775E9CC1E7372113C0 /* SubscriptionViews.swift */; };
-		7E2B4C6A1D4F5A9B0C3D7E11 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1A2B3C4D5E6F708192A3B4 /* SubscriptionView.swift */; };
 		1496DBDD2EB2A9F9F8C01EBE /* RestaurantViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7094B9A804BA7976118CE64 /* RestaurantViewModel.swift */; };
 		14A9AFE4A37F30095FF8F9B6 /* RestaurantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 863C5EFD389328E1E45E214C /* RestaurantDetailView.swift */; };
 		15CB1DB9981C28C6A5050C5C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD5B734AEC20B42FDC495DA /* AppState.swift */; };
@@ -26,9 +24,12 @@
 		2A4DBD6313E38BBD17FA75EC /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9082F83825F189F223FFD5E6 /* SignupView.swift */; };
 		2FC6B4FC3EFE45F2B0ED3E8B /* StepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF27410C3F02D9FE374F2E22 /* StepperView.swift */; };
 		3492809B6D625C75A54CAD0B /* FaqView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075AA236A35E8C183C3BD5A6 /* FaqView.swift */; };
+		37ECDDD54C03F4B47CC5CC8E /* SubscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55310EAF67D784FD094B8 /* SubscriptionViewModel.swift */; };
 		3CF2681427AEE86CD8E88188 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651A6FFCB91AF2BF2B8F204A /* ForgotPasswordView.swift */; };
 		3D1ED34FD1E72E3AEA855D29 /* RestaurantRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261F0C5FE3C1D63F6EB6EA50 /* RestaurantRowView.swift */; };
 		44210A2A1A393C125FEA4AF4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2720CA49180727FE7523B09E /* LoginView.swift */; };
+		469ACC989961CB2F5E35CAE1 /* SubscriptionPlanDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A025B06513E8D8C7F9986A4 /* SubscriptionPlanDetailsView.swift */; };
+		47FC95192F6ECC8C19DA2C7E /* SubscriptionPlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2B764FB12EFFC1B59DB254 /* SubscriptionPlansView.swift */; };
 		4A9DFE7B2484342F7BA34E7F /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EE1BEF102933264D831B0 /* AuthViewModel.swift */; };
 		4C8E043BAC6DA364BFDCEADD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF6DAA3F1FC177C0CB15D2E /* Constants.swift */; };
 		50236CD15A8B0BF097E6D306 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A737F4C2EB61E59149A371 /* SessionManager.swift */; };
@@ -68,6 +69,7 @@
 		C2BAB21626121B3D4CA7D4B0 /* RestaurantListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D0410030020D7C52126651 /* RestaurantListView.swift */; };
 		C3264F42CCCC172BC03FC8F5 /* CartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86818BA74C2D0A506EC29AC8 /* CartViewModel.swift */; };
 		C9FFE4BDA8EBD4E815357A69 /* OrderHistoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74662AAA6600E62FD1107F83 /* OrderHistoryRow.swift */; };
+		CB5C20B107730F34269D68FF /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5FD08D4BD3346FB5AE7B6 /* SubscriptionView.swift */; };
 		D6AD0DFFE57BC8C62C7D09FE /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45607312B5396AA36BC8AFAC /* SplashView.swift */; };
 		DAFE9CE9ABE5BC942FE66AC5 /* AddressListView.swift.bak in Resources */ = {isa = PBXBuildFile; fileRef = 189D89C7429EC751229B4C60 /* AddressListView.swift.bak */; };
 		E1B01D67191C11B6EE95169F /* OrderHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CAD2573F67B846BEF10D92 /* OrderHistoryView.swift */; };
@@ -89,6 +91,7 @@
 		261F0C5FE3C1D63F6EB6EA50 /* RestaurantRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantRowView.swift; sourceTree = "<group>"; };
 		2720CA49180727FE7523B09E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		29D9173183B2886050666B73 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		2A025B06513E8D8C7F9986A4 /* SubscriptionPlanDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlanDetailsView.swift; sourceTree = "<group>"; };
 		2A97E6AAB232731A6088B78D /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		327316B9CF74AD4571B8AE40 /* DineInBookingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineInBookingViews.swift; sourceTree = "<group>"; };
 		344EE1BEF102933264D831B0 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
@@ -102,8 +105,6 @@
 		4F56E40EEF3F728D9DF09B1C /* FavouritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesView.swift; sourceTree = "<group>"; };
 		54141E3D09713A80E7527E42 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		54EFBB780741A49F6938074D /* CartItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
-		58F11A775E9CC1E7372113C0 /* SubscriptionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionViews.swift; sourceTree = "<group>"; };
-		8F1A2B3C4D5E6F708192A3B4 /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
 		5ACA161004EA214ABF8B93B6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		60CAD2573F67B846BEF10D92 /* OrderHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderHistoryView.swift; sourceTree = "<group>"; };
 		620FDB1FB3F719FB68D1DE32 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
@@ -121,6 +122,7 @@
 		83298255189BB7913132CA80 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		863C5EFD389328E1E45E214C /* RestaurantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantDetailView.swift; sourceTree = "<group>"; };
 		86818BA74C2D0A506EC29AC8 /* CartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewModel.swift; sourceTree = "<group>"; };
+		87E5FD08D4BD3346FB5AE7B6 /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
 		883BC3C7D8027B5484164795 /* ReferralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralView.swift; sourceTree = "<group>"; };
 		8D9589D956E17E083920DBD2 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		8DE40B4DA5F263DAE9888A6C /* RefundsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefundsView.swift; sourceTree = "<group>"; };
@@ -141,8 +143,10 @@
 		C7094B9A804BA7976118CE64 /* RestaurantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantViewModel.swift; sourceTree = "<group>"; };
 		C746A3312211608852CD03C5 /* OrderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderViewModel.swift; sourceTree = "<group>"; };
 		CE78893E1CCFBAC3A794FDE1 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
+		CEF55310EAF67D784FD094B8 /* SubscriptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionViewModel.swift; sourceTree = "<group>"; };
 		D1B99910A3417663D14994D6 /* AddToCartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCartViewModel.swift; sourceTree = "<group>"; };
 		D3739C7CDD63932A48F3AF0F /* Miscellaneous.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miscellaneous.swift; sourceTree = "<group>"; };
+		DB2B764FB12EFFC1B59DB254 /* SubscriptionPlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPlansView.swift; sourceTree = "<group>"; };
 		DBF6DAA3F1FC177C0CB15D2E /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DF7D54544A5A8487C06C6E83 /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
 		E2D0410030020D7C52126651 /* RestaurantListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantListView.swift; sourceTree = "<group>"; };
@@ -186,13 +190,13 @@
 				65E82F6D06F4D0828C373FD7 /* Home */,
 				2D55D7D8D376A816BEFDF540 /* Intro */,
 				A58F454611DF017BC8BFD52D /* Main */,
-				9C1D2E3F4A5B6C7D8E9F0A1B /* Subscription */,
 				1B0F326B9AB263FD2E4D33E3 /* Orders */,
 				2F983C2F9292DA25D9E19551 /* Profile */,
 				660E2BFBEAE8FD885591D4CA /* Restaurant */,
 				AA28071EE5DD03E1A6F42C2D /* Search */,
 				ECC8E114A74B2FFB16F47A33 /* Services */,
 				83894EE0DD3E9144E07F6028 /* Splash */,
+				28506FF9DCEEC263F88A3172 /* Subscription */,
 				C2E29C1D440F8AE28142EE1C /* Utility */,
 			);
 			path = Views;
@@ -240,6 +244,16 @@
 				5A1E027CBCED2BE964D1E69D /* Images */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		28506FF9DCEEC263F88A3172 /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				2A025B06513E8D8C7F9986A4 /* SubscriptionPlanDetailsView.swift */,
+				DB2B764FB12EFFC1B59DB254 /* SubscriptionPlansView.swift */,
+				87E5FD08D4BD3346FB5AE7B6 /* SubscriptionView.swift */,
+			);
+			path = Subscription;
 			sourceTree = "<group>";
 		};
 		2D55D7D8D376A816BEFDF540 /* Intro */ = {
@@ -376,14 +390,6 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
-		9C1D2E3F4A5B6C7D8E9F0A1B /* Subscription */ = {
-			isa = PBXGroup;
-			children = (
-				8F1A2B3C4D5E6F708192A3B4 /* SubscriptionView.swift */,
-			);
-			path = Subscription;
-			sourceTree = "<group>";
-		};
 		AA28071EE5DD03E1A6F42C2D /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -407,7 +413,6 @@
 				883BC3C7D8027B5484164795 /* ReferralView.swift */,
 				8DE40B4DA5F263DAE9888A6C /* RefundsView.swift */,
 				EF27410C3F02D9FE374F2E22 /* StepperView.swift */,
-				58F11A775E9CC1E7372113C0 /* SubscriptionViews.swift */,
 				2A97E6AAB232731A6088B78D /* WalletView.swift */,
 			);
 			path = Utility;
@@ -433,6 +438,7 @@
 				C2BD7F4A4A5816252D097738 /* ProfileViewModel.swift */,
 				C7094B9A804BA7976118CE64 /* RestaurantViewModel.swift */,
 				620FDB1FB3F719FB68D1DE32 /* SearchViewModel.swift */,
+				CEF55310EAF67D784FD094B8 /* SubscriptionViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -591,8 +597,10 @@
 				2A4DBD6313E38BBD17FA75EC /* SignupView.swift in Sources */,
 				D6AD0DFFE57BC8C62C7D09FE /* SplashView.swift in Sources */,
 				2FC6B4FC3EFE45F2B0ED3E8B /* StepperView.swift in Sources */,
-				130B3E1807EB50AF7A58082E /* SubscriptionViews.swift in Sources */,
-				7E2B4C6A1D4F5A9B0C3D7E11 /* SubscriptionView.swift in Sources */,
+				469ACC989961CB2F5E35CAE1 /* SubscriptionPlanDetailsView.swift in Sources */,
+				47FC95192F6ECC8C19DA2C7E /* SubscriptionPlansView.swift in Sources */,
+				CB5C20B107730F34269D68FF /* SubscriptionView.swift in Sources */,
+				37ECDDD54C03F4B47CC5CC8E /* SubscriptionViewModel.swift in Sources */,
 				C1346560AD4E9B6A3FE139C7 /* User.swift in Sources */,
 				0B0799A57524787083583725 /* WalletView.swift in Sources */,
 			);

@@ -228,7 +228,8 @@ struct ProfileView: View {
             }
             
             ProfileMenuRow(icon: "clock.arrow.circlepath", title: "Subscription History", color: .indigo) {
-                SubscriptionHistoryView()
+                // SubscriptionHistoryView()
+                Text("Coming Soon")
             }
 
             ProfileMenuRow(icon: "ticket.fill", title: "Offers", color: .orange) {
