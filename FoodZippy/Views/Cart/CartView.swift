@@ -12,6 +12,15 @@ struct CartView: View {
     @State private var showCouponField = false
     @State private var navigateToOrderSuccess = false
 
+    private var cartToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button { dismiss() } label: {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(.white)
+            }
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -62,17 +71,11 @@ struct CartView: View {
             }
             .navigationTitle("My Cart")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .toolbarBackground(Color(hex: "#E23744"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
-                    }
-                }
-            }
+            .toolbar { cartToolbarContent }
             .task {
                 viewModel.loadCart()
                 await viewModel.loadCartData()
@@ -690,3 +693,4 @@ struct CartOrderSuccessView: View {
     CartView()
         .environmentObject(CartManager.shared)
 }
+

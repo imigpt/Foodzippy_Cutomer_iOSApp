@@ -26,17 +26,17 @@ class AppState: ObservableObject {
     enum TabItem: Int, CaseIterable {
         case home = 0
         case flash = 1
-        case zippy = 2
-        case takeaway = 3
-        case dineIn = 4
+        case highProtein = 2
+        case reorder = 3
+        case Subscription = 4
         
         var title: String {
             switch self {
             case .home: return "Home"
             case .flash: return "Flash"
-            case .zippy: return "Zippy"
-            case .takeaway: return "Takeaway"
-            case .dineIn: return "Dine-In"
+            case .highProtein: return "High Prot"
+            case .reorder: return "Reorder"
+            case .Subscription: return "Subscription"
             }
         }
         
@@ -44,9 +44,9 @@ class AppState: ObservableObject {
             switch self {
             case .home: return "house.fill"
             case .flash: return "bolt.fill"
-            case .zippy: return "bolt.fill"
-            case .takeaway: return "bag.fill"
-            case .dineIn: return "fork.knife"
+            case .highProtein: return "flame.fill"
+            case .reorder: return "repeat.circle.fill"
+            case .Subscription: return "bag.fill"
             }
         }
     }

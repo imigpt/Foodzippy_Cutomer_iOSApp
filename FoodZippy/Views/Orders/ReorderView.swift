@@ -2,82 +2,99 @@ import SwiftUI
 
 struct ReorderView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(hex: "#F2F2F7").ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    navBar
-                    
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 16) {
-                            searchBar
-                                .padding(.horizontal, 16)
-                                .padding(.top, 16)
-                            
-                            filterChips
-                                .padding(.top, 4)
-                            
-                            cardsList
-                                .padding(.horizontal, 16)
-                                .padding(.bottom, 24)
-                        }
-                    }
+        ZStack {
+            Color.white.ignoresSafeArea()
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 12) {
+                    searchBar
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+
+                    filterChips
+                        .padding(.top, 4)
+
+                    Spacer()
+                        .frame(height: 8)
+
+                    cardsList
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 100)
                 }
             }
-            .navigationBarHidden(true)
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            navBar
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
     }
     
     private var navBar: some View {
-        HStack {
-            Button(action: { dismiss() }) {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 20, weight: .medium))
+        VStack(spacing: 0) {
+            HStack {
+                Button(action: {
+                    if appState.selectedTab == .reorder {
+                        appState.selectedTab = .home
+                    } else {
+                        dismiss()
+                    }
+                }) {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.black)
+                }
+                
+                Spacer()
+                
+                Text("REORDER")
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.black)
+                    .tracking(0.5)
+                
+                Spacer()
+                
+                // Mirroring back button for perfect centering, but keeping it empty or a placeholder if needed
+                Image(systemName: "arrow.left")
+                    .font(.system(size: 18, weight: .semibold))
+                    .opacity(0)
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .padding(.top, 8)
             
-            Spacer()
-            
-            Text("REORDER")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(.black)
-            
-            Spacer()
-            
-            // To balance the back button layout precisely (though opacity 0)
-            Image(systemName: "arrow.left")
-                .font(.system(size: 20))
-                .opacity(0)
+            Divider()
+                .padding(.horizontal, 0)
+                .background(Color(hex: "#E8E8E8"))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
         .background(Color.white)
+        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
     }
     
     private var searchBar: some View {
         HStack {
-            Text("Search by restaurant or dish")
-                .font(.system(size: 15))
-                .foregroundColor(Color(hex: "#8E8E93"))
+            TextField("Search by restaurant or dish", text: .constant(""))
+                .font(.system(size: 14))
+                .foregroundColor(.black)
+                .disabled(true) // Just for layout match as per image
             
             Spacer()
             
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 18))
-                .foregroundColor(Color(hex: "#8E8E93"))
+                .font(.system(size: 16))
+                .foregroundColor(Color(hex: "#999999"))
         }
         .padding(.horizontal, 16)
-        .frame(height: 48)
+        .frame(height: 44)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        // Matching Swiggy's subtle search bar look
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                .stroke(Color.black.opacity(0.1), lineWidth: 1)
         )
+        .shadow(color: Color.black.opacity(0.02), radius: 4, x: 0, y: 2)
     }
     
     private var filterChips: some View {
@@ -92,50 +109,36 @@ struct ReorderView: View {
     }
     
     private var cardsList: some View {
-        VStack(spacing: 16) {
-            // First Card
+        VStack(spacing: 14) {
+            // Sample Reorder Cards
             ReorderCardView(
-                isAvailable: true,
-                hasAd: false,
-                restaurantName: "Chinese Wok",
-                deliveryTime: "30–35 mins",
-                offerText: "50% off",
-                imageName: "noodles", 
-                dishName: "Veg Schezwan Noodles - Half (500 ml)",
-                price: "₹199",
-                oldPrice: "₹279",
-                isVeg: true
-            )
-            
-            // Second Card (Unavailable)
-            ReorderCardView(
-                isAvailable: false,
-                hasAd: false,
-                restaurantName: "Pari Cafe",
-                deliveryTime: "45–50 mins",
-                offerText: "₹50 off above ₹399",
-                imageName: "thali",
-                dishName: "8Poori With Aloo Sabji",
-                price: "₹120",
-                oldPrice: nil,
+                restaurantName: "World Trade Park",
+                location: "Jaipur",
+                total: "₹1220",
+                itemName: "WTP Special x 8",
+                itemPrice: "₹1220",
                 isVeg: true,
-                extraDishName: "Adrak tea",
-                extraDishPrice: "₹40",
-                extraDishIsVeg: true
+                status: "Completed"
             )
             
-            // Third Card (Ad)
             ReorderCardView(
-                isAvailable: true,
-                hasAd: true,
-                restaurantName: "Pizza Hut",
-                deliveryTime: "35–40 mins",
-                offerText: "₹80 off above ₹249",
-                imageName: "pizza",
-                dishName: "Create Your Flavour Fun Combo - Box Of 2 - Veg Pizza",
-                price: "₹218",
-                oldPrice: nil,
-                isVeg: true
+                restaurantName: "World Trade Park",
+                location: "Jaipur",
+                total: "₹320",
+                itemName: "chocolate Shake x 4",
+                itemPrice: "₹320",
+                isVeg: true,
+                status: "Completed"
+            )
+            
+            ReorderCardView(
+                restaurantName: "World Trade Park",
+                location: "Jaipur",
+                total: "₹470",
+                itemName: "WTP Special x 3",
+                itemPrice: "₹470",
+                isVeg: true,
+                status: "Completed"
             )
         }
     }
@@ -147,218 +150,145 @@ struct ChipView: View {
     
     var body: some View {
         Text(title)
-            .font(.system(size: 13, weight: .medium))
-            .foregroundColor(Color(hex: "#3C3C43"))
+            .font(.system(size: 13, weight: .regular))
+            .foregroundColor(.black.opacity(0.8))
             .padding(.horizontal, 14)
-            .frame(height: 36)
+            .frame(height: 32)
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .clipShape(Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                Capsule()
+                    .stroke(Color.black.opacity(0.12), lineWidth: 1)
             )
     }
 }
 
 // MARK: - Reorder Card View
 struct ReorderCardView: View {
-    let isAvailable: Bool
-    let hasAd: Bool
     let restaurantName: String
-    let deliveryTime: String
-    let offerText: String
-    let imageName: String
-    let dishName: String
-    let price: String
-    let oldPrice: String?
+    let location: String
+    let total: String
+    let itemName: String
+    let itemPrice: String
     let isVeg: Bool
+    let status: String
     
-    // For the second layout which has multiple dishes
-    var extraDishName: String? = nil
-    var extraDishPrice: String? = nil
-    var extraDishIsVeg: Bool? = nil
-    
-    @State private var isLoved = false
+    @State private var showConfirmation = false
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top Row
-            HStack(alignment: .top, spacing: 12) {
-                // Restaurant Image
-                ZStack(alignment: .topLeading) {
-                    AsyncImage(url: URL(string: "https://via.placeholder.com/100")) { phase in
-                        switch phase {
-                        case .empty:
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.2))
-                                .overlay(ProgressView().scaleEffect(0.5))
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        case .failure:
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.2))
-                                .overlay(Image(systemName: "photo").foregroundColor(.gray))
-                        @unknown default:
-                            EmptyView()
-                        }
-                    }
-                    .frame(width: 48, height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    
-                    if hasAd {
-                        Text("Ad")
-                            .font(.system(size: 8, weight: .bold))
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 2)
-                            .background(Color.white)
-                            .cornerRadius(4)
-                            .padding(.top, -6)
-                            .padding(.leading, -4)
-                            .shadow(color: .black.opacity(0.2), radius: 2)
-                    }
-                }
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    // Restaurant Name & Time
-                    HStack(spacing: 4) {
-                        Text(restaurantName)
-                            .font(.system(size: 15, weight: .bold))
-                        Text("•")
-                            .font(.system(size: 15))
+            // Top Section: Restaurant Info + Image
+            HStack(spacing: 12) {
+                // Circular Restaurant Image
+                Circle()
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 60, height: 60)
+                    .overlay(
+                        Image(systemName: "photo")
+                            .font(.system(size: 20))
                             .foregroundColor(.gray)
-                        Text(deliveryTime)
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundColor(.black)
+                    )
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    // Restaurant Name
+                    Text(restaurantName)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.black)
                     
-                    // Offer Tag
+                    // Location
                     HStack(spacing: 4) {
-                        Image(systemName: "tag.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(Color(hex: "#FF5722"))
-                        
-                        Text(offerText)
-                            .font(.system(size: 13, weight: .regular))
-                            .foregroundColor(Color(hex: "#5C5C60"))
+                        Text("•")
+                        Text(location)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(Color(hex: "#A0A0A0"))
                     }
+                    
+                    // Total Amount
+                    Text("Total: \(total)")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(Color(hex: "#A0A0A0"))
                 }
                 
                 Spacer()
-                
-                // Favorite Button
-                Button(action: { isLoved.toggle() }) {
-                    Image(systemName: isLoved ? "heart.fill" : "heart.fill")
-                        .font(.system(size: 20))
-                        .foregroundColor(isLoved ? Color.red : Color(hex: "#D1D1D6"))
-                }
-                .padding(.top, 4)
             }
             .padding(14)
             
             Divider()
                 .padding(.horizontal, 14)
-                .opacity(0.6)
             
-            // Availability Message
-            if !isAvailable {
-                Text("Not available at the moment")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(Color(hex: "#D97706")) // Orange-ish
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 14)
-                    .padding(.top, 14)
-                    .padding(.bottom, -2) // Reduce bottom padding before the dish items
-            }
-            
-            // Dish Row
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 14) {
-                    dishItemView(
-                        name: dishName,
-                        price: price,
-                        oldPrice: oldPrice,
-                        isVeg: isVeg,
-                        isAvailable: isAvailable
-                    )
+            // Middle Section: Item Details
+            HStack(spacing: 10) {
+                // Veg Indicator
+                ZStack {
+                    RoundedRectangle(cornerRadius: 2.5)
+                        .stroke(Color(hex: "#0B9F63"), lineWidth: 1.2)
+                        .frame(width: 14, height: 14)
+                    Circle()
+                        .fill(Color(hex: "#0B9F63"))
+                        .frame(width: 6, height: 6)
+                }
+                .padding(.top, 2)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(itemName)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.black)
+                        .lineLimit(1)
                     
-                    if let extName = extraDishName, let extPrice = extraDishPrice, let extVeg = extraDishIsVeg {
-                        dishItemView(
-                            name: extName,
-                            price: extPrice,
-                            oldPrice: nil,
-                            isVeg: extVeg,
-                            isAvailable: isAvailable
-                        )
-                    }
+                    Text(itemPrice)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.black)
                 }
                 
                 Spacer()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            
+            Divider()
+                .padding(.horizontal, 14)
+            
+            // Bottom Section: Status + REORDER Button
+            HStack(spacing: 12) {
+                Text(status)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(Color(hex: "#0B9F63"))
                 
-                // Add Button
-                if isAvailable {
-                    Button(action: {}) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(Color(hex: "#1EA86F")) // Green
-                            .frame(width: 36, height: 36)
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                            )
-                    }
-                    .padding(.top, 4)
+                Spacer()
+                
+                Button(action: { showConfirmation = true }) {
+                    Text("REORDER")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(minWidth: 90)
+                        .frame(height: 38)
+                        .background(Color(hex: "#EE3333"))
+                        .cornerRadius(20)
                 }
             }
             .padding(14)
-            .padding(.top, isAvailable ? 0 : 2)
         }
         .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
-    }
-    
-    @ViewBuilder
-    private func dishItemView(name: String, price: String, oldPrice: String?, isVeg: Bool, isAvailable: Bool) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            // Veg Indicator
-            ZStack {
-                RoundedRectangle(cornerRadius: 3)
-                    .stroke(isVeg ? Color(hex: "#1EA86F") : Color.red, lineWidth: 1.5)
-                    .frame(width: 14, height: 14)
-                Circle()
-                    .fill(isVeg ? Color(hex: "#1EA86F") : Color.red)
-                    .frame(width: 6, height: 6)
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 2)
+        .alert("Reorder Confirmation", isPresented: $showConfirmation) {
+            Button("CANCEL", role: .cancel) {
+                showConfirmation = false
             }
-            .padding(.top, 3)
-            .opacity(isAvailable ? 1.0 : 0.4)
+            .foregroundColor(Color(hex: "#FF9500"))
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(name)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(isAvailable ? Color.black : Color(hex: "#8E8E93"))
-                    .lineLimit(2)
-                
-                HStack(spacing: 6) {
-                    Text(price)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(isAvailable ? Color(hex: "#3C3C43") : Color(hex: "#8E8E93"))
-                    
-                    if let old = oldPrice {
-                        Text(old)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(Color(hex: "#8E8E93"))
-                            .strikethrough()
-                    }
-                }
+            Button("YES, REORDER") {
+                // Handle reorder action here
+                showConfirmation = false
             }
+            .foregroundColor(Color(hex: "#FF9500"))
+        } message: {
+            Text("Do you want to reorder from \(restaurantName)?")
         }
     }
 }
 
 #Preview {
     ReorderView()
+        .environmentObject(AppState.shared)
 }

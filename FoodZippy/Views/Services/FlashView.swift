@@ -187,16 +187,16 @@ struct FlashView: View {
         return [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
     }
 
-    private var heroTitleFontSize: CGFloat {
-        horizontalSizeClass == .regular ? 56 : 48
+    private var heroTitleFont: Font {
+        horizontalSizeClass == .regular ? .system(size: 56, weight: .black, design: .rounded) : .system(size: 42, weight: .black, design: .rounded)
     }
 
-    private var heroSubtitleFontSize: CGFloat {
-        horizontalSizeClass == .regular ? 20 : 18
+    private var heroSubtitleFont: Font {
+        horizontalSizeClass == .regular ? .title3.weight(.bold) : .subheadline.weight(.bold)
     }
 
-    private var sectionTitleFontSize: CGFloat {
-        horizontalSizeClass == .regular ? 32 : 28
+    private var sectionTitleFont: Font {
+        horizontalSizeClass == .regular ? .title.weight(.bold) : .title2.weight(.bold)
     }
 
     private var horizontalPadding: CGFloat {
@@ -337,7 +337,7 @@ struct FlashView: View {
                 HStack {
                     Button(action: { dismiss() }) {
                         Image(systemName: "arrow.left")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.headline)
                             .foregroundColor(.white)
                             .frame(width: 50, height: 50)
                             .background(Color.black.opacity(0.18))
@@ -348,7 +348,7 @@ struct FlashView: View {
 
                     Button(action: {}) {
                         Image(systemName: "magnifyingglass")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.headline)
                             .foregroundColor(.white)
                             .frame(width: 50, height: 50)
                             .background(Color.black.opacity(0.18))
@@ -363,12 +363,12 @@ struct FlashView: View {
                 HStack(alignment: .bottom, spacing: 8) {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("99 store")
-                            .font(.system(size: heroTitleFontSize, weight: .black, design: .rounded))
+                            .font(heroTitleFont)
                             .foregroundColor(Color.white)
                             .shadow(color: .black.opacity(0.25), radius: 0, x: 2, y: 2)
 
                         Text("Meals at ₹99 + Free Delivery")
-                            .font(.system(size: heroSubtitleFontSize, weight: .semibold))
+                            .font(heroSubtitleFont)
                             .foregroundColor(Color(hex: "#F72437"))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
@@ -446,7 +446,7 @@ struct FlashView: View {
     private var brandsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Popular Brands")
-                .font(.system(size: 18, weight: .bold))
+                .font(sectionTitleFont)
                 .foregroundColor(Color(hex: "#171A29"))
                 .padding(.horizontal, horizontalPadding)
 
@@ -467,7 +467,7 @@ struct FlashView: View {
     private var categoriesSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("What's on your mind?")
-                 .font(.system(size: 18, weight: .bold))
+                .font(sectionTitleFont)
                 .foregroundColor(Color(hex: "#171A29"))
                 .padding(.horizontal, horizontalPadding)
 
@@ -620,7 +620,7 @@ private struct BrandItemView: View {
                                 .fill(Color.white)
                                 .overlay(
                                     Image(systemName: "photo")
-                                        .font(.system(size: 24, weight: .semibold))
+                                        .font(.title3.weight(.semibold))
                                         .foregroundColor(.orange)
                                 )
                         @unknown default:
@@ -651,12 +651,12 @@ private struct CategoryItemView: View {
         sizeClass == .regular ? 108 : 92
     }
 
-    private var titleFontSize: CGFloat {
-        sizeClass == .regular ? 18 : 16
+    private var titleFont: Font {
+        sizeClass == .regular ? .body.weight(.bold) : .subheadline.weight(.bold)
     }
 
-    private var iconSize: CGFloat {
-        sizeClass == .regular ? 28 : 24
+    private var iconFont: Font {
+        sizeClass == .regular ? .title : .title2
     }
 
     var body: some View {
@@ -677,7 +677,7 @@ private struct CategoryItemView: View {
                                 .fill(Color.white)
                                 .overlay(
                                     Image(systemName: "takeoutbag.and.cup.and.straw.fill")
-                                        .font(.system(size: iconSize, weight: .semibold))
+                                        .font(iconFont.weight(.semibold))
                                         .foregroundColor(Color(hex: "#F72437"))
                                 )
                         @unknown default:
@@ -693,7 +693,7 @@ private struct CategoryItemView: View {
 
                     if isSelected {
                         Image(systemName: "checkmark")
-                            .font(.system(size: sizeClass == .regular ? 13 : 11, weight: .bold))
+                            .font(.caption2.weight(.bold))
                             .foregroundColor(.white)
                             .frame(width: 24, height: 24)
                             .background(Circle().fill(Color(hex: "#F72437")))
@@ -702,7 +702,7 @@ private struct CategoryItemView: View {
                 }
 
                 Text(item.title)
-                    .font(.system(size: titleFontSize, weight: .bold))
+                    .font(titleFont)
                     .foregroundColor(isSelected ? Color(hex: "#F72437") : .secondary)
             }
             .frame(width: categoryWidth)
@@ -721,18 +721,18 @@ struct RestaurantFlashCardView: View {
             HStack(alignment: .top, spacing: 8) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(section.restaurantName)
-                        .font(.system(size: 31, weight: .bold))
+                        .font(.title2.weight(.bold))
                         .foregroundColor(.primary)
 
-            HStack(spacing: 4) {
-                Image(systemName: "star.fill")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(Color(hex: "#F72437"))
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.caption2.weight(.bold))
+                            .foregroundColor(Color(hex: "#F72437"))
 
-                Text("\(section.ratingText) (\(section.reviewCount)) \(section.deliveryTime)")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(Color(hex: "#2A2A2A"))
-            }
+                        Text("\(section.ratingText) (\(section.reviewCount)) \(section.deliveryTime)")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(Color(hex: "#2A2A2A"))
+                    }
                 }
 
                 Spacer()
@@ -742,9 +742,9 @@ struct RestaurantFlashCardView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Text("View items")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.subheadline.weight(.bold))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.caption2.weight(.bold))
                     }
                     .foregroundColor(Color(hex: "#F72437"))
                 }
@@ -752,7 +752,7 @@ struct RestaurantFlashCardView: View {
             }
 
             Text(section.offerText)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.footnote.weight(.medium))
                 .foregroundColor(.gray)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -802,20 +802,20 @@ struct DishItemView: View {
             MiniVegIndicator(isVeg: dish.isVeg)
 
             Text(dish.title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundColor(.primary)
                 .lineLimit(2)
 
             HStack(alignment: .center, spacing: 8) {
                 Text(dish.priceText)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.headline)
                     .foregroundColor(Color(hex: "#1E1E1E"))
 
                 Spacer()
 
                 Button(action: onTap) {
                     Text("ADD")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.caption.weight(.bold))
                         .foregroundColor(Color(hex: "#098430"))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -869,10 +869,6 @@ private struct DishCardView: View {
         style == .trending ? 126 : 132
     }
 
-    private var titleFont: Font {
-        .system(size: 16, weight: .semibold)
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .bottomTrailing) {
@@ -900,7 +896,7 @@ private struct DishCardView: View {
 
                 Button(action: onAdd) {
                     Image(systemName: "plus")
-                        .font(.system(size: 22, weight: .bold))
+                        .font(.title3.weight(.bold))
                         .foregroundColor(Color(hex: "#098430"))
                         .frame(width: 48, height: 48)
                         .background(Color.white)
@@ -913,19 +909,19 @@ private struct DishCardView: View {
             HStack(spacing: 6) {
                 VegIndicatorView(isVeg: item.isVeg)
                 Text(item.title)
-                    .font(titleFont)
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.primary)
                     .lineLimit(2)
             }
 
             HStack(spacing: 8) {
                 Text(item.oldPriceText)
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
                     .strikethrough()
 
                 Text(item.finalPriceText)
-                    .font(.system(size: 20, weight: .black))
+                    .font(.headline.weight(.black))
                     .foregroundColor(.black)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
@@ -935,9 +931,9 @@ private struct DishCardView: View {
 
             HStack(spacing: 4) {
                 Image(systemName: "star.fill")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.caption.weight(.bold))
                 Text("\(item.ratingText)(\(item.ratingCount))")
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.caption.weight(.bold))
             }
             .foregroundColor(Color(hex: "#0B9F63"))
             .padding(.horizontal, 8)
@@ -946,7 +942,7 @@ private struct DishCardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
             Text(item.restaurantName)
-                .font(.system(size: 14, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(.gray)
                 .lineLimit(1)
         }
@@ -968,10 +964,10 @@ private struct FilterChipView: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                 if showChevron {
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.caption.weight(.bold))
                 }
             }
             .foregroundColor(isSelected ? Color(hex: "#FF6B00") : Color(hex: "#4B4B4B"))
@@ -1149,11 +1145,11 @@ private struct StandardBannerCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(banner.mainTitle)
-                        .font(.system(size: 28, weight: .black))
+                        .font(.title.weight(.black))
                         .foregroundColor(Color(hex: "#1A1A1A"))
 
                     Text(banner.subtitle)
-                        .font(.system(size: 20, weight: .semibold))
+                        .font(.headline)
                         .foregroundColor(Color(hex: "#424242"))
                 }
 

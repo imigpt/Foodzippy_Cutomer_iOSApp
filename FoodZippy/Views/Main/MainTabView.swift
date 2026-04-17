@@ -40,20 +40,27 @@ struct MainTabView: View {
             }
         case .flash:
             FlashView()
-        case .dineIn:
-            DineInMainView()
-        case .zippy:
-            HighProteinView()
-        case .takeaway:
+        case .highProtein:
+            NavigationStack {
+                HighProteinView()
+            }
+        case .reorder:
             ReorderView()
+        case .Subscription:
+            SubscriptionView()
         }
     }
 
     var body: some View {
         GeometryReader { geo in
-            currentTabContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.white)
+            ZStack {
+                Color.white
+                    .ignoresSafeArea()
+
+                currentTabContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea(.all) // allow content to extend under all safe areas
+            }
                 .overlay(alignment: .top) {
                     topSafeAreaColor
                         .frame(height: geo.safeAreaInsets.top)
@@ -72,7 +79,7 @@ struct MainTabView: View {
                             }
 
                             // TAB BAR
-                            CustomBottomTabBar(
+                            MainBottomTabBar(
                                 selectedTab: selectedTabBinding
                             )
                         }
@@ -97,16 +104,16 @@ struct MainTabView: View {
     }
 }
 
-private struct CustomBottomTabBar: View {
+private struct MainBottomTabBar: View {
     @Binding var selectedTab: AppState.TabItem
 
     var body: some View {
         HStack(spacing: 0) {
             tabButton(.home)
             tabButton(.flash)
-            tabButton(.dineIn)
-            tabButton(.zippy)
-            tabButton(.takeaway)
+            tabButton(.highProtein)
+            tabButton(.reorder)
+            tabButton(.Subscription)
         }
         .padding(.top, 6)
         .padding(.bottom, 0)
@@ -150,21 +157,21 @@ private struct CustomBottomTabBar: View {
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
 
-        case .dineIn:  // "99 store"
+        case .Subscription:  // "Subscription"
             ZStack {
                 Circle().strokeBorder(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray, lineWidth: 1.5)
                     .frame(width: 22, height: 22)
-                Text("99")
+                Text("Sub")
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
             }
 
-        case .zippy: // "EatRight"
-            Image(systemName: "heart.fill") // Approximating the heart icon
+        case .highProtein: // "High Protein"
+            Image(systemName: "flame.fill")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
 
-        case .takeaway: // "Reorder"
+        case .reorder: // "Reorder"
             Image(systemName: "repeat.circle.fill")
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(selectedTab == tab ? Color(hex: "#FC8019") : Color.gray)
@@ -175,9 +182,9 @@ private struct CustomBottomTabBar: View {
         switch tab {
         case .home: return "Food"
         case .flash: return "Bolt"
-        case .dineIn: return "99 store"
-        case .zippy: return "EatRight"
-        case .takeaway: return "Reorder"
+        case .highProtein: return "High Prot"
+        case .reorder: return "Reorder"
+        case .Subscription: return "Subscription"
         }
     }
 }

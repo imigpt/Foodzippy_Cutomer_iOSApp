@@ -466,13 +466,6 @@ struct DineInView: View {
     }
 }
 
-struct HighProteinView: View {
-    var body: some View {
-        Text("High Protein Coming Soon")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
 struct TakeawayView: View {
     var body: some View {
         Text("Takeaway Coming Soon")

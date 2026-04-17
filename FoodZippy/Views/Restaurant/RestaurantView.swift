@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RestaurantView: View {
+    let restaurant: Restaurant
     @Environment(\.dismiss) private var dismiss
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject private var appState: AppState
@@ -16,6 +17,43 @@ struct RestaurantView: View {
 
     @State private var selectedDishForDetail: AddToCartDish?
     @State private var selectedDishForCustomization: AddToCartDish?
+
+    init(restaurant: Restaurant? = nil) {
+        self.restaurant = restaurant ?? Restaurant(
+            restId: "restaurant-shri-govindam",
+            restTitle: "Shri Govindam Pavitra Bhojnalaya",
+            restImg: nil,
+            restImg1: nil,
+            restImg2: nil,
+            restImg3: nil,
+            restLogo: nil,
+            restRating: "3.8",
+            restDeliverytime: "40–45 mins",
+            restCostfortwo: nil,
+            restIsVeg: 1,
+            restFullAddress: "Jagatpura",
+            restLandmark: nil,
+            restMobile: nil,
+            restLats: nil,
+            restLongs: nil,
+            restCharge: nil,
+            restLicence: nil,
+            restDcharge: nil,
+            restMorder: nil,
+            restIsOpen: 1,
+            restIsDeliver: 1,
+            restSdesc: "Pure Veg",
+            restDistance: nil,
+            isFavourite: 0,
+            couTitle: nil,
+            couSubtitle: nil,
+            isPreorder: 0,
+            openTime: nil,
+            closeTime: nil,
+            deliveryTypes: nil,
+            deliveryTypesLabels: nil
+        )
+    }
 
     private let fastFoodItems: [FastFoodDish] = [
         .init(
@@ -275,21 +313,21 @@ struct RestaurantView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "leaf.fill")
                             .font(.system(size: 12, weight: .bold))
-                        Text("Pure Veg")
+                        Text(restaurant.isVeg ? "Pure Veg" : "Multi Cuisine")
                             .font(.system(size: 13, weight: .bold))
                     }
                     .foregroundColor(Color(hex: "#1EA86F"))
 
-                    Text("Shri Govindam Pavitra\nBhojnalaya")
+                    Text(restaurant.restTitle ?? "Restaurant")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(Color(hex: "#171A29"))
                         .lineSpacing(2)
 
                     HStack(spacing: 8) {
-                        Text("40–45 mins")
+                        Text(restaurant.restDeliverytime ?? "40–45 mins")
                         Text("|")
                             .foregroundColor(Color.gray.opacity(0.5))
-                        Text("Jagatpura")
+                        Text(restaurant.restFullAddress ?? restaurant.restDistance ?? "Jagatpura")
                     }
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(Color(hex: "#8A8D94"))
@@ -299,7 +337,7 @@ struct RestaurantView: View {
 
                 VStack(alignment: .trailing, spacing: 6) {
                     HStack(spacing: 4) {
-                        Text("3.8")
+                        Text(restaurant.restRating ?? "3.8")
                             .font(.system(size: 15, weight: .bold))
                         Image(systemName: "star.fill")
                             .font(.system(size: 11, weight: .bold))
@@ -310,7 +348,7 @@ struct RestaurantView: View {
                     .background(Color(hex: "#1EA86F"))
                     .clipShape(Capsule())
 
-                    Text("2.5K+ ratings")
+                    Text(restaurant.restSdesc ?? "2.5K+ ratings")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(Color(hex: "#8A8D94"))
                 }
