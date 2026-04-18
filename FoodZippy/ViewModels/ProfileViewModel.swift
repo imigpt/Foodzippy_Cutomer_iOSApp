@@ -21,16 +21,20 @@ class ProfileViewModel: ObservableObject {
     @Published var showError = false
     @Published var showLogoutConfirm = false
     
+    // Updated to match the 11 new menu items requested for Foodzippy
     var profileMenuItems: [ProfileMenuItem] {
         [
-            ProfileMenuItem(title: "Favourites", subtitle: "Your favourite restaurants", icon: "heart.fill", action: .favourites),
-            ProfileMenuItem(title: "Saved Addresses", subtitle: "Manage your addresses", icon: "mappin.circle.fill", action: .savedAddresses),
-            ProfileMenuItem(title: SessionManager.shared.walletName, subtitle: "View balance & transactions", icon: "wallet.pass.fill", action: .wallet),
-            ProfileMenuItem(title: "FoodZippy Plus", subtitle: "Exclusive member benefits", icon: "star.fill", action: .plus),
-            ProfileMenuItem(title: "My Refunds", subtitle: "Track your refunds", icon: "arrow.uturn.left.circle.fill", action: .refunds),
-            ProfileMenuItem(title: "Invite Friends", subtitle: "Earn rewards for referrals", icon: "person.2.fill", action: .comingSoon),
-            ProfileMenuItem(title: "FAQ", subtitle: "Frequently asked questions", icon: "questionmark.circle.fill", action: .faq),
-            ProfileMenuItem(title: "Help & Support", subtitle: "Get help with your orders", icon: "headphones.circle.fill", action: .help),
+            ProfileMenuItem(title: "Foodzippy HDFC Bank Credit Card", subtitle: "", icon: "creditcard", action: .comingSoon),
+            ProfileMenuItem(title: "My Vouchers", subtitle: "", icon: "ticket", action: .comingSoon),
+            ProfileMenuItem(title: "Account Statement", subtitle: "", icon: "doc.text", action: .comingSoon),
+            ProfileMenuItem(title: "Order Food on Train", subtitle: "", icon: "train.side.front.car", action: .comingSoon),
+            ProfileMenuItem(title: "Corporate Rewards", subtitle: "", icon: "briefcase", action: .comingSoon),
+            ProfileMenuItem(title: "Student Rewards", subtitle: "", icon: "graduationcap", action: .comingSoon),
+            ProfileMenuItem(title: "Registered as Restaurant", subtitle: "", icon: "bookmark", action: .comingSoon),
+            ProfileMenuItem(title: "Favourites", subtitle: "", icon: "heart", action: .favourites),
+            ProfileMenuItem(title: "Partner Rewards", subtitle: "", icon: "crown", action: .comingSoon),
+            ProfileMenuItem(title: "Allow restaurants to contact you", subtitle: "", icon: "message", action: .comingSoon),
+            ProfileMenuItem(title: "FAQ", subtitle: "", icon: "questionmark.circle", action: .faq)
         ]
     }
     

@@ -10,6 +10,7 @@ struct AddressListView: View {
     let selectionMode: Bool
     var onSelect: ((Address) -> Void)?
 
+    @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     @State private var addresses: [Address] = []
     @State private var isLoading = true
@@ -33,14 +34,11 @@ struct AddressListView: View {
                         .foregroundColor(.black)
                 }
                 Spacer()
-                Text("Subscription")
+                Text("Select Your Location")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(.black)
-                Spacer()
-                Image(systemName: "person.crop.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(.black)
             }
+            
             .padding(.horizontal, 16)
             .padding(.top, 10)
             .padding(.bottom, 16)
@@ -49,7 +47,7 @@ struct AddressListView: View {
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
-                TextField("Search subscription restaurants", text: $searchText)
+                TextField("Search an area or address", text: $searchText)
                     .foregroundColor(.black)
             }
             .padding()
@@ -135,6 +133,12 @@ struct AddressListView: View {
             Text("Are you sure you want to delete this address?")
         }
         .task { await loadAddresses() }
+        .onAppear {
+            appState.hideMainTabBar = true
+        }
+        .onDisappear {
+            appState.hideMainTabBar = false
+        }
     }
 
     private func useCurrentLocation() {

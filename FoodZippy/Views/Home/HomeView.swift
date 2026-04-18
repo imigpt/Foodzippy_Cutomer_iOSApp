@@ -26,10 +26,12 @@ struct HomeView: View {
     @EnvironmentObject var cartManager: CartManager
     @State private var selectedRestaurant: Restaurant?
     @State private var navigateToRestaurant = false
+    @State private var navigateToProfile = false
     @State private var navigateToRestaurantView = false
     @State private var navigateToDineIn = false
     @State private var navigateToFlash = false
     @State private var navigateToAddressList = false
+    @State private var navigateToBuyOne = false
     @State private var scrollResetToken = UUID()
     @State private var selectedDishForDetail: AddToCartDish?
     @State private var selectedDishForCustomization: AddToCartDish?
@@ -148,7 +150,9 @@ struct HomeView: View {
                                     withAnimation(.easeInOut(duration: 0.25)) {
                                         proxy.scrollTo(topAnchorId, anchor: .top)
                                     }
-                                }
+                                },
+                                onProfileTap: { navigateToProfile = true },
+                                onBuyOneTap: { navigateToBuyOne = true }
                             )
                             
                             // ── White content area ─────────────────────────────────────
@@ -282,6 +286,12 @@ struct HomeView: View {
         .navigationDestination(isPresented: $navigateToFlash) {
             FlashView()
         }
+        .navigationDestination(isPresented: $navigateToProfile) {
+            ProfileView()
+        }
+        .navigationDestination(isPresented: $navigateToBuyOne) {
+            BuyOneView()
+        }
         .navigationDestination(isPresented: $navigateToAddressList) {
             AddressListView(selectionMode: true) { selectedAddress in
                 SessionManager.shared.saveAddress(selectedAddress)
@@ -324,6 +334,8 @@ struct HomeView: View {
         let onAddressTap: () -> Void
         let onDineInTap: () -> Void
         let onFoodTap: () -> Void
+        let onProfileTap: () -> Void
+        let onBuyOneTap: () -> Void
         
         var body: some View {
             ZStack(alignment: .top) {
@@ -367,36 +379,41 @@ struct HomeView: View {
                         Spacer()
                         
                         // BUY one badge
-                        ZStack {
-                            Capsule(style: .continuous)
-                                .fill(Color.white)
-                                .frame(width: 77, height: 37)
-                            VStack(spacing: -3) {
-                                Text("BUY")
-                                    .font(.system(size: 9.5, weight: .bold))
-                                    .foregroundColor(Color(hex: "#7B7B7B"))
-                                Text("one")
-                                    .font(.system(size: 22, weight: .heavy))
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [Color(hex: "#FF7A45"), Color(hex: "#F24B2E")],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
+                        Button(action: onBuyOneTap) {
+                            ZStack {
+                                Capsule(style: .continuous)
+                                    .fill(Color.white)
+                                    .frame(width: 77, height: 37)
+                                VStack(spacing: -3) {
+                                    Text("BUY")
+                                        .font(.system(size: 9.5, weight: .bold))
+                                        .foregroundColor(Color(hex: "#7B7B7B"))
+                                    Text("one")
+                                        .font(.system(size: 22, weight: .heavy))
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [Color(hex: "#FF7A45"), Color(hex: "#F24B2E")],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
                                         )
-                                    )
+                                }
                             }
                         }
                         .padding(.trailing, 12)
                         
-                        // Profile circle
-                        ZStack {
-                            Circle()
-                                .fill(Color(hex: "#E9E9EE"))
-                                .frame(width: 38, height: 38)
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(Color(hex: "#505056"))
+                        // Profile circle -> tappable to open ProfileView
+                        Button(action: onProfileTap) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(hex: "#E9E9EE"))
+                                    .frame(width: 38, height: 38)
+                                Image(systemName: "person.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(Color(hex: "#505056"))
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 8)

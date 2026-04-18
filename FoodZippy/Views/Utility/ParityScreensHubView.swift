@@ -27,7 +27,7 @@ struct ParityScreensHubView: View {
             }
 
             Section("Payments") {
-                NavigationLink("SBI Credit Card") { SbiCreditCardView() }
+                NavigationLink("SBI Credit Card") { }
                 NavigationLink("PayPal") { PaypalPaymentView() }
                 NavigationLink("Paystack") { PaystackPaymentView() }
                 NavigationLink("Razorpay") { RazorpayPaymentView() }

@@ -7,6 +7,7 @@ struct User: Codable, Identifiable {
     let id: String?
     let name: String?
     let mobile: String?
+    let email: String?
     let ccode: String?
     let password: String?
     let code: String?
@@ -17,7 +18,7 @@ struct User: Codable, Identifiable {
     let isVerify: Int?
     
     enum CodingKeys: String, CodingKey {
-        case id, name, mobile, ccode, password, code, wallet, rdate, refercode, status
+        case id, name, mobile, email, ccode, password, code, wallet, rdate, refercode, status
         case isVerify = "is_verify"
     }
 }
