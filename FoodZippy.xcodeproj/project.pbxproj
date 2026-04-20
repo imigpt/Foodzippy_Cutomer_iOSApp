@@ -19,6 +19,7 @@
 		14A9AFE4A37F30095FF8F9B6 /* RestaurantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 863C5EFD389328E1E45E214C /* RestaurantDetailView.swift */; };
 		15CB1DB9981C28C6A5050C5C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD5B734AEC20B42FDC495DA /* AppState.swift */; };
 		17A950C63901541067AD3601 /* DishDetailSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71223E1297FEE804793247FB /* DishDetailSheetView.swift */; };
+		1C6CF3A42F95FD7300059120 /* SubscriptionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6CF3A32F95FD7300059120 /* SubscriptionHistoryView.swift */; };
 		24939001BDC56E9F81DEBDEB /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF864E3D5035B45CD18CF7D /* MenuItem.swift */; };
 		2A07242B2C31A12556E55E3E /* ServiceViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DB23DCECD0D0E311894F81 /* ServiceViews.swift */; };
 		2A4DBD6313E38BBD17FA75EC /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9082F83825F189F223FFD5E6 /* SignupView.swift */; };
@@ -92,6 +93,7 @@
 		075AA236A35E8C183C3BD5A6 /* FaqView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaqView.swift; sourceTree = "<group>"; };
 		155C7E480311D2E4EBA1BA0F /* HighProteinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighProteinView.swift; sourceTree = "<group>"; };
 		189D89C7429EC751229B4C60 /* AddressListView.swift.bak */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressListView.swift.bak; sourceTree = "<group>"; };
+		1C6CF3A32F95FD7300059120 /* SubscriptionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionHistoryView.swift; sourceTree = "<group>"; };
 		1E8122CFDA1DFF3AF4596AAA /* .txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = .txt; sourceTree = "<group>"; };
 		261F0C5FE3C1D63F6EB6EA50 /* RestaurantRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantRowView.swift; sourceTree = "<group>"; };
 		2720CA49180727FE7523B09E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 				2A025B06513E8D8C7F9986A4 /* SubscriptionPlanDetailsView.swift */,
 				DB2B764FB12EFFC1B59DB254 /* SubscriptionPlansView.swift */,
 				87E5FD08D4BD3346FB5AE7B6 /* SubscriptionView.swift */,
+				1C6CF3A32F95FD7300059120 /* SubscriptionHistoryView.swift */,
 				39100B0CAB0333DA6E1191EA /* BuyOneView.swift */,
 				61CA90E7FEC338EDC8B70F07 /* RedeemCouponView.swift */,
 			);
@@ -622,6 +625,7 @@
 				CB5C20B107730F34269D68FF /* SubscriptionView.swift in Sources */,
 				37ECDDD54C03F4B47CC5CC8E /* SubscriptionViewModel.swift in Sources */,
 				C1346560AD4E9B6A3FE139C7 /* User.swift in Sources */,
+				1C6CF3A42F95FD7300059120 /* SubscriptionHistoryView.swift in Sources */,
 				0B0799A57524787083583725 /* WalletView.swift in Sources */,
 				9E904BA403732DB3AA744DF7 /* BuyOneView.swift in Sources */,
 				84022E7E83EB4BA129F02B61 /* RedeemCouponView.swift in Sources */,

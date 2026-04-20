@@ -240,12 +240,20 @@ struct ProfileView: View {
             }
             .frame(maxWidth: .infinity)
             
-            QuickLinkCard(icon: "wallet.pass", title: "My\nRefunds")
-                .frame(maxWidth: .infinity)
-            QuickLinkCard(icon: "arrow.counterclockwise.circle", title: "My\nRefunds")
-                .frame(maxWidth: .infinity)
-            QuickLinkCard(icon: "creditcard", title: "Foodzippy\nMoney")
-                .frame(maxWidth: .infinity)
+            NavigationLink(destination: SubscriptionHistoryView()) {
+                QuickLinkCard(icon: "wallet.pass", title: "My\nSubscriptions")
+            }
+            .frame(maxWidth: .infinity)
+            
+            NavigationLink(destination: RefundsView()) {
+                QuickLinkCard(icon: "arrow.counterclockwise.circle", title: "My\nRefunds")
+            }
+            .frame(maxWidth: .infinity)
+            
+            NavigationLink(destination: WalletView()) {
+                QuickLinkCard(icon: "creditcard", title: "Foodzippy\nMoney")
+            }
+            .frame(maxWidth: .infinity)
         }
         .padding(.horizontal)
     }
