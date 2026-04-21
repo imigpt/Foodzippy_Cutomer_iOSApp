@@ -22,6 +22,7 @@ class AppState: ObservableObject {
     @Published var showGlobalLoader = false
     @Published var cartBadgeCount: Int = 0
     @Published var hideMainTabBar: Bool = false
+    @Published var hideTabBarForDetail: Bool = false
     
     enum TabItem: Int, CaseIterable {
         case home = 0

@@ -18,6 +18,9 @@ struct AddressListView: View {
     @State private var showDeleteConfirm = false
     @State private var addressToDelete: Address?
     @State private var searchText = ""
+    @State private var selectedAddressId: String? = nil
+    @State private var showEditSheet = false
+    @State private var addressToEdit: Address? = nil
 
     init(selectionMode: Bool = false, onSelect: ((Address) -> Void)? = nil) {
         self.selectionMode = selectionMode
@@ -27,100 +30,189 @@ struct AddressListView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Custom Navigation Bar
-            HStack {
-                Button(action: { dismiss() }) {
+            HStack(spacing: 16) {
+                Button(action: {
+                    appState.hideMainTabBar = false
+                    dismiss()
+                }) {
                     Image(systemName: "arrow.left")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.black)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(Color(hex: "#333333"))
                 }
+                Text("Select your location")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(Color(hex: "#333333"))
                 Spacer()
-                Text("Select Your Location")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(.black)
             }
-            
-            .padding(.horizontal, 16)
-            .padding(.top, 10)
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
             .padding(.bottom, 16)
             
-            // Search Bar
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
-                TextField("Search an area or address", text: $searchText)
-                    .foregroundColor(.black)
-            }
-            .padding()
-            .background(Color.white)
-            .cornerRadius(20)
-            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 20)
-            
-            // Action Tiles
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ActionTileView(icon: "location.north.circle", iconColor: .orange, title: "Use Current\nLocation") {
-                        useCurrentLocation()
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // Search Bar
+                    HStack {
+                        TextField("Search an area or address", text: $searchText)
+                            .font(.system(size: 15))
+                            .foregroundColor(.black)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 18, weight: .regular))
+                            .foregroundColor(.gray)
                     }
-                    ActionTileView(icon: "plus.app", iconColor: .teal, title: "Add New\nAddress") {
-                        showAddAddress = true
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                    )
+                    .padding(.horizontal, 20)
+                    
+                    // Action Tiles
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ActionTileView(
+                                icon: "location.viewfinder",
+                                iconColor: Color(hex: "#E65100"), // Orange
+                                title: "Use Current\nLocation"
+                            ) {
+                                showAddAddress = true
+                            }
+                            
+                            ActionTileView(
+                                icon: "plus.square",
+                                iconColor: Color(hex: "#E65100"), // Orange
+                                title: "Add New\nAddress"
+                            ) {
+                                showAddAddress = true
+                            }
+                            
+                            ActionTileView(
+                                icon: "phone.circle.fill", // WhatsApp fallback
+                                iconColor: Color(hex: "#25D366"), // WhatsApp Green
+                                title: "Request\nAddress",
+                                isWhatsApp: true
+                            ) {
+                                // Request Address Action
+                            }
+                        }
+                        .padding(.horizontal, 20)
                     }
-                    ActionTileView(icon: "message.fill", iconColor: .green, title: "Request\nAddress") {
-                        // Request Address Action
+                    
+                    // Content Area (List or Empty State)
+                    if isLoading {
+                        ProgressView()
+                            .padding(.top, 40)
+                    } else if addresses.isEmpty {
+                        // Empty State Illustration
+                        VStack(spacing: 24) {
+                            ZStack {
+                                Image(systemName: "map.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 140, height: 140)
+                                    .foregroundColor(Color(hex: "#E8EAF6"))
+                                
+                                Image(systemName: "magnifyingglass")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 60, height: 60)
+                                    .foregroundColor(Color(hex: "#A8B0C4"))
+                                    .offset(x: 10, y: 10)
+                                
+                                Text("?")
+                                    .font(.system(size: 32, weight: .bold))
+                                    .foregroundColor(Color(hex: "#7A8299"))
+                                    .offset(x: -2, y: -2)
+                                
+                                Image(systemName: "arrow.uturn.up")
+                                    .font(.system(size: 30, weight: .semibold))
+                                    .foregroundColor(Color(hex: "#A8B0C4"))
+                                    .offset(x: 60, y: -40)
+                                    .rotationEffect(.degrees(20))
+                            }
+                            .padding(.bottom, 10)
+                            .padding(.top, 40)
+                            
+                            VStack(spacing: 6) {
+                                Text("You don't have any saved addresses")
+                                    .font(.system(size: 15, weight: .regular))
+                                    .foregroundColor(Color(hex: "#828282"))
+                                
+                                Text("Add a new address and\ncontinue ordering")
+                                    .font(.system(size: 17, weight: .bold))
+                                    .foregroundColor(Color(hex: "#5C5C64"))
+                                    .multilineTextAlignment(.center)
+                                    .lineSpacing(4)
+                            }
+                        }
+                        .padding(.bottom, 60)
+                    } else {
+                        // Saved Addresses List
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("SAVED ADDRESSES")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(Color(hex: "#8E939C"))
+                                .padding(.horizontal, 20)
+                            
+                            VStack(spacing: 12) {
+                                ForEach(addresses) { address in
+                                    AddressCardView(
+                                        address: address,
+                                        isSelected: selectedAddressId == address.id,
+                                        onSelect: {
+                                            selectedAddressId = address.id
+                                            if selectionMode {
+                                                onSelect?(address)
+                                                dismiss()
+                                            }
+                                        },
+                                        onEdit: {
+                                            addressToEdit = address
+                                            showEditSheet = true
+                                        },
+                                        onShare: {
+                                            let text = "\(address.type?.capitalized ?? "Address"): \(address.fullAddress)"
+                                            let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+                                            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                               let window = scene.windows.first,
+                                               let rootVC = window.rootViewController {
+                                                rootVC.present(activityVC, animated: true)
+                                            }
+                                        },
+                                        onDelete: {
+                                            addressToDelete = address
+                                            showDeleteConfirm = true
+                                        }
+                                    )
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                        .padding(.top, 8)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.bottom, 40)
             }
-            .padding(.bottom, 30)
-            
-            Spacer()
-            
-            // Empty State Illustration
-            VStack(spacing: 16) {
-                ZStack {
-                    Image(systemName: "map")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 150, height: 150)
-                        .foregroundColor(.gray.opacity(0.3))
-                    Image(systemName: "magnifyingglass")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80, height: 80)
-                        .foregroundColor(.gray)
-                        .overlay(
-                            Image(systemName: "questionmark")
-                                .font(.system(size: 30, weight: .bold))
-                                .foregroundColor(.gray)
-                        )
-                }
-                
-                Text("You don't have any saved addresses")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.gray)
-                
-                Text("Add a new address and continue ordering")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.gray)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-            }
-            
-            Spacer()
-            Spacer()
         }
-        .background(Color(hex: "#F1EDFF").ignoresSafeArea())
+        .background(Color(hex: "#F9F9FB").ignoresSafeArea())
         .navigationBarHidden(true)
-        .sheet(isPresented: $showAddAddress) {
-            AddressPickerView { newAddress in
-                addresses.insert(newAddress, at: 0)
+        .navigationDestination(isPresented: $showAddAddress) {
+            DeliveryLocationView { newAddress in
+                upsertAddress(newAddress)
+                selectedAddressId = newAddress.id
+                isLoading = false
                 showAddAddress = false
                 if selectionMode {
                     onSelect?(newAddress)
                     dismiss()
                 }
             }
+            .environmentObject(appState)
         }
         .alert("Delete Address", isPresented: $showDeleteConfirm) {
             Button("Delete", role: .destructive) {
@@ -137,27 +229,19 @@ struct AddressListView: View {
             appState.hideMainTabBar = true
         }
         .onDisappear {
-            appState.hideMainTabBar = false
+            if !showAddAddress {
+                appState.hideMainTabBar = false
+            }
         }
-    }
-
-    private func useCurrentLocation() {
-        let locMgr = LocationManager.shared
-        let lat = locMgr.latitude
-        let lng = locMgr.longitude
-        let address = Address(
-            id: "current",
-            uid: SessionManager.shared.currentUser?.id,
-            hno: nil,
-            address: "Current Location",
-            latMap: lat,
-            longMap: lng,
-            landmark: nil,
-            type: "current",
-            addressImage: nil
-        )
-        onSelect?(address)
-        dismiss()
+        .sheet(isPresented: $showEditSheet) {
+            if let address = addressToEdit {
+                EditAddressSheet(address: address, isPresented: $showEditSheet) { updatedAddress in
+                    if let index = addresses.firstIndex(where: { $0.id == updatedAddress.id }) {
+                        addresses[index] = updatedAddress
+                    }
+                }
+            }
+        }
     }
 
     private func loadAddresses() async {
@@ -167,9 +251,45 @@ struct AddressListView: View {
         }
         do {
             let response = try await APIService.shared.getAddressList(uid: uid)
-            addresses = response.addressList ?? []
+            addresses = mergeLocalAddresses(remote: response.addressList ?? [])
+            // Auto-select the first one if applicable
+            if let first = addresses.first {
+                selectedAddressId = first.id
+            }
         } catch {}
         isLoading = false
+    }
+
+    private func upsertAddress(_ newAddress: Address) {
+        if let id = newAddress.id,
+           let index = addresses.firstIndex(where: { $0.id == id }) {
+            addresses[index] = newAddress
+            return
+        }
+
+        if let index = addresses.firstIndex(where: {
+            ($0.fullAddress == newAddress.fullAddress) && ($0.latitude == newAddress.latitude) && ($0.longitude == newAddress.longitude)
+        }) {
+            addresses[index] = newAddress
+            return
+        }
+
+        addresses.insert(newAddress, at: 0)
+    }
+
+    private func mergeLocalAddresses(remote: [Address]) -> [Address] {
+        var merged = remote
+        for local in addresses {
+            let existsById = local.id != nil && merged.contains(where: { $0.id == local.id })
+            let existsByLocation = merged.contains(where: {
+                ($0.fullAddress == local.fullAddress) && ($0.latitude == local.latitude) && ($0.longitude == local.longitude)
+            })
+
+            if !existsById && !existsByLocation {
+                merged.insert(local, at: 0)
+            }
+        }
+        return merged
     }
 
     private func deleteAddress(_ address: Address) async {
@@ -181,74 +301,121 @@ struct AddressListView: View {
     }
 }
 
-// MARK: - Action Tile View (Horizontal Scroll)
+// MARK: - Address Card View
+private struct AddressCardView: View {
+    let address: Address
+    let isSelected: Bool
+    let onSelect: () -> Void
+    let onEdit: () -> Void
+    let onShare: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            // Icon
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(hex: "#F4F5F7"))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: "location") // Outline arrow
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(Color(hex: "#333333"))
+            }
+
+            // Text Info
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
+                    Text((address.type ?? "Other").capitalized)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(Color(hex: "#1A1A1A"))
+                    
+                    if isSelected {
+                        Text("SELECTED")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(Color(hex: "#00B47A")) // Dark Green
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(Color(hex: "#E5F7ED")) // Light Green
+                            .cornerRadius(4)
+                    }
+                }
+
+                Text(address.fullAddress)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(Color(hex: "#6B7280"))
+                    .lineLimit(2)
+                    .lineSpacing(2)
+            }
+            .padding(.top, 2)
+
+            Spacer()
+
+            // Context Menu (Vertical Ellipsis)
+            Menu {
+                Button(action: onEdit) {
+                    Label("Edit", systemImage: "square.and.pencil")
+                }
+                Button(action: onShare) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+                Button(role: .destructive, action: onDelete) {
+                    Label("Delete", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis")
+                    .rotationEffect(.degrees(90)) // Makes it vertical
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(Color(hex: "#8E939C"))
+                    .frame(width: 30, height: 40, alignment: .topTrailing)
+                    .contentShape(Rectangle())
+            }
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(16)
+        .onTapGesture {
+            onSelect()
+        }
+    }
+}
+
+// MARK: - Action Tile View
 private struct ActionTileView: View {
     let icon: String
     let iconColor: Color
     let title: String
+    var isWhatsApp: Bool = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 0) {
                 Image(systemName: icon)
-                    .font(.system(size: 28))
+                    .font(.system(size: 20, weight: .medium))
                     .foregroundColor(iconColor)
+                
+                Spacer()
+                
                 Text(title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(Color(hex: "#5E626B"))
+                    .multilineTextAlignment(.leading)
+                    .lineSpacing(2)
             }
-            .frame(width: 110, height: 120)
+            .padding(14)
+            .frame(width: 110, height: 100, alignment: .leading)
             .background(Color.white)
             .cornerRadius(16)
-            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.gray.opacity(0.15), lineWidth: 1)
+            )
         }
     }
 }
 
-// MARK: - Address Row
-private struct AddressItemRow: View {
-    let address: Address
-    let selectionMode: Bool
-
-    var body: some View {
-        HStack(spacing: 14) {
-            Image(systemName: address.typeIcon)
-                .font(.system(size: 20))
-                .foregroundColor(Color(hex: "#E23744"))
-                .frame(width: 40, height: 40)
-                .background(Color(hex: "#E23744").opacity(0.1))
-                .cornerRadius(10)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text((address.type ?? "Other").capitalized)
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.black)
-
-                Text(address.fullAddress)
-                    .font(.system(size: 12))
-                    .foregroundColor(.gray)
-                    .lineLimit(2)
-            }
-
-            Spacer()
-
-            if selectionMode {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 13))
-                    .foregroundColor(.gray)
-            }
-        }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 14)
-        .background(Color.white)
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Address Picker (Map + Form)
+// MARK: - Address Picker (Map + Form) remains unchanged
 struct AddressPickerView: View {
     let onSave: (Address) -> Void
 
@@ -277,14 +444,12 @@ struct AddressPickerView: View {
                             .frame(height: 260)
                             .cornerRadius(0)
 
-                        // Center pin
                         Image(systemName: "mappin.circle.fill")
                             .font(.system(size: 36))
                             .foregroundColor(Color(hex: "#E23744"))
                             .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
                             .allowsHitTesting(false)
 
-                        // Current location button
                         VStack {
                             Spacer()
                             HStack {
@@ -309,7 +474,6 @@ struct AddressPickerView: View {
 
                     // Form
                     VStack(spacing: 16) {
-                        // Detected address
                         HStack(alignment: .top, spacing: 12) {
                             Image(systemName: "mappin.circle.fill")
                                 .font(.system(size: 20))
@@ -334,7 +498,6 @@ struct AddressPickerView: View {
                         .background(Color.white)
                         .cornerRadius(12)
 
-                        // House/Flat No
                         VStack(alignment: .leading, spacing: 6) {
                             Text("House / Flat No.")
                                 .font(.system(size: 12))
@@ -346,7 +509,6 @@ struct AddressPickerView: View {
                                 .cornerRadius(10)
                         }
 
-                        // Landmark
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Landmark (optional)")
                                 .font(.system(size: 12))
@@ -358,7 +520,6 @@ struct AddressPickerView: View {
                                 .cornerRadius(10)
                         }
 
-                        // Address type chips
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Save as")
                                 .font(.system(size: 12))
@@ -386,7 +547,6 @@ struct AddressPickerView: View {
                             }
                         }
 
-                        // Save button
                         Button(action: saveAddress) {
                             Group {
                                 if isSaving {
@@ -487,6 +647,116 @@ struct AddressPickerView: View {
     }
 }
 
-#Preview {
-    AddressListView()
+// MARK: - Edit Address Sheet
+struct EditAddressSheet: View {
+    let address: Address
+    @Binding var isPresented: Bool
+    let onSave: (Address) -> Void
+    
+    @State private var houseNo = ""
+    @State private var landmark = ""
+    @State private var addressType = "Home"
+    @State private var isSaving = false
+    
+    let addressTypes = ["Home", "Work", "Other"]
+    
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("House / Flat No.")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.gray)
+                    TextField("E.g., B-42, 3rd Floor", text: $houseNo)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Landmark (optional)")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.gray)
+                    TextField("E.g., Near bus stop", text: $landmark)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Save as")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.gray)
+                    HStack(spacing: 12) {
+                        ForEach(addressTypes, id: \.self) { atype in
+                            Button { addressType = atype } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: atype == "Home" ? "house" : atype == "Work" ? "briefcase" : "mappin")
+                                        .font(.system(size: 12))
+                                    Text(atype)
+                                        .font(.system(size: 13, weight: .semibold))
+                                }
+                                .foregroundColor(addressType == atype ? .white : Color(hex: "#333333"))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(addressType == atype ? Color(hex: "#FF5200") : Color(hex: "#F4F5F7"))
+                                .cornerRadius(20)
+                            }
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: saveAddress) {
+                    Group {
+                        if isSaving {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Update Address")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color(hex: "#FF5200"))
+                    .cornerRadius(12)
+                }
+                .disabled(isSaving)
+            }
+            .padding(24)
+            .navigationTitle("Edit Address")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { isPresented = false }
+                }
+            }
+            .onAppear {
+                houseNo = address.hno ?? ""
+                landmark = address.landmark ?? ""
+                addressType = (address.type ?? "Home").capitalized
+            }
+        }
+    }
+    
+    private func saveAddress() {
+        isSaving = true
+        
+        // Create an updated address with new values
+        let updatedAddress = Address(
+            id: address.id,
+            uid: address.uid,
+            hno: houseNo.isEmpty ? nil : houseNo,
+            address: address.address,
+            latMap: address.latMap,
+            longMap: address.longMap,
+            landmark: landmark.isEmpty ? nil : landmark,
+            type: addressType.lowercased(),
+            addressImage: address.addressImage
+        )
+        
+        DispatchQueue.main.async {
+            isSaving = false
+            onSave(updatedAddress)
+            isPresented = false
+        }
+    }
 }

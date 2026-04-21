@@ -94,7 +94,7 @@ struct RestaurantDirectoryView: View { var body: some View { PlaceholderScreen(t
 struct SearchProductView: View { var body: some View { PlaceholderScreen(title: "Search Product", subtitle: "Product-level search entry and results.") } }
 struct SearchSubscriptionView: View { var body: some View { PlaceholderScreen(title: "Search Subscription", subtitle: "Search across subscription plans and meals.") } }
 
-struct SbiCreditCardView: View { var body: some View { PlaceholderScreen(title: "SBI Credit Card", subtitle: "SBI specific payment campaign/screen.") } }
+
 struct PaypalPaymentView: View { var body: some View { PlaceholderScreen(title: "PayPal", subtitle: "PayPal payment handoff and callback state.") } }
 struct PaystackPaymentView: View { var body: some View { PlaceholderScreen(title: "Paystack", subtitle: "Paystack payment handoff and callback state.") } }
 struct RazorpayPaymentView: View { var body: some View { PlaceholderScreen(title: "Razorpay", subtitle: "Razorpay payment handoff and callback state.") } }
