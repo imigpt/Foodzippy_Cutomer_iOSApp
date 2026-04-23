@@ -789,6 +789,7 @@ struct HomeView: View {
                 Task { await viewModel.refresh() }
             }
         }
+        // 1. Attach the first sheet to your main view
         .sheet(item: $selectedDishForDetail) { dish in
             DishDetailSheetView(
                 dish: dish,
@@ -797,23 +798,30 @@ struct HomeView: View {
                     selectedDishForDetail = nil
                 },
                 onRequestCustomization: { customDish in
+                    // Close the first sheet
                     selectedDishForDetail = nil
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    
+                    // 2. Increase the delay to allow the dismissal animation to finish (~0.4 seconds)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                         selectedDishForCustomization = customDish
                     }
                 }
             )
             .presentationDetents([.fraction(0.92), .large])
         }
-        .sheet(item: $selectedDishForCustomization) { dish in
-            CustomisationSheetView(
-                dish: dish,
-                cartViewModel: cartViewModel,
-                onClose: {
-                    selectedDishForCustomization = nil
+        // 3. Attach the second sheet to an invisible background element to prevent modifier conflicts
+        .background {
+            Color.clear
+                .sheet(item: $selectedDishForCustomization) { dish in
+                    CustomisationSheetView(
+                        dish: dish,
+                        cartViewModel: cartViewModel,
+                        onClose: {
+                            selectedDishForCustomization = nil
+                        }
+                    )
+                    .presentationDetents([.fraction(0.95), .large])
                 }
-            )
-            .presentationDetents([.fraction(0.95), .large])
         }
     }
     

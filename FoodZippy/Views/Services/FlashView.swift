@@ -260,71 +260,76 @@ struct FlashView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .top) {
-                Color(hex: "#FAFAFA").ignoresSafeArea()
-
-                ScrollView(showsIndicators: false) {
-                    LazyVStack(spacing: 20) {
-                        heroBanner
-                        brandsSection
-                        categoriesSection
-                        bannersSection
-                        flashRestaurantsSection
-                    }
-                    .padding(.bottom, 24)
-                }
-                .refreshable { await viewModel.refresh() }
-
-                if let dish = selectedDishForDetail {
-                    SpringBottomSheetOverlay(onDismissed: {
-                        selectedDishForDetail = nil
-                        if let queuedDish = queuedCustomizationDish {
-                            queuedCustomizationDish = nil
-                            if selectedDishForCustomization == nil {
-                                selectedDishForCustomization = queuedDish
-                            }
+        GeometryReader { geo in
+            NavigationStack {
+                ZStack(alignment: .top) {
+                    Color(hex: "#FAFAFA").ignoresSafeArea()
+                    
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack(spacing: 20) {
+                            heroBanner
+                            brandsSection
+                            categoriesSection
+                            bannersSection
+                            flashRestaurantsSection
                         }
-                    }) { dismiss in
-                        DishDetailSheetView(
-                            dish: dish,
-                            cartViewModel: cartViewModel,
-                            onClose: dismiss,
-                            onRequestCustomization: { customDish in
-                                queuedCustomizationDish = customDish
-                                dismiss()
-                            }
-                        )
+                        .padding(.bottom, 24)
                     }
-                    .zIndex(10)
-                }
+                    .refreshable { await viewModel.refresh() }
 
-                if selectedDishForDetail == nil, let dish = selectedDishForCustomization {
-                    SpringBottomSheetOverlay(onDismissed: {
-                        selectedDishForCustomization = nil
-                    }) { dismiss in
-                        CustomisationSheetView(
-                            dish: dish,
-                            cartViewModel: cartViewModel,
-                            onClose: dismiss
-                        )
+
+                    if let dish = selectedDishForDetail {
+                        SpringBottomSheetOverlay(onDismissed: {
+                            selectedDishForDetail = nil
+                            if let queuedDish = queuedCustomizationDish {
+                                queuedCustomizationDish = nil
+                                if selectedDishForCustomization == nil {
+                                    selectedDishForCustomization = queuedDish
+                                }
+                            }
+                        }) { dismiss in
+                            DishDetailSheetView(
+                                dish: dish,
+                                cartViewModel: cartViewModel,
+                                onClose: dismiss,
+                                onRequestCustomization: { customDish in
+                                    queuedCustomizationDish = customDish
+                                    dismiss()
+                                }
+                            )
+                        }
+                        .zIndex(10)
                     }
-                    .zIndex(11)
+
+                    if selectedDishForDetail == nil, let dish = selectedDishForCustomization {
+                        SpringBottomSheetOverlay(onDismissed: {
+                            selectedDishForCustomization = nil
+                        }) { dismiss in
+                            CustomisationSheetView(
+                                dish: dish,
+                                cartViewModel: cartViewModel,
+                                onClose: dismiss
+                            )
+                        }
+                        .zIndex(11)
+                    }
                 }
+                .task { await viewModel.loadIfNeeded() }
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationBarBackButtonHidden(true)
             }
-            .task { await viewModel.loadIfNeeded() }
-            .toolbar(.hidden, for: .navigationBar)
-            .navigationBarBackButtonHidden(true)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var heroBanner: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             LinearGradient(
                 colors: [Color(hex: "#F72437"), Color(hex: "#D41F31")],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+                .ignoresSafeArea(.container, edges: .top)
 
             RadialGradient(
                 colors: [Color.white.opacity(0.18), .clear],
@@ -334,56 +339,66 @@ struct FlashView: View {
             )
 
             VStack(spacing: 0) {
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "arrow.left")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(width: 50, height: 50)
-                            .background(Color.black.opacity(0.18))
-                            .clipShape(Circle())
+                Color.clear
+                    .frame(height: 60)
+                
+                GeometryReader { geo in
+                    VStack(spacing: 0) {
+                        Color.clear
+                            .frame(height: geo.safeAreaInsets.top)
+                        
+                        HStack {
+                            Button(action: { dismiss() }) {
+                                Image(systemName: "arrow.left")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 50, height: 50)
+                                    .background(Color.black.opacity(0.18))
+                                    .clipShape(Circle())
+                            }
+
+                            Spacer()
+
+                            Button(action: {}) {
+                                Image(systemName: "magnifyingglass")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 50, height: 50)
+                                    .background(Color.black.opacity(0.18))
+                                    .clipShape(Circle())
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+
+                        Spacer(minLength: 0)
+
+                        HStack(alignment: .bottom, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("99 store")
+                                    .font(heroTitleFont)
+                                    .foregroundColor(Color.white)
+                                    .shadow(color: .black.opacity(0.25), radius: 0, x: 2, y: 2)
+
+                                Text("Meals at ₹99 + Free Delivery")
+                                    .font(heroSubtitleFont)
+                                    .foregroundColor(Color(hex: "#F72437"))
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 10)
+                                    .background(Color.white)
+                                    .clipShape(Capsule())
+                            }
+                            .padding(.leading, 16)
+                            .padding(.bottom, 26)
+
+                            Spacer(minLength: 0)
+
+                            heroFoodStack
+                                .frame(width: horizontalSizeClass == .regular ? 220 : 190, height: horizontalSizeClass == .regular ? 185 : 162)
+                                .padding(.trailing, horizontalSizeClass == .regular ? 20 : 10)
+                                .padding(.bottom, horizontalSizeClass == .regular ? 20 : 12)
+                        }
                     }
-
-                    Spacer()
-
-                    Button(action: {}) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(width: 50, height: 50)
-                            .background(Color.black.opacity(0.18))
-                            .clipShape(Circle())
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 14)
-
-                Spacer(minLength: 0)
-
-                HStack(alignment: .bottom, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("99 store")
-                            .font(heroTitleFont)
-                            .foregroundColor(Color.white)
-                            .shadow(color: .black.opacity(0.25), radius: 0, x: 2, y: 2)
-
-                        Text("Meals at ₹99 + Free Delivery")
-                            .font(heroSubtitleFont)
-                            .foregroundColor(Color(hex: "#F72437"))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
-                            .background(Color.white)
-                            .clipShape(Capsule())
-                    }
-                    .padding(.leading, 16)
-                    .padding(.bottom, 26)
-
-                    Spacer(minLength: 0)
-
-                    heroFoodStack
-                        .frame(width: horizontalSizeClass == .regular ? 220 : 190, height: horizontalSizeClass == .regular ? 185 : 162)
-                        .padding(.trailing, horizontalSizeClass == .regular ? 20 : 10)
-                        .padding(.bottom, horizontalSizeClass == .regular ? 20 : 12)
                 }
             }
         }

@@ -1,0 +1,72 @@
+{
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Constants.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Constants.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Constants.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Constants.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Constants.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Constants.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Utils/Extensions.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Extensions.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Extensions.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Extensions.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Extensions.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/Extensions.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/ViewModels/CartViewModel.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartViewModel.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Address/DeliveryLocationView.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DeliveryLocationView.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DeliveryLocationView.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DeliveryLocationView.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DeliveryLocationView.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DeliveryLocationView.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Cart/CartView.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CartView.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Profile/CorporateCashbackView.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CorporateCashbackView.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CorporateCashbackView.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CorporateCashbackView.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CorporateCashbackView.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CorporateCashbackView.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Services/DineInBookingViews.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DineInBookingViews.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DineInBookingViews.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DineInBookingViews.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DineInBookingViews.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DineInBookingViews.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/CustomisationSheetView.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CustomisationSheetView.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CustomisationSheetView.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CustomisationSheetView.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CustomisationSheetView.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/CustomisationSheetView.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/DishDetailSheetView.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DishDetailSheetView.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DishDetailSheetView.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DishDetailSheetView.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DishDetailSheetView.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/DishDetailSheetView.swiftdeps"
+  },
+  "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Views/Utility/FaqView.swift" : {
+    "const-values" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FaqView.swiftconstvalues",
+    "dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FaqView.d",
+    "diagnostics" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FaqView.dia",
+    "object" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FaqView.o",
+    "swift-dependencies" : "/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Intermediates.noindex/FoodZippy.build/Debug-iphonesimulator/FoodZippy.build/Objects-normal/arm64/FaqView.swiftdeps"
+  }
+}

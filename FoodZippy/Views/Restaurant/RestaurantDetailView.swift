@@ -158,6 +158,7 @@ struct RestaurantDetailView: View {
         .toolbarBackground(Color(hex: "#E23744"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .task {
             await viewModel.loadRestaurant(restId: restaurant.restId ?? "")
         }
@@ -921,3 +922,4 @@ struct FloatingCartBar: View {
         .environmentObject(CartManager.shared)
     }
 }
+

@@ -200,6 +200,7 @@ struct AddressListView: View {
             }
         }
         .background(Color(hex: "#F9F9FB").ignoresSafeArea())
+        .toolbar(.hidden, for: .tabBar)
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showAddAddress) {
             DeliveryLocationView { newAddress in

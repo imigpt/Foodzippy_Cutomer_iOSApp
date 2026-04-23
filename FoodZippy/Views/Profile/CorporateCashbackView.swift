@@ -92,9 +92,10 @@ struct CorporateRewardsView: View {
             }
             .ignoresSafeArea()
         }
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
+        // 2. Add this to keep your custom tab bar hidden
         .onAppear {
-            appState.hideMainTabBar = true
+            AppState.shared.hideMainTabBar = true 
         }
     }
 }

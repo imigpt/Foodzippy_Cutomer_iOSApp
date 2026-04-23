@@ -97,8 +97,11 @@ struct HighProteinView: View {
     ]
 
     var body: some View {
-        // Removed GeometryReader wrapping the whole view to prevent layout collapsing issues
-        // Safe area is handled automatically by the NavigationStack/ScrollView.
+    ZStack(alignment: .top) {
+        
+        Color(hex: "#F7F7F7")
+            .ignoresSafeArea() // 🔥 Fix
+        
         VStack(spacing: 0) {
             header
             
@@ -128,38 +131,36 @@ struct HighProteinView: View {
                     .padding(.bottom, 24)
                 }
             }
-            .background(Color(hex: "#F7F7F7"))
         }
-        .background(Color(hex: "#F7F7F7").ignoresSafeArea())
-        .navigationBarBackButtonHidden(true)
     }
+    .navigationBarHidden(true)
+}
 
     private var header: some View {
-        HStack {
-            Button {
-                if appState.selectedTab == .highProtein {
-                    appState.selectedTab = .home
-                } else {
-                    dismiss()
-                }
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(Color(hex: "#222222"))
-                    .frame(width: 38, height: 38)
-                    .background(Color.white)
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+    HStack {
+        Button {
+            if appState.selectedTab == .highProtein {
+                appState.selectedTab = .home
+            } else {
+                dismiss()
             }
-            .buttonStyle(.plain)
-
-            Spacer()
+        } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(Color(hex: "#222222"))
+                .frame(width: 38, height: 38)
+                .background(Color.white)
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
-        .background(Color(hex: "#F7F7F7"))
+
+        Spacer()
     }
+    .padding(.horizontal, 16)
+    .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top ?? 44) // 🔥 FIX
+    .padding(.bottom, 8)
+    .background(Color.clear) // 🔥 FIX
+}
 }
 
 // MARK: - Responsive Banner
@@ -168,8 +169,9 @@ struct BannerView: View {
         GeometryReader { proxy in
             let width = proxy.size.width
             
-            ZStack {
-                // Background
+            VStack(alignment: .center, spacing: 0) {
+                Color.clear
+               // .frame(height: 60)
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .fill(Color(hex: "#F5F2E9"))
                 

@@ -6,11 +6,11 @@ struct BuyOneView: View {
     @State private var navigateToRedeemCoupon = false
 
     var body: some View {
-        ZStack(alignment: .top) {
+        ZStack(alignment: .topLeading) {
             
             // Background Color for the rest of the scroll view
             Color(UIColor.systemGroupedBackground)
-                .ignoresSafeArea()
+               // .ignoresSafeArea()
             
             // Scrollable Content
             ScrollView(showsIndicators: false) {
@@ -119,7 +119,7 @@ struct BuyOneView: View {
                 Spacer()
                 StickyBottomBar()
             }
-            .ignoresSafeArea(edges: .bottom)
+             .ignoresSafeArea(edges: .bottom)
         }
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $navigateToRedeemCoupon) {

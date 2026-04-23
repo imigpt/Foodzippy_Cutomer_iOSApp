@@ -40,6 +40,13 @@ struct ProfileView: View {
             }
             .background(Color(UIColor.systemGroupedBackground).opacity(0.3).ignoresSafeArea()) // Light off-white base
             .toolbar(.hidden, for: .navigationBar) // Hide default nav bar to use custom top section
+            .toolbar(.hidden, for: .tabBar)        // <-- ADDED: Hides native SwiftUI Tab Bar
+            .onAppear {
+                appState.hideMainTabBar = true // Hides it when Profile opens
+            }
+            .onDisappear {
+                appState.hideMainTabBar = false // Restores it when Profile closes
+            }
             .refreshable {
                 await viewModel.loadProfile()
             }

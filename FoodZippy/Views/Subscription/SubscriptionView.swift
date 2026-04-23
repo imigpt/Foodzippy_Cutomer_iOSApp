@@ -152,7 +152,7 @@ struct SearchBarView: View {
     }
 }
 
-// MARK: - Auto-Scrolling Banner Carousel
+// MARK: - Auto-Scrolling Banner Carousel (Original UI Restored)
 struct BannerSliderView: View {
     @State private var currentIndex = 0
     @State private var dragOffset: CGFloat = 0
@@ -182,8 +182,10 @@ struct BannerSliderView: View {
                 }
             }
             .offset(x: baseOffset - (CGFloat(currentIndex) * step) + dragOffset)
+            // CRITICAL FIX: Makes the entire area swipeable, not just the visible cards
+            .contentShape(Rectangle()) 
             .gesture(
-                DragGesture(minimumDistance: 8)
+                DragGesture(minimumDistance: 15) // Prevents conflict with vertical ScrollView
                     .onChanged { value in
                         isDragging = true
                         dragOffset = value.translation.width
@@ -204,15 +206,16 @@ struct BannerSliderView: View {
                             dragOffset = 0
                         }
 
+                        // Delay resetting isDragging to ensure timer doesn't fire immediately
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
                             isDragging = false
                         }
                     }
             )
         }
-        .frame(height: 380)
+        .frame(height: 380) // Restored your original height
         .onReceive(timer) { _ in
-            guard !isDragging else { return }
+            guard !isDragging else { return } // Pauses auto-scroll while user is interacting
             withAnimation(.spring(response: 0.42, dampingFraction: 0.86)) {
                 currentIndex = (currentIndex + 1) % banners
             }

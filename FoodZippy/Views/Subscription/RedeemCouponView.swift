@@ -33,8 +33,9 @@ struct RedeemCouponView: View {
             .padding(.top, 56)
         }
         .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar) // <-- ADDED: Hides native SwiftUI Tab Bar
         .onAppear {
-            appState.hideMainTabBar = true
+            appState.hideMainTabBar = true // Keeps your custom state synchronized
         }
         .onDisappear {
             appState.hideMainTabBar = false

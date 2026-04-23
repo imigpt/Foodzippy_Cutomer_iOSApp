@@ -1,0 +1,490 @@
+// AddressListView.swift
+// Matches Android AddressListActivity + MapActivity
+
+import SwiftUI
+import MapKit
+
+struct AddressListView: View {
+    let selectionMode: Bool
+    var onSelect: ((Address) -> Void)?
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var addresses: [Address] = []
+    @State private var isLoading = true
+    @State private var showAddAddress = false
+    @State private var showDeleteConfirm = false
+    @State private var addressToDelete: Address?
+    
+    init(selectionMode: Bool = false, onSelect: ((Address) -> Void)? = nil) {
+        self.selectionMode = selectionMode
+        self.onSelect = onSelect
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            if isLoading {
+                VStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+            } else if addresses.isEmpty {
+                VStack(spacing: 16) {
+                    Spacer()
+                    Image(systemName: "mappin.slash")
+                        .font(.system(size: 48))
+                        .foregroundColor(.gray.opacity(0.4))
+                    Text("No saved addresses")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    Button {
+                        showAddAddress = true
+                    } label: {
+                        Label("Add Address", systemImage: "plus")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(Color.appPrimary)
+                            .cornerRadius(10)
+                    }
+                    Spacer()
+                }
+            } else {
+                List {
+                    // Current location option
+                    if selectionMode {
+                        Button {
+                            let location = LocationManager.shared
+                            let address = Address(
+                                id: "current",
+                                uid: SessionManager.shared.user?.id,
+                                address: location.cityName,
+                                fullAddress: location.fullAddress,
+                                lats: String(location.latitude),
+                                longs: String(location.longitude),
+                                atype: "current"
+                            )
+                            onSelect?(address)
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "location.fill")
+                                    .foregroundColor(.appPrimary)
+                                    .frame(width: 28)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Use Current Location")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.appPrimary)
+                                    Text(LocationManager.shared.fullAddress)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                        .lineLimit(1)
+                                }
+                            }
+                        }
+                    }
+                    
+                    ForEach(addresses, id: \.id) { address in
+                        Button {
+                            if selectionMode {
+                                onSelect?(address)
+                                dismiss()
+                            }
+                        } label: {
+                            AddressRow(address: address, selectionMode: selectionMode)
+                        }
+                        .buttonStyle(.plain)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                addressToDelete = address
+                                showDeleteConfirm = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+                .listStyle(.plain)
+            }
+        }
+        .navigationTitle("Addresses")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showAddAddress = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $showAddAddress) {
+            AddressPickerView { address in
+                addresses.insert(address, at: 0)
+                showAddAddress = false
+                if selectionMode {
+                    onSelect?(address)
+                    dismiss()
+                }
+            }
+        }
+        .alert("Delete Address", isPresented: $showDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                if let address = addressToDelete {
+                    Task { await deleteAddress(address) }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to delete this address?")
+        }
+        .task {
+            await loadAddresses()
+        }
+    }
+    
+    private func loadAddresses() async {
+        let uid = SessionManager.shared.user?.id ?? ""
+        do {
+            let response = try await APIService.shared.getAddressList(uid: uid)
+            addresses = response.addresses ?? []
+        } catch {}
+        isLoading = false
+    }
+    
+    private func deleteAddress(_ address: Address) async {
+        let uid = SessionManager.shared.user?.id ?? ""
+        do {
+            let _ = try await APIService.shared.deleteAddress(uid: uid, addressId: address.id ?? "")
+            addresses.removeAll { $0.id == address.id }
+        } catch {}
+    }
+}
+
+struct AddressRow: View {
+    let address: Address
+    let selectionMode: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: iconForType(address.atype ?? ""))
+                .font(.title3)
+                .foregroundColor(.appPrimary)
+                .frame(width: 36)
+            
+            VStack(alignment: .leading, spacing: 3) {
+                Text(address.atype?.capitalized ?? "Other")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.appBlack)
+                
+                Text(address.fullAddress ?? address.address ?? "")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+            }
+            
+            Spacer()
+            
+            if selectionMode {
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+    
+    private func iconForType(_ type: String) -> String {
+        switch type.lowercased() {
+        case "home": return "house.fill"
+        case "work", "office": return "building.2.fill"
+        default: return "mappin.circle.fill"
+        }
+    }
+}
+
+// MARK: - Address Picker View (Map-based)
+
+struct AddressPickerView: View {
+    let onSave: (Address) -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var locationManager = LocationManager.shared
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 23.0225, longitude: 72.5714),
+        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    )
+    @State private var addressText = ""
+    @State private var landmark = ""
+    @State private var addressType = "Home"
+    @State private var isSaving = false
+    @State private var searchText = ""
+    @State private var searchResults: [MKMapItem] = []
+    @State private var showSearchResults = false
+    
+    private let addressTypes = ["Home", "Work", "Other"]
+    
+    var body: some View {
+        NavigationStack {
+            ZStack(alignment: .top) {
+                // Map
+                Map(coordinateRegion: $region, showsUserLocation: true)
+                    .ignoresSafeArea(edges: .top)
+                    .frame(height: UIScreen.main.bounds.height * 0.45)
+                    .onChange(of: region.center.latitude) { _, _ in
+                        reverseGeocode()
+                    }
+                
+                // Center pin
+                VStack {
+                    Spacer()
+                        .frame(height: UIScreen.main.bounds.height * 0.45 / 2 - 20)
+                    Image(systemName: "mappin.circle.fill")
+                        .font(.system(size: 32))
+                        .foregroundColor(.appPrimary)
+                    Spacer()
+                }
+                .frame(height: UIScreen.main.bounds.height * 0.45)
+                
+                // Search overlay
+                VStack {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                        TextField("Search location...", text: $searchText)
+                            .font(.subheadline)
+                            .onSubmit { searchLocation() }
+                    }
+                    .padding(10)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    
+                    if showSearchResults && !searchResults.isEmpty {
+                        VStack(spacing: 0) {
+                            ForEach(searchResults, id: \.self) { item in
+                                Button {
+                                    selectSearchResult(item)
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "mappin")
+                                            .foregroundColor(.gray)
+                                        VStack(alignment: .leading) {
+                                            Text(item.name ?? "")
+                                                .font(.caption)
+                                                .foregroundColor(.appBlack)
+                                            Text(item.placemark.title ?? "")
+                                                .font(.caption2)
+                                                .foregroundColor(.gray)
+                                                .lineLimit(1)
+                                        }
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 8)
+                                }
+                                Divider()
+                            }
+                        }
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                        .padding(.horizontal)
+                    }
+                    
+                    Spacer()
+                }
+            }
+            .frame(height: UIScreen.main.bounds.height * 0.45)
+            
+            // Address form
+            ScrollView {
+                VStack(spacing: 16) {
+                    // Detected address
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "mappin.circle.fill")
+                            .foregroundColor(.appPrimary)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Selected Location")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Text(addressText.isEmpty ? "Move the map to select" : addressText)
+                                .font(.subheadline)
+                                .foregroundColor(.appBlack)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Divider()
+                    
+                    // Landmark
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Landmark (optional)")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        TextField("E.g., Near bus stop", text: $landmark)
+                            .font(.subheadline)
+                            .padding(10)
+                            .background(Color.gray.opacity(0.06))
+                            .cornerRadius(8)
+                    }
+                    
+                    // Address type
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Save as")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        
+                        HStack(spacing: 10) {
+                            ForEach(addressTypes, id: \.self) { type in
+                                Button {
+                                    addressType = type
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: type == "Home" ? "house" : type == "Work" ? "building.2" : "mappin")
+                                            .font(.caption)
+                                        Text(type)
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                    }
+                                    .foregroundColor(addressType == type ? .white : .appBlack)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 8)
+                                    .background(addressType == type ? Color.appPrimary : Color.gray.opacity(0.1))
+                                    .cornerRadius(16)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Save button
+                    Button {
+                        saveAddress()
+                    } label: {
+                        if isSaving {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Save Address")
+                                .fontWeight(.bold)
+                        }
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(addressText.isEmpty ? Color.gray : Color.appPrimary)
+                    .cornerRadius(12)
+                    .disabled(addressText.isEmpty || isSaving)
+                }
+                .padding()
+            }
+            
+            .navigationTitle("Add Address")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        // Center on user location
+                        region = MKCoordinateRegion(
+                            center: CLLocationCoordinate2D(
+                                latitude: locationManager.latitude,
+                                longitude: locationManager.longitude
+                            ),
+                            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                        )
+                    } label: {
+                        Image(systemName: "location.fill")
+                    }
+                }
+            }
+            .onAppear {
+                region = MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(
+                        latitude: locationManager.latitude,
+                        longitude: locationManager.longitude
+                    ),
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )
+            }
+        }
+    }
+    
+    private func reverseGeocode() {
+        let location = CLLocation(latitude: region.center.latitude, longitude: region.center.longitude)
+        CLGeocoder().reverseGeocodeLocation(location) { placemarks, _ in
+            if let pm = placemarks?.first {
+                let parts = [pm.name, pm.locality, pm.administrativeArea, pm.postalCode, pm.country]
+                addressText = parts.compactMap { $0 }.joined(separator: ", ")
+            }
+        }
+    }
+    
+    private func searchLocation() {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = searchText
+        request.region = region
+        
+        MKLocalSearch(request: request).start { response, _ in
+            searchResults = response?.mapItems ?? []
+            showSearchResults = !searchResults.isEmpty
+        }
+    }
+    
+    private func selectSearchResult(_ item: MKMapItem) {
+        region = MKCoordinateRegion(
+            center: item.placemark.coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+        )
+        searchText = item.name ?? ""
+        showSearchResults = false
+    }
+    
+    private func saveAddress() {
+        isSaving = true
+        let uid = SessionManager.shared.user?.id ?? ""
+        let fullAddress = landmark.isEmpty ? addressText : "\(addressText), \(landmark)"
+        
+        Task {
+            do {
+                let response = try await APIService.shared.addAddress(
+                    uid: uid,
+                    address: fullAddress,
+                    lats: String(region.center.latitude),
+                    longs: String(region.center.longitude),
+                    atype: addressType.lowercased()
+                )
+                
+                let newAddress = Address(
+                    id: response.addressId ?? UUID().uuidString,
+                    uid: uid,
+                    address: addressText,
+                    fullAddress: fullAddress,
+                    lats: String(region.center.latitude),
+                    longs: String(region.center.longitude),
+                    atype: addressType.lowercased()
+                )
+                
+                await MainActor.run {
+                    isSaving = false
+                    onSave(newAddress)
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run { isSaving = false }
+            }
+        }
+    }
+}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>colors</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACColorNameAccentColor</string>
+			<key>relativePath</key>
+			<string>./AccentColor.colorset</string>
+			<key>swiftSymbol</key>
+			<string>accent</string>
+		</dict>
+	</array>
+	<key>images</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameBanner</string>
+			<key>relativePath</key>
+			<string>./banner.imageset</string>
+			<key>swiftSymbol</key>
+			<string>banner</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameBurger</string>
+			<key>relativePath</key>
+			<string>./burger.imageset</string>
+			<key>swiftSymbol</key>
+			<string>burger</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameCorporateCashback</string>
+			<key>relativePath</key>
+			<string>./corporate_cashback.imageset</string>
+			<key>swiftSymbol</key>
+			<string>corporateCashback</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameFavourites</string>
+			<key>relativePath</key>
+			<string>./favourites.imageset</string>
+			<key>swiftSymbol</key>
+			<string>favourites</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameRedeemCoupon</string>
+			<key>relativePath</key>
+			<string>./redeem_coupon.imageset</string>
+			<key>swiftSymbol</key>
+			<string>redeemCoupon</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/FoodZippy/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameStudentCashback</string>
+			<key>relativePath</key>
+			<string>./student_cashback.imageset</string>
+			<key>swiftSymbol</key>
+			<string>studentCashback</string>
+		</dict>
+	</array>
+	<key>symbols</key>
+	<array/>
+</dict>
+</plist>

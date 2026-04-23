@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/tanayshrivastava/Desktop/Foodzippy iOS/foodzippy_customer_iosapp/build/Build/Products/Debug-iphonesimulator/FoodZippy.app/FoodZippy'
+relocations:     []
+...

@@ -1,13 +1,13 @@
 import SwiftUI
 
 // MARK: - Meal Model
-struct MealData: Identifiable {
+private struct MealData: Identifiable {
     let id = UUID()
     let name: String
     let price: Double
 }
 
-struct DayMeals: Identifiable {
+private struct DayMeals: Identifiable {
     let id: Int
     let day: Int
     let breakfast: [MealData]
@@ -16,7 +16,7 @@ struct DayMeals: Identifiable {
 }
 
 struct SubscriptionPlanDetailsView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: AppState
     
     // Theme Colors
@@ -102,7 +102,7 @@ struct SubscriptionPlanDetailsView: View {
                         // Navigation overlay
                         HStack {
                             Button(action: {
-                                presentationMode.wrappedValue.dismiss()
+                                dismiss()
                             }) {
                                 Circle()
                                     .fill(Color.black.opacity(0.4))
@@ -125,7 +125,7 @@ struct SubscriptionPlanDetailsView: View {
                         }
                         .padding(.horizontal, 16)
                         // Adjusting for safe area manually since image ignores it
-                        .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top ?? 44)
+                        .padding(.top, 44)
                     }
                     
                     // 2. Floating Info Card
@@ -247,7 +247,8 @@ struct SubscriptionPlanDetailsView: View {
                 }
             }
         }
-        .navigationBarHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
         .onAppear {
             appState.hideMainTabBar = true
             // Initialize meals for first day
@@ -255,6 +256,7 @@ struct SubscriptionPlanDetailsView: View {
                 selectedMeals[selectedDay] = ["breakfast", "lunch", "dinner"]
             }
         }
+        .onDisappear { appState.hideMainTabBar = false }
         .onChange(of: selectedDay) { newDay in
             // Initialize meals for newly selected day if not already done
             if selectedMeals[newDay] == nil {
@@ -278,7 +280,7 @@ struct SubscriptionPlanDetailsView: View {
 
 // MARK: - Subviews
 
-struct FloatingInfoCard: View {
+private struct FloatingInfoCard: View {
     let textGreen: Color
     
     var body: some View {
@@ -335,7 +337,7 @@ struct FloatingInfoCard: View {
     }
 }
 
-struct StatBox: View {
+private struct StatBox: View {
     let value: String
     let label: String
     let color: Color
@@ -356,7 +358,7 @@ struct StatBox: View {
     }
 }
 
-struct DaySelector: View {
+private struct DaySelector: View {
     @Binding var selectedDay: Int
     let redAccent: Color
     let days = 1...7
@@ -394,7 +396,7 @@ struct DaySelector: View {
     }
 }
 
-struct MealSectionView: View {
+private struct MealSectionView: View {
     let title: String
     let mealLabel: String
     let mealName: String
@@ -464,7 +466,7 @@ struct MealSectionView: View {
     }
 }
 
-struct BottomActionBar: View {
+private struct BottomActionBar: View {
     let badgeGreen: Color
     let totalAmount: Double
     let onBuyTapped: () -> Void
@@ -497,7 +499,7 @@ struct BottomActionBar: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .padding(.bottom, UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0 > 0 ? 0 : 8)
+            .padding(.bottom, 8)
             .background(Color.white)
         }
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: -5)
@@ -505,7 +507,7 @@ struct BottomActionBar: View {
 }
 
 // MARK: - Preview
-struct SubscriptionPlanDetailsView_Previews: PreviewProvider {
+private struct SubscriptionPlanDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         SubscriptionPlanDetailsView()
     }

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>12</integer>
+	<key>logs</key>
+	<dict>
+		<key>22E43DDB-C7E3-4C53-9511-0A80EEBE0612</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>22E43DDB-C7E3-4C53-9511-0A80EEBE0612.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>FoodZippy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>FoodZippy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project FoodZippy with scheme FoodZippy and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>798534740.34075797</real>
+			<key>timeStoppedRecording</key>
+			<real>798534746.54882395</real>
+			<key>title</key>
+			<string>Building project FoodZippy with scheme FoodZippy and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>22E43DDB-C7E3-4C53-9511-0A80EEBE0612</string>
+		</dict>
+		<key>CE968BF2-9AFC-4ACA-8303-66A89CFD72DA</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>CE968BF2-9AFC-4ACA-8303-66A89CFD72DA.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>FoodZippy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>FoodZippy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project FoodZippy with scheme FoodZippy and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>798534436.42795706</real>
+			<key>timeStoppedRecording</key>
+			<real>798534443.36637604</real>
+			<key>title</key>
+			<string>Building project FoodZippy with scheme FoodZippy and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>CE968BF2-9AFC-4ACA-8303-66A89CFD72DA</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
