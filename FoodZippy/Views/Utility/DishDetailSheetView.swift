@@ -10,101 +10,100 @@ struct DishDetailSheetView: View {
     @State private var isAdded = false
     
     var body: some View {
-        GeometryReader { geo in
-            let width = geo.size.width
-            let height = geo.size.height
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    
-                    // MARK: - Image Section
-                    ZStack(alignment: .topTrailing) {
-                        AsyncImage(url: URL(string: dish.imageURL)) { phase in
-                            switch phase {
-                            case .empty:
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.14))
-                                    .overlay(ProgressView().tint(.white))
-                                
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                
-                            case .failure:
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.18))
-                                    .overlay(
-                                        Image(systemName: "photo")
-                                            .foregroundColor(.white)
-                                    )
-                            @unknown default:
-                                EmptyView()
-                            }
-                        }
-                        .frame(height: height * 0.38) // 🔥 Responsive height
-                        .frame(maxWidth: .infinity)
-                        .clipped()
-                        
-                        Button(action: onClose) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: width * 0.045, weight: .bold))
-                                .foregroundColor(.black)
-                                .frame(width: width * 0.12, height: width * 0.12)
-                                .background(Circle().fill(Color.white.opacity(0.92)))
-                        }
-                        .padding(.top, 16)
-                        .padding(.trailing, 16)
-                    }
-                    
-                    // MARK: - Content
-                    VStack(alignment: .leading, spacing: height * 0.015) {
-                        
-                        HStack(alignment: .top, spacing: 14) {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 0) {
+                
+                // MARK: - Image Section
+                ZStack(alignment: .topTrailing) {
+                    AsyncImage(url: URL(string: dish.imageURL)) { phase in
+                        switch phase {
+                        case .empty:
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.14))
+                                .overlay(ProgressView().tint(.white))
                             
-                            VStack(alignment: .leading, spacing: 8) {
-                                SheetVegIndicatorView(isVeg: dish.isVeg)
-                                
-                                // Title
-                                Text(dish.title)
-                                    .font(.system(size: width * 0.075, weight: .bold)) // 🔥 Responsive
-                                    .foregroundColor(Color(hex: "#3B3F46"))
-                                    .lineLimit(2)
-                                
-                                // Price
-                                HStack(spacing: 6) {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                            
+                        case .failure:
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.18))
+                                .overlay(
+                                    Image(systemName: "photo")
+                                    .font(.system(size: 44))
+                                    .foregroundColor(.gray.opacity(0.3))
+                                )
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                    .frame(height: 320)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    
+                    Button(action: onClose) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.black)
+                            .frame(width: 36, height: 36)
+                            .background(Circle().fill(Color.white.opacity(0.9)))
+                    }
+                    .padding(.top, 16)
+                    .padding(.trailing, 16)
+                }
+                
+                // MARK: - Content
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(alignment: .top, spacing: 14) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            SheetVegIndicatorView(isVeg: dish.isVeg)
+                            
+                            // Title
+                            Text(dish.title)
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color(hex: "#3B3F46"))
+                                .lineLimit(3)
+                            
+                            // Price
+                            HStack(spacing: 8) {
+                                if dish.oldPrice > 0 {
                                     Text(dish.oldPriceText)
-                                        .font(.system(size: width * 0.045, weight: .semibold))
+                                        .font(.headline)
                                         .foregroundColor(.gray)
                                         .strikethrough()
-                                    
-                                    Text(dish.finalPriceText(for: nil))
-                                        .font(.system(size: width * 0.065, weight: .black))
-                                        .foregroundColor(.black)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 3)
-                                        .background(Color(hex: "#FFD938"))
-                                        .clipShape(RoundedRectangle(cornerRadius: 4))
                                 }
                                 
-                                // Rating
-                                HStack(spacing: 4) {
-                                    Image(systemName: "star.fill")
-                                        .font(.system(size: width * 0.025, weight: .bold))
-                                    
-                                    Text("\(dish.ratingText) (\(dish.ratingCount))")
-                                        .font(.system(size: width * 0.03, weight: .bold))
-                                }
-                                .foregroundColor(Color(hex: "#0B9F63"))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color(hex: "#E9F8F1"))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                Text(dish.finalPriceText(for: nil))
+                                    .font(.title2)
+                                    .fontWeight(.black)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color(hex: "#FFD938"))
+                                    .clipShape(RoundedRectangle(cornerRadius: 4))
                             }
                             
-                            Spacer()
-                            
-                            // Add / Stepper
+                            // Rating
+                            HStack(spacing: 4) {
+                                Image(systemName: "star.fill")
+                                    .font(.caption.weight(.bold))
+                                
+                                Text("\(dish.ratingText) (\(dish.ratingCount))")
+                                    .font(.caption.weight(.bold))
+                            }
+                            .foregroundColor(Color(hex: "#0B9F63"))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Color(hex: "#E9F8F1"))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                        
+                        Spacer()
+                        
+                        // Add / Stepper
+                        VStack {
                             if dish.isCustomizable {
                                 AddButtonView(subtitle: "Customisable") {
                                     onRequestCustomization(dish)
@@ -134,22 +133,25 @@ struct DishDetailSheetView: View {
                                 )
                             }
                         }
-                        
-                        // Description
-                        Text(dish.description)
-                            .font(.system(size: width * 0.038, weight: .medium))
-                            .foregroundColor(Color(hex: "#63666C"))
-                            .lineSpacing(3)
+                        .padding(.top, 4)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 14)
-                    .padding(.bottom, 20)
-                    .background(Color.white)
+                    
+                    // Description
+                    Text(dish.description)
+                        .font(.body)
+                        .foregroundColor(Color(hex: "#63666C"))
+                        .lineSpacing(4)
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 32)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white)
+                .cornerRadius(28, corners: [.topLeft, .topRight])
             }
-            .background(Color(hex: "#EFEFF4"))
-            .clipShape(RoundedRectangle(cornerRadius: 24))
         }
+        .background(Color.white)
+        .ignoresSafeArea()
         .modifier(PresentationStyling())
     }
     
@@ -173,8 +175,8 @@ struct DishDetailSheetView: View {
         func body(content: Content) -> some View {
             if #available(iOS 16.4, *) {
                 content
-                    .presentationBackground(.clear)
-                    .presentationCornerRadius(24)
+                    .presentationBackground(Color.white)
+                    .presentationCornerRadius(32)
             } else {
                 content
             }

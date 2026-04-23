@@ -167,6 +167,7 @@ struct FlashView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject private var cartManager: CartManager
+    @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel = FlashStoreViewModel()
     @StateObject private var cartViewModel = AddToCartViewModel.shared
     @State private var selectedCategory = "All"
@@ -259,153 +260,132 @@ struct FlashView: View {
         ]
     }
 
-    var body: some View {
-        GeometryReader { geo in
-            NavigationStack {
-                ZStack(alignment: .top) {
-                    Color(hex: "#FAFAFA").ignoresSafeArea()
-                    
-                    ScrollView(showsIndicators: false) {
-                        LazyVStack(spacing: 20) {
-                            heroBanner
-                            brandsSection
-                            categoriesSection
-                            bannersSection
-                            flashRestaurantsSection
-                        }
-                        .padding(.bottom, 24)
-                    }
-                    .refreshable { await viewModel.refresh() }
 
-
-                    if let dish = selectedDishForDetail {
-                        SpringBottomSheetOverlay(onDismissed: {
-                            selectedDishForDetail = nil
-                            if let queuedDish = queuedCustomizationDish {
-                                queuedCustomizationDish = nil
-                                if selectedDishForCustomization == nil {
-                                    selectedDishForCustomization = queuedDish
-                                }
-                            }
-                        }) { dismiss in
-                            DishDetailSheetView(
-                                dish: dish,
-                                cartViewModel: cartViewModel,
-                                onClose: dismiss,
-                                onRequestCustomization: { customDish in
-                                    queuedCustomizationDish = customDish
-                                    dismiss()
-                                }
-                            )
-                        }
-                        .zIndex(10)
-                    }
-
-                    if selectedDishForDetail == nil, let dish = selectedDishForCustomization {
-                        SpringBottomSheetOverlay(onDismissed: {
-                            selectedDishForCustomization = nil
-                        }) { dismiss in
-                            CustomisationSheetView(
-                                dish: dish,
-                                cartViewModel: cartViewModel,
-                                onClose: dismiss
-                            )
-                        }
-                        .zIndex(11)
-                    }
-                }
-                .task { await viewModel.loadIfNeeded() }
-                .toolbar(.hidden, for: .navigationBar)
-                .navigationBarBackButtonHidden(true)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    }
-
-    private var heroBanner: some View {
+var body: some View {
+    GeometryReader { geo in
         ZStack(alignment: .top) {
-            LinearGradient(
-                colors: [Color(hex: "#F72437"), Color(hex: "#D41F31")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-                .ignoresSafeArea(.container, edges: .top)
-
-            RadialGradient(
-                colors: [Color.white.opacity(0.18), .clear],
-                center: .topLeading,
-                startRadius: 24,
-                endRadius: 420
-            )
-
-            VStack(spacing: 0) {
-                Color.clear
-                    .frame(height: 60)
-                
-                GeometryReader { geo in
-                    VStack(spacing: 0) {
-                        Color.clear
-                            .frame(height: geo.safeAreaInsets.top)
-                        
-                        HStack {
-                            Button(action: { dismiss() }) {
-                                Image(systemName: "arrow.left")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(width: 50, height: 50)
-                                    .background(Color.black.opacity(0.18))
-                                    .clipShape(Circle())
-                            }
-
-                            Spacer()
-
-                            Button(action: {}) {
-                                Image(systemName: "magnifyingglass")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(width: 50, height: 50)
-                                    .background(Color.black.opacity(0.18))
-                                    .clipShape(Circle())
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-
-                        Spacer(minLength: 0)
-
-                        HStack(alignment: .bottom, spacing: 8) {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("99 store")
-                                    .font(heroTitleFont)
-                                    .foregroundColor(Color.white)
-                                    .shadow(color: .black.opacity(0.25), radius: 0, x: 2, y: 2)
-
-                                Text("Meals at ₹99 + Free Delivery")
-                                    .font(heroSubtitleFont)
-                                    .foregroundColor(Color(hex: "#F72437"))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 10)
-                                    .background(Color.white)
-                                    .clipShape(Capsule())
-                            }
-                            .padding(.leading, 16)
-                            .padding(.bottom, 26)
-
-                            Spacer(minLength: 0)
-
-                            heroFoodStack
-                                .frame(width: horizontalSizeClass == .regular ? 220 : 190, height: horizontalSizeClass == .regular ? 185 : 162)
-                                .padding(.trailing, horizontalSizeClass == .regular ? 20 : 10)
-                                .padding(.bottom, horizontalSizeClass == .regular ? 20 : 12)
-                        }
-                    }
+            Color(hex: "#FAFAFA").ignoresSafeArea()
+            
+            ScrollView(showsIndicators: false) {
+                LazyVStack(spacing: 20) {
+                    heroBanner(safeAreaTop: geo.safeAreaInsets.top) // अपडेटेड बैनर
+                    brandsSection
+                    categoriesSection
+                    bannersSection
+                    flashRestaurantsSection
+                }
+                .padding(.bottom, 24)
+            }
+            .refreshable { await viewModel.refresh() }
+            .ignoresSafeArea(edges: .top)
+        }
+        .task { await viewModel.loadIfNeeded() }
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    // 1. Attach the first sheet
+    .sheet(item: $selectedDishForDetail) { dish in
+        DishDetailSheetView(
+            dish: dish,
+            cartViewModel: cartViewModel,
+            onClose: {
+                selectedDishForDetail = nil
+            },
+            onRequestCustomization: { customDish in
+                selectedDishForDetail = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    selectedDishForCustomization = customDish
                 }
             }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: heroHeight)
-        .clipped()
+        )
+                .presentationDetents([.medium, .large])
     }
+    // 2. Attach the second sheet to an invisible background element
+    .background {
+        Color.clear
+            .sheet(item: $selectedDishForCustomization) { dish in
+                CustomisationSheetView(
+                    dish: dish,
+                    cartViewModel: cartViewModel,
+                    onClose: {
+                        selectedDishForCustomization = nil
+                    }
+                )
+                .presentationDetents([.medium, .large])
+            }
+    }
+}
+
+private func heroBanner(safeAreaTop: CGFloat) -> some View {
+    VStack(spacing: 0) {
+        VStack(spacing: 0) {
+            HStack {
+                Button(action: { 
+                    appState.selectedTab = .home
+                    dismiss() 
+                }) {
+                    Image(systemName: "arrow.left")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.black.opacity(0.2))
+                        .clipShape(Circle())
+                }
+
+                Spacer()
+
+                Button(action: {}) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.black.opacity(0.2))
+                        .clipShape(Circle())
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, safeAreaTop + 8) // Notch padding fixed
+
+            Spacer(minLength: 10)
+
+            HStack(alignment: .bottom) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("99 store")
+                        .font(.system(size: horizontalSizeClass == .regular ? 54 : 42, weight: .black, design: .rounded))
+                        .foregroundColor(.yellow)
+                        .shadow(color: .black.opacity(0.2), radius: 0, x: 2, y: 2)
+
+                    Text("Meals at ₹99 + Free Delivery")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color.cyan.opacity(0.4))
+                        .clipShape(Capsule())
+                }
+                .padding(.leading, 16)
+                .padding(.bottom, 20)
+
+                Spacer()
+                
+                heroFoodStack
+                    .frame(width: 180, height: 150)
+                    .padding(.trailing, 10)
+                    .padding(.bottom, 10)
+            }
+        }
+    }
+    .frame(maxWidth: .infinity)
+    .frame(height: heroHeight + safeAreaTop) // Extended height to cover safe area
+    .background(
+        LinearGradient(
+            colors: [Color(hex: "#00A5FF"), Color(hex: "#007FFF")], // Swiggy Blue Theme
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    )
+}
 
     private var heroFoodStack: some View {
         ZStack(alignment: .trailing) {

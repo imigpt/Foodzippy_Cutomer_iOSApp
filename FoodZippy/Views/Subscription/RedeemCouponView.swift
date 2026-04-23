@@ -37,9 +37,9 @@ struct RedeemCouponView: View {
         .onAppear {
             appState.hideMainTabBar = true // Keeps your custom state synchronized
         }
-        .onDisappear {
-            appState.hideMainTabBar = false
-        }
+        // .onDisappear {
+        //     appState.hideMainTabBar = false
+        // }
     }
 }
 

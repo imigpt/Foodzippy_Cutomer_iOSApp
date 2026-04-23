@@ -27,107 +27,109 @@ struct ProfileFAQView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color.appGrayBg
-                .ignoresSafeArea()
-
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 16) {
-                    Color.clear
-                        .frame(height: 92)
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("How can we help you?")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
-
-                        Text("Find quick answers for common questions")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-
-                        HStack(spacing: 10) {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.gray)
-
-                            TextField("Search FAQs", text: $searchText)
-                                .font(.subheadline)
-                                .textInputAutocapitalization(.never)
-                        }
-                        .padding(12)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .padding(16)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.black.opacity(0.06), lineWidth: 1)
-                    )
-                    .padding(.horizontal, 16)
-
-                    VStack(spacing: 10) {
-                        ForEach(filteredFaqs) { item in
-                            FAQAccordionRow(
-                                item: item,
-                                isExpanded: expandedId == item.id,
-                                onTap: {
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        expandedId = (expandedId == item.id) ? nil : item.id
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    .padding(.horizontal, 16)
-
-                    if filteredFaqs.isEmpty {
-                        VStack(spacing: 8) {
-                            Image(systemName: "questionmark.circle")
-                                .font(.system(size: 28))
-                                .foregroundColor(.gray)
-                            Text("No FAQ found")
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                Color.appGrayBg
+                    .ignoresSafeArea()
+    
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 16) {
+                        Color.clear
+                            .frame(height: 42 + geo.safeAreaInsets.top)
+    
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("How can we help you?")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+    
+                            Text("Find quick answers for common questions")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
-                        }
-                        .padding(.top, 24)
-                    }
-
-                    Spacer(minLength: 30)
-                }
-                .padding(.bottom, 24)
-            }
-
-            VStack {
-                HStack(spacing: 12) {
-                    Button {
-                        appState.hideMainTabBar = false
-                        dismiss()
-                    } label: {
-                        Image(systemName: "arrow.left")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                            .padding(10)
+    
+                            HStack(spacing: 10) {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundColor(.gray)
+    
+                                TextField("Search FAQs", text: $searchText)
+                                    .font(.subheadline)
+                                    .textInputAutocapitalization(.never)
+                            }
+                            .padding(12)
                             .background(Color.white)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.12), radius: 5, x: 0, y: 2)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .padding(16)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                        )
+                        .padding(.horizontal, 16)
+    
+                        VStack(spacing: 10) {
+                            ForEach(filteredFaqs) { item in
+                                FAQAccordionRow(
+                                    item: item,
+                                    isExpanded: expandedId == item.id,
+                                    onTap: {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            expandedId = (expandedId == item.id) ? nil : item.id
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 16)
+    
+                        if filteredFaqs.isEmpty {
+                            VStack(spacing: 8) {
+                                Image(systemName: "questionmark.circle")
+                                    .font(.system(size: 28))
+                                    .foregroundColor(.gray)
+                                Text("No FAQ found")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.top, 24)
+                        }
+    
+                        Spacer(minLength: 30)
                     }
-
-                    Text("FAQ")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.black)
-
+                    .padding(.bottom, 24)
+                }
+                .ignoresSafeArea(edges: .top)
+    
+                VStack {
+                    HStack(spacing: 12) {
+                        Button {
+                            appState.hideMainTabBar = false
+                            dismiss()
+                        } label: {
+                            Image(systemName: "arrow.left")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                                .padding(10)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.12), radius: 5, x: 0, y: 2)
+                        }
+    
+                        Text("FAQ")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.black)
+    
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, geo.safeAreaInsets.top + 8)
+    
                     Spacer()
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 50)
-
-                Spacer()
             }
-            .ignoresSafeArea()
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {

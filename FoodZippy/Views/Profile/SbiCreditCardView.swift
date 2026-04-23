@@ -6,78 +6,75 @@ struct SbiCreditCardView: View {
     @State private var amount: String = ""
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // 1. Top Promotional Banner
-                ZStack(alignment: .topLeading) {
-                    Color.appGreen // App theme green
-                    
-                    // IF YOU HAVE THE IMAGE ASSET, UNCOMMENT THIS:
-                    // Image("sbi_banner")
-                    //     .resizable()
-                    //     .scaledToFill()
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        // Custom Back Button
-                        Button(action: {
-                            appState.hideMainTabBar = false
-                            dismiss()
-                        }) {
-                            Image(systemName: "arrow.left")
-                                .font(.title3)
-                                .fontWeight(.semibold)
+        GeometryReader { geo in
+            ScrollView {
+                VStack(spacing: 0) {
+                    // 1. Top Promotional Banner
+                    ZStack(alignment: .topLeading) {
+                        Color.appGreen // App theme green
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            // Custom Back Button
+                            Button(action: {
+                                appState.hideMainTabBar = false
+                                dismiss()
+                            }) {
+                                Image(systemName: "arrow.left")
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .padding(8)
+                                    .background(Color.white.opacity(0.2))
+                                    .clipShape(Circle())
+                            }
+                            .padding(.top, geo.safeAreaInsets.top + 8)
+                            .padding(.bottom, 4)
+                            
+                            Image(systemName: "creditcard.fill")
+                                .font(.largeTitle)
                                 .foregroundColor(.white)
-                                .padding(8)
-                                .background(Color.white.opacity(0.2))
-                                .clipShape(Circle())
+                            
+                            Text("Earn 10X\nRewards on\nTop Brands*")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            
+                            Text("(Apollo 24*7, Myntra, Cleartrip,\nBookMyShow, Dominos & more)")
+                                .font(.caption)
+                                .foregroundColor(.white)
+                                .padding(.top, 4)
+                            
+                            Spacer()
+                            
+                            Text("*T&Cs Apply")
+                                .font(.system(size: 10))
+                                .foregroundColor(.white.opacity(0.8))
                         }
-                        .padding(.top, 50) // Space for status bar / notch
-                        .padding(.bottom, 4)
-                        
-                        Image(systemName: "creditcard.fill")
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
-                        
-                        Text("Earn 10X\nRewards on\nTop Brands*")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                        
-                        Text("(Apollo 24*7, Myntra, Cleartrip,\nBookMyShow, Dominos & more)")
-                            .font(.caption)
-                            .foregroundColor(.white)
-                            .padding(.top, 4)
-                        
-                        Spacer()
-                        
-                        Text("*T&Cs Apply")
-                            .font(.system(size: 10))
-                            .foregroundColor(.white.opacity(0.8))
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 320) // Slightly taller to accommodate the back button
-                .clipShape(CustomCorner(radius: 20, corners: [.bottomLeft, .bottomRight]))
-                .ignoresSafeArea(.all, edges: .top)
-                
-                VStack(spacing: 24) {
-                    // 2. Offer Card
-                    offerCard
-                        .padding(.top, 8)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 270 + geo.safeAreaInsets.top)
+                    .clipShape(CustomCorner(radius: 20, corners: [.bottomLeft, .bottomRight]))
                     
-                    // 3. Add Money to Zippy Wallet Section
-                    addMoneySection
-                    
-                    // 4. Choose Payment Method Section
-                    paymentMethodSection
+                    VStack(spacing: 24) {
+                        // 2. Offer Card
+                        offerCard
+                            .padding(.top, 8)
+                        
+                        // 3. Add Money to Zippy Wallet Section
+                        addMoneySection
+                        
+                        // 4. Choose Payment Method Section
+                        paymentMethodSection
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
             }
+            .background(Color.appGrayBg.opacity(0.55).ignoresSafeArea())
+            .ignoresSafeArea(edges: .top)
         }
-        .background(Color.appGrayBg.opacity(0.55).ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar) // Hides the default top navigation bar
         .onAppear {
             appState.hideMainTabBar = true

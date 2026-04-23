@@ -21,91 +21,92 @@ struct StudentRewardsView: View {
     ]
     
     var body: some View {
-        ZStack(alignment: .top) {
-            Color(UIColor.systemGroupedBackground)
-                .ignoresSafeArea()
-            
-            // Root scrollable view
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    
-                    // 1. Student Cashback Image Banner
-                    Image("student_cashback")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 260) // Adjust the height as needed for your banner
-                        .clipped()
-                    
-                    VStack(alignment: .leading, spacing: 24) {
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                Color(UIColor.systemGroupedBackground)
+                    .ignoresSafeArea()
+                
+                // Root scrollable view
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 24) {
                         
-                        // 2. VERIFY YOUR STUDENT EMAIL
-                        StudentVerificationSection(
-                            emailAddress: $emailAddress,
-                            cardTextGray: Color.gray,
-                            grayButtonBG: Color.appGrayBg // Ensure this color exists in your assets/extensions
-                        )
+                        // 1. Student Cashback Image Banner
+                        Image("student_cashback")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 220 + geo.safeAreaInsets.top) // Adjust height to include notch
+                            .clipped()
                         
-                        // 3. BENEFITS
-                        BenefitsSection(
-                            benefits: benefits,
-                            oneOrange: Color.appAccent,
-                            cardTextGray: Color.gray
-                        )
-                        
-                        // 4. HOW IT WORKS
-                        StudentHowItWorksSection(
-                            steps: howItWorksSteps,
-                            themePurple: Color.appPrimary, // Ensure this color exists in your assets/extensions
-                            cardTextGray: Color.gray
-                        )
-                        
-                        // FAQ link
-                        Button(action: {
-                            // FAQ action
-                        }) {
-                            HStack(spacing: 4) {
-                                Text("Frequently Asked Questions")
-                                    .font(.system(size: 15, weight: .bold))
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14, weight: .bold))
+                        VStack(alignment: .leading, spacing: 24) {
+                            
+                            // 2. VERIFY YOUR STUDENT EMAIL
+                            StudentVerificationSection(
+                                emailAddress: $emailAddress,
+                                cardTextGray: Color.gray,
+                                grayButtonBG: Color.appGrayBg // Ensure this color exists in your assets/extensions
+                            )
+                            
+                            // 3. BENEFITS
+                            BenefitsSection(
+                                benefits: benefits,
+                                oneOrange: Color.appAccent,
+                                cardTextGray: Color.gray
+                            )
+                            
+                            // 4. HOW IT WORKS
+                            StudentHowItWorksSection(
+                                steps: howItWorksSteps,
+                                themePurple: Color.appPrimary, // Ensure this color exists in your assets/extensions
+                                cardTextGray: Color.gray
+                            )
+                            
+                            // FAQ link
+                            Button(action: {
+                                // FAQ action
+                            }) {
+                                HStack(spacing: 4) {
+                                    Text("Frequently Asked Questions")
+                                        .font(.system(size: 15, weight: .bold))
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 14, weight: .bold))
+                                }
+                                .foregroundColor(Color.appPrimary)
                             }
-                            .foregroundColor(Color.appPrimary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 16)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 16)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 40) // Bottom padding for content
+                    }
+                }
+                .ignoresSafeArea(edges: .top)
+                
+                // Fixed Back Button on Top
+                VStack {
+                    HStack {
+                        Button(action: {
+                            appState.hideMainTabBar = false
+                            dismiss()
+                        }) {
+                            Image(systemName: "arrow.left")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary) // Changed to primary (black/dark) for contrast
+                                .padding(10)
+                                .background(Color.white) // Solid white background so it's always visible over the image
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 2)
+                        }
+                        .padding(.top, geo.safeAreaInsets.top + 8)
+                        
+                        Spacer()
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 40) // Bottom padding for content
-                }
-            }
-           // .ignoresSafeArea(edges: .top) // Allows the image banner to reach the very top of the screen
-            
-            // Fixed Back Button on Top
-            VStack {
-                HStack {
-                    Button(action: {
-                        appState.hideMainTabBar = false
-                        dismiss()
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary) // Changed to primary (black/dark) for contrast
-                            .padding(10)
-                            .background(Color.white) // Solid white background so it's always visible over the image
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 2)
-                    }
-                    .padding(.top, 50) // Space for status bar / notch
                     
                     Spacer()
                 }
-                .padding(.horizontal, 16)
-                
-                Spacer()
             }
-            .ignoresSafeArea()
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {

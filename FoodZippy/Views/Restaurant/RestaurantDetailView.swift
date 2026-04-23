@@ -38,125 +38,111 @@ struct RestaurantDetailView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    // MARK: - Hero Header
-                    RestaurantHeroHeader(restaurant: viewModel.restaurant ?? restaurant)
-
-                    // MARK: - Info Row
-                    RestaurantInfoRow(restaurant: viewModel.restaurant ?? restaurant)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-
-                    Divider()
-
-                    // MARK: - Search Bar
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(Color(hex: "#999999"))
-                        TextField("Search in menu", text: $searchText)
-                            .font(.system(size: 14))
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(Color(hex: "#F5F5F5"))
-                    .cornerRadius(8)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-
-                    // MARK: - Tab Selector
-                    HStack(spacing: 0) {
-                        ForEach(DetailTab.allCases, id: \.self) { tab in
-                            let isSelected = selectedTab == tab
-                            Button {
-                                selectedTab = tab
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Text(tab.rawValue)
-                                        .font(.system(size: 14, weight: isSelected ? .bold : .medium))
-                                        .foregroundColor(isSelected ? Color(hex: "#E23744") : Color(hex: "#666666"))
-                                        .padding(.vertical, 10)
-
-                                    Rectangle()
-                                        .fill(isSelected ? Color(hex: "#E23744") : Color.clear)
-                                        .frame(height: 2)
-                                }
-                                .frame(maxWidth: .infinity)
-                            }
-                        }
-                    }
-                    .background(Color.white)
-                    .overlay(
-                        Rectangle().frame(height: 1).foregroundColor(Color.gray.opacity(0.2)),
-                        alignment: .bottom
-                    )
-
-                    // MARK: - Content
-                    switch selectedTab {
-                    case .menu:
-                        MenuTabContent(
-                            categories: displayedCategories,
-                            isLoading: viewModel.isLoading,
-                            vegOnly: $viewModel.vegOnly,
-                            cartManager: cartManager,
-                            onAddItem: { item in
-                                if item.hasCustomization {
-                                    selectedMenuItem = item
-                                    showAddonSheet = true
-                                } else {
-                                    addToCart(item: item, addonId: "", addonTitle: "", addonPrice: "")
-                                }
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // MARK: - Hero Header
+                        RestaurantHeroHeader(
+                            restaurant: viewModel.restaurant ?? restaurant,
+                            safeAreaTop: geo.safeAreaInsets.top,
+                            isFavourite: viewModel.isFavourite,
+                            onBack: { dismiss() },
+                            onFavourite: {
+                                Task { await viewModel.toggleFavourite() }
                             }
                         )
 
-                    case .gallery:
-                        GalleryTabContent(images: viewModel.gallery)
-                            .padding(.top, 8)
+                        // MARK: - Info Row
+                        RestaurantInfoRow(restaurant: viewModel.restaurant ?? restaurant)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
 
-                    case .reviews:
-                        ReviewsTabContent(reviews: viewModel.reviews)
-                            .padding(.top, 8)
+                        Divider()
+
+                        // MARK: - Search Bar
+                        HStack(spacing: 10) {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(Color(hex: "#999999"))
+                            TextField("Search in menu", text: $searchText)
+                                .font(.system(size: 14))
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(Color(hex: "#F5F5F5"))
+                        .cornerRadius(8)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+
+                        // MARK: - Tab Selector
+                        HStack(spacing: 0) {
+                            ForEach(DetailTab.allCases, id: \.self) { tab in
+                                let isSelected = selectedTab == tab
+                                Button {
+                                    selectedTab = tab
+                                } label: {
+                                    VStack(spacing: 4) {
+                                        Text(tab.rawValue)
+                                            .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+                                            .foregroundColor(isSelected ? Color(hex: "#E23744") : Color(hex: "#666666"))
+                                            .padding(.vertical, 10)
+
+                                        Rectangle()
+                                            .fill(isSelected ? Color(hex: "#E23744") : Color.clear)
+                                            .frame(height: 2)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                }
+                            }
+                        }
+                        .background(Color.white)
+                        .overlay(
+                            Rectangle().frame(height: 1).foregroundColor(Color.gray.opacity(0.2)),
+                            alignment: .bottom
+                        )
+
+                        // MARK: - Content
+                        switch selectedTab {
+                        case .menu:
+                            MenuTabContent(
+                                categories: displayedCategories,
+                                isLoading: viewModel.isLoading,
+                                vegOnly: $viewModel.vegOnly,
+                                cartManager: cartManager,
+                                onAddItem: { item in
+                                    if item.hasCustomization {
+                                        selectedMenuItem = item
+                                        showAddonSheet = true
+                                    } else {
+                                        addToCart(item: item, addonId: "", addonTitle: "", addonPrice: "")
+                                    }
+                                }
+                            )
+
+                        case .gallery:
+                            GalleryTabContent(images: viewModel.gallery)
+                                .padding(.top, 8)
+
+                        case .reviews:
+                            ReviewsTabContent(reviews: viewModel.reviews)
+                                .padding(.top, 8)
+                        }
                     }
+                    .padding(.bottom, cartManager.cartItems.isEmpty ? 0 : 80)
                 }
-                .padding(.bottom, cartManager.cartItems.isEmpty ? 0 : 80)
-            }
+                .ignoresSafeArea(edges: .top)
 
-            // MARK: - Floating View Cart
-            if !cartManager.cartItems.isEmpty {
-                FloatingCartBar(cartManager: cartManager) {
-                    showCart = true
-                }
-                .padding(.horizontal, 10)
-                .padding(.bottom, 10)
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.white)
-                }
-            }
-            ToolbarItem(placement: .principal) {
-                Text(viewModel.restaurant?.restTitle ?? restaurant.restTitle ?? "")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
-                    .lineLimit(1)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    Task { await viewModel.toggleFavourite() }
-                } label: {
-                    Image(systemName: viewModel.isFavourite ? "heart.fill" : "heart")
-                        .foregroundColor(.white)
+                // MARK: - Floating View Cart
+                if !cartManager.cartItems.isEmpty {
+                    FloatingCartBar(cartManager: cartManager) {
+                        showCart = true
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 10)
                 }
             }
         }
-        .toolbarBackground(Color(hex: "#E23744"), for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
         .task {
@@ -200,6 +186,10 @@ struct RestaurantDetailView: View {
 // MARK: - Hero Header
 private struct RestaurantHeroHeader: View {
     let restaurant: Restaurant
+    let safeAreaTop: CGFloat
+    let isFavourite: Bool
+    let onBack: () -> Void
+    let onFavourite: () -> Void
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -209,16 +199,53 @@ private struct RestaurantHeroHeader: View {
                 Color(hex: "#E23744").opacity(0.3)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 200)
+            .frame(height: 200 + safeAreaTop)
             .clipped()
 
             // Gradient overlay
             LinearGradient(
-                colors: [.clear, .black.opacity(0.55)],
+                colors: [.clear, .black.opacity(0.6)],
                 startPoint: .center,
                 endPoint: .bottom
             )
-            .frame(height: 200)
+            .frame(height: 200 + safeAreaTop)
+
+            // Custom Navigation Bar Overlay
+            VStack(spacing: 0) {
+                HStack {
+                    Button(action: onBack) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+
+                    Spacer()
+
+                    Text(restaurant.restTitle ?? "")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .opacity(0) // Hide for now, can show when scrolled
+
+                    Spacer()
+
+                    Button(action: onFavourite) {
+                        Image(systemName: isFavourite ? "heart.fill" : "heart")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, safeAreaTop + 8)
+
+                Spacer()
+            }
 
             HStack {
                 // Restaurant logo
@@ -252,7 +279,7 @@ private struct RestaurantHeroHeader: View {
                 Spacer()
             }
         }
-        .frame(height: 200)
+        .frame(height: 200 + safeAreaTop)
     }
 }
 

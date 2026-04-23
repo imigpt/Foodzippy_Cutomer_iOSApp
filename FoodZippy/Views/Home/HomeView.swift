@@ -24,6 +24,7 @@ extension Color {
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var cartManager: CartManager
+    @EnvironmentObject var appState: AppState
     @State private var selectedRestaurant: Restaurant?
     @State private var navigateToRestaurant = false
     @State private var navigateToProfile = false
@@ -38,11 +39,11 @@ struct HomeView: View {
     @StateObject private var cartViewModel = AddToCartViewModel.shared
     @State private var selectedTopMode: HomeTopMode = .food
     private let topAnchorId = "home_top_anchor"
-
+    
     private var topModeTheme: HomeTopModeTheme {
         selectedTopMode.theme
     }
-
+    
     private var topPromoContent: HomeTopPromoContent {
         selectedTopMode.promo
     }
@@ -75,7 +76,7 @@ struct HomeView: View {
                 )
             }
         }
-
+        
         switch selectedTopMode {
         case .food:
             return [
@@ -103,7 +104,7 @@ struct HomeView: View {
             ]
         }
     }
-
+    
     private var horizontalOfferPrefix: String {
         switch selectedTopMode {
         case .food: return "AT"
@@ -181,20 +182,24 @@ struct HomeView: View {
     }
     
     private func showDishDetail(for product: Product) {
+        let isCustomizable = true // Make products customizable for demo purposes
         let dish = AddToCartDish(
             id: product.id.uuidString,
             restaurantId: UUID().uuidString,
             restaurantName: product.restaurant,
             title: product.name,
             imageURL: product.image,
-            description: "",
+            description: "Delicious \(product.name) prepared fresh with high-quality ingredients.",
             basePrice: Double(product.price),
             oldPrice: Double(product.oldPrice ?? product.price),
             rating: product.rating,
             ratingCount: product.ratingCount,
             isVeg: product.isVeg,
-            isCustomizable: false,
-            customisationOptions: []
+            isCustomizable: isCustomizable,
+            customisationOptions: isCustomizable ? [
+                DishCustomisationOption(id: "half", title: "Half", additionalPrice: 0.0, isVeg: product.isVeg),
+                DishCustomisationOption(id: "full", title: "Full", additionalPrice: 40.0, isVeg: product.isVeg)
+            ] : []
         )
         selectedDishForDetail = dish
     }
@@ -738,6 +743,7 @@ struct HomeView: View {
                     }
                     .id(scrollResetToken)
                     .background(Color.hBg)
+                    .ignoresSafeArea(edges: .top)
                     .onAppear {
                         scrollResetToken = UUID()
                         DispatchQueue.main.async {
@@ -759,6 +765,7 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .task { await viewModel.loadHomeData() }
         .refreshable { await viewModel.refresh() }
+        .onAppear { appState.hideMainTabBar = false }
         .navigationDestination(isPresented: $navigateToRestaurant) {
             if let r = selectedRestaurant {
                 if selectedTopMode == .takeAway || selectedTopMode == .driveThru {
@@ -807,7 +814,7 @@ struct HomeView: View {
                     }
                 }
             )
-            .presentationDetents([.fraction(0.92), .large])
+            .presentationDetents([.medium, .large])
         }
         // 3. Attach the second sheet to an invisible background element to prevent modifier conflicts
         .background {
@@ -820,7 +827,7 @@ struct HomeView: View {
                             selectedDishForCustomization = nil
                         }
                     )
-                    .presentationDetents([.fraction(0.95), .large])
+                    .presentationDetents([.medium, .large])
                 }
         }
     }
@@ -844,7 +851,7 @@ struct HomeView: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                    .ignoresSafeArea(.container, edges: .top)
+                .ignoresSafeArea(.container, edges: .top)
                 
                 VStack(spacing: 0) {
                     Color.clear
@@ -956,9 +963,9 @@ struct HomeView: View {
         let selectedMode: HomeTopMode
         let theme: HomeTopModeTheme
         let onSelect: (HomeTopMode) -> Void
-
+        
         @Namespace private var animation
-
+        
         private let inactiveColor = Color.white.opacity(0.04)
         private let categories: [HomeTopMode] = [.food, .takeAway, .dineIn, .driveThru]
         
@@ -1224,7 +1231,7 @@ struct HomeView: View {
     
     private struct BannerView: View {
         let content: HomeTopPromoContent
-
+        
         var body: some View {
             HStack(spacing: 0) {
                 HStack(spacing: 2) {
@@ -1267,7 +1274,7 @@ struct HomeView: View {
     
     private struct OfferTextRow: View {
         let content: HomeTopPromoContent
-
+        
         var body: some View {
             HStack(spacing: 8) {
                 Rectangle()
@@ -1289,7 +1296,7 @@ struct HomeView: View {
     
     private struct OfferCardsRow: View {
         let content: HomeTopPromoContent
-
+        
         var body: some View {
             HStack(spacing: 8) {
                 // Card 1 – ₹150 OFF
@@ -1380,7 +1387,7 @@ struct HomeView: View {
     
     private struct LargeOrderCard: View {
         let title: String
-
+        
         var body: some View {
             ZStack(alignment: .top) {
                 RoundedRectangle(cornerRadius: 14)
@@ -1755,7 +1762,7 @@ struct HomeView: View {
                     )
                 }
             }
-
+            
             switch selectedMode {
             case .food:
                 return [
@@ -1811,7 +1818,7 @@ struct HomeView: View {
                     )
                 }
             }
-
+            
             switch selectedMode {
             case .food:
                 return [
@@ -2189,7 +2196,7 @@ struct HomeView: View {
                 }
             }
         }
-
+        
         private var categorySectionTitle: String {
             switch selectedMode {
             case .food: return "What's on your mind?"
@@ -2198,7 +2205,7 @@ struct HomeView: View {
             case .driveThru: return "What's hot on the drive lane?"
             }
         }
-
+        
         private var topRestaurantsTitle: String {
             let count = sourceRestaurants.isEmpty ? 1743 : sourceRestaurants.count
             switch selectedMode {
@@ -2414,7 +2421,7 @@ struct HomeView: View {
                 }
             }
         }
-
+        
         private var moreTitle: String {
             switch selectedMode {
             case .food: return "More on FoodZippy"
@@ -2473,7 +2480,7 @@ struct HomeView: View {
                 }
             }
         }
-
+        
         private var title: String {
             switch selectedMode {
             case .food: return "The Pankh Restaurant's and Cafe & Banquet Hall"
@@ -2482,7 +2489,7 @@ struct HomeView: View {
             case .driveThru: return "Fast Lane Drive-Thru Spots"
             }
         }
-
+        
         private var subtitle: String {
             switch selectedMode {
             case .food: return "3.12 mins"
@@ -3080,7 +3087,7 @@ struct HomeView: View {
                 }
             }
         }
-
+        
         private var title: String {
             switch selectedMode {
             case .food: return "delicious yard"
@@ -3089,7 +3096,7 @@ struct HomeView: View {
             case .driveThru: return "turbo lane"
             }
         }
-
+        
         private var subtitle: String {
             switch selectedMode {
             case .food: return "₹ 2000 for two"
@@ -3311,12 +3318,12 @@ struct HomeView: View {
         }
     }
     
-    #if DEBUG
+#if DEBUG
     struct HomeView_Previews: PreviewProvider {
         static var previews: some View {
             HomeView()
                 .environmentObject(CartManager.shared)
         }
     }
-    #endif
+#endif
 }

@@ -128,9 +128,9 @@ struct BuyOneView: View {
         .onAppear {
             appState.hideMainTabBar = true
         }
-        .onDisappear {
-            appState.hideMainTabBar = false
-        }
+        // .onDisappear {
+        //     appState.hideMainTabBar = false
+        // }
     }
 }
 

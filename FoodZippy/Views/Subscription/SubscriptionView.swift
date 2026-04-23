@@ -6,69 +6,71 @@ struct SubscriptionView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Header + Search Bar overlapping
-                ZStack(alignment: .bottom) {
-                    headerBackground
-                    headerContent
-                }
-                .zIndex(1) // Ensures search bar shadow overlaps the scrollview
-                
-                // Main Scrollable Content
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 24) {
-                        BannerSliderView()
-                            .padding(.horizontal, 16)
-                            .padding(.top, 40) // Space for floating search bar
-                        
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("My Subscriptions")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.black)
-                                .padding(.horizontal, 16)
-                            
-                            SubscriptionCard()
-                                .padding(.horizontal, 16)
-                            
-                            Text("Subscription Restaurants")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.black)
-                                .padding(.horizontal, 16)
-                                .padding(.top, 8)
-                            
-                            // 1st Restaurant Card (from video)
-                            SubscriptionRestaurantCard(
-                                imageName: "restaurant_interior_mock", // Replace with your asset
-                                distance: "12.12 Kms",
-                                name: "delicious yard",
-                                isVeg: false,
-                                rating: "4",
-                                reviews: "10",
-                                priceInfo: "₹2000 for two",
-                                location: "jaipur, rajasthan"
-                            )
-                            .padding(.horizontal, 16)
-                            
-                            // 2nd Restaurant Card (from video)
-                            SubscriptionRestaurantCard(
-                                imageName: "wtp_exterior_mock", // Replace with your asset
-                                distance: "5.75 Kms",
-                                name: "World Trade Park",
-                                isVeg: true,
-                                rating: "4",
-                                reviews: "10",
-                                priceInfo: "₹2000 for two",
-                                location: "jaipur, rajasthan"
-                            )
-                            .padding(.horizontal, 16)
-                        }
+            GeometryReader { geo in
+                VStack(spacing: 0) {
+                    // Header + Search Bar overlapping
+                    ZStack(alignment: .bottom) {
+                        headerBackground(safeAreaTop: geo.safeAreaInsets.top)
+                        headerContent(safeAreaTop: geo.safeAreaInsets.top)
                     }
-                    .padding(.bottom, 80)
+                    .zIndex(1) // Ensures search bar shadow overlaps the scrollview
+                    
+                    // Main Scrollable Content
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 24) {
+                            BannerSliderView()
+                                .padding(.horizontal, 16)
+                                .padding(.top, 40) // Space for floating search bar
+                            
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("My Subscriptions")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 16)
+                                
+                                SubscriptionCard()
+                                    .padding(.horizontal, 16)
+                                
+                                Text("Subscription Restaurants")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 16)
+                                    .padding(.top, 8)
+                                
+                                // 1st Restaurant Card (from video)
+                                SubscriptionRestaurantCard(
+                                    imageName: "restaurant_interior_mock", // Replace with your asset
+                                    distance: "12.12 Kms",
+                                    name: "delicious yard",
+                                    isVeg: false,
+                                    rating: "4",
+                                    reviews: "10",
+                                    priceInfo: "₹2000 for two",
+                                    location: "jaipur, rajasthan"
+                                )
+                                .padding(.horizontal, 16)
+                                
+                                // 2nd Restaurant Card (from video)
+                                SubscriptionRestaurantCard(
+                                    imageName: "wtp_exterior_mock", // Replace with your asset
+                                    distance: "5.75 Kms",
+                                    name: "World Trade Park",
+                                    isVeg: true,
+                                    rating: "4",
+                                    reviews: "10",
+                                    priceInfo: "₹2000 for two",
+                                    location: "jaipur, rajasthan"
+                                )
+                                .padding(.horizontal, 16)
+                            }
+                        }
+                        .padding(.bottom, 80)
+                    }
+                    .background(Color(hex: "#F7F7F7"))
                 }
-                .background(Color(hex: "#F7F7F7"))
+                .navigationBarHidden(true)
+                .ignoresSafeArea(edges: .top)
             }
-            .navigationBarHidden(true)
-            .ignoresSafeArea(edges: .top)
         }
         .onAppear {
             appState.hideMainTabBar = false
@@ -76,16 +78,16 @@ struct SubscriptionView: View {
     }
     
     // MARK: - Header Components
-    private var headerBackground: some View {
+    private func headerBackground(safeAreaTop: CGFloat) -> some View {
         LinearGradient(
             colors: [Color(hex: "#8E8CE6"), Color(hex: "#B0AFFF")],
             startPoint: .leading,
             endPoint: .trailing
         )
-        .frame(height: 140) // Includes safe area
+        .frame(height: 96 + safeAreaTop)
     }
     
-    private var headerContent: some View {
+    private func headerContent(safeAreaTop: CGFloat) -> some View {
         VStack(spacing: 0) {
             Spacer()
             
@@ -115,15 +117,12 @@ struct SubscriptionView: View {
 
                 Spacer()
 
-                // Matched to target UI (Black icon)
-                Image(systemName: "person.circle")
-                    .font(.system(size: 28, weight: .medium))
-                    .foregroundColor(.black)
             }
             .padding(.horizontal, 16)
+            .padding(.top, safeAreaTop + 8)
             .padding(.bottom, 36) // Space above the search bar
         }
-        .frame(height: 140)
+        .frame(height: 96 + safeAreaTop)
         .overlay(alignment: .bottom) {
             SearchBarView()
                 .padding(.horizontal, 16)
@@ -152,13 +151,20 @@ struct SearchBarView: View {
     }
 }
 
-// MARK: - Auto-Scrolling Banner Carousel (Original UI Restored)
+// MARK: - Auto-Scrolling Banner Carousel (Original UI Restored
+
+import SwiftUI
+
+import SwiftUI
+
 struct BannerSliderView: View {
-    @State private var currentIndex = 0
+    @State private var currentIndex = 76 
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging = false
 
-    private let banners = 3
+    private let actualBannersCount = 3
+    private let fakeBannersCount = 150 
+    
     private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -169,23 +175,31 @@ struct BannerSliderView: View {
             let step = cardWidth + cardSpacing
             let baseOffset = (width - cardWidth) / 2
 
-            HStack(spacing: cardSpacing) {
-                ForEach(0..<banners, id: \.self) { index in
-                    let relative = abs((CGFloat(index) - CGFloat(currentIndex)) + (dragOffset / step))
-                    let scale = max(0.92, 1 - (relative * 0.08))
+            ZStack {
+                Color.black.opacity(0.001) 
+                    .ignoresSafeArea()
+                
+                HStack(spacing: cardSpacing) {
+                    ForEach(0..<fakeBannersCount, id: \.self) { index in
+                        let relative = abs((CGFloat(index) - CGFloat(currentIndex)) + (dragOffset / step))
+                        let scale = max(0.92, 1 - (relative * 0.08))
 
-                    BannerItemView()
-                        .frame(width: cardWidth)
-                        .scaleEffect(scale)
-                        .animation(.easeOut(duration: 0.2), value: scale)
-                        .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+                        let realIndex = index % actualBannersCount
+
+                        BannerItemView() 
+                            .frame(width: cardWidth)
+                            .scaleEffect(scale)
+                            .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+                    }
                 }
+                .offset(x: baseOffset - (CGFloat(currentIndex) * step) + dragOffset)
             }
-            .offset(x: baseOffset - (CGFloat(currentIndex) * step) + dragOffset)
-            // CRITICAL FIX: Makes the entire area swipeable, not just the visible cards
             .contentShape(Rectangle()) 
-            .gesture(
-                DragGesture(minimumDistance: 15) // Prevents conflict with vertical ScrollView
+            
+            // 🛑 CRITICAL FIX: Changed from .gesture to .highPriorityGesture 🛑
+            // This stops the middle banner from swallowing your swipe!
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 15) 
                     .onChanged { value in
                         isDragging = true
                         dragOffset = value.translation.width
@@ -196,9 +210,9 @@ struct BannerSliderView: View {
                         var nextIndex: Int = currentIndex
 
                         if value.translation.width < -threshold || predicted < -threshold {
-                            nextIndex = min(currentIndex + 1, banners - 1)
+                            nextIndex = currentIndex + 1
                         } else if value.translation.width > threshold || predicted > threshold {
-                            nextIndex = max(currentIndex - 1, 0)
+                            nextIndex = currentIndex - 1
                         }
 
                         withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
@@ -206,18 +220,17 @@ struct BannerSliderView: View {
                             dragOffset = 0
                         }
 
-                        // Delay resetting isDragging to ensure timer doesn't fire immediately
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
                             isDragging = false
                         }
                     }
             )
         }
-        .frame(height: 380) // Restored your original height
+        .frame(height: 380) 
         .onReceive(timer) { _ in
-            guard !isDragging else { return } // Pauses auto-scroll while user is interacting
+            guard !isDragging else { return } 
             withAnimation(.spring(response: 0.42, dampingFraction: 0.86)) {
-                currentIndex = (currentIndex + 1) % banners
+                currentIndex += 1 
             }
         }
     }

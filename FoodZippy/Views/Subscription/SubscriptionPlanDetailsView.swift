@@ -84,166 +84,167 @@ struct SubscriptionPlanDetailsView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Background
-            bgColor.ignoresSafeArea()
-            
-            // Main Content
-            ScrollView {
-                VStack(spacing: 0) {
-                    // 1. Header Image & Navigation
-                    ZStack(alignment: .top) {
-                        Image("burger") // Placeholder image, replace with actual asset
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.3)
-                            .clipped()
-                        
-                        // Navigation overlay
-                        HStack {
-                            Button(action: {
-                                dismiss()
-                            }) {
-                                Circle()
-                                    .fill(Color.black.opacity(0.4))
-                                    .frame(width: 40, height: 40)
-                                    .overlay(
-                                        Image(systemName: "arrow.left")
-                                            .foregroundColor(.white)
-                                    )
-                            }
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                // Background
+                bgColor.ignoresSafeArea()
+                
+                // Main Content
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // 1. Header Image & Navigation
+                        ZStack(alignment: .top) {
+                            Image("burger") // Placeholder image, replace with actual asset
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geo.size.width, height: geo.size.height * 0.3 + geo.safeAreaInsets.top)
+                                .clipped()
                             
-                            Spacer()
-                            
-                            // Top-Right Badge
-                            Text("7 Days Plan")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(Capsule().fill(badgeGreen))
-                        }
-                        .padding(.horizontal, 16)
-                        // Adjusting for safe area manually since image ignores it
-                        .padding(.top, 44)
-                    }
-                    
-                    // 2. Floating Info Card
-                    FloatingInfoCard(textGreen: textGreen)
-                        .offset(y: -40)
-                        .padding(.horizontal, 16)
-                        .zIndex(1) // Ensure it overlaps image
-                        
-                    
-                    // Content below floating card (Negative spacing compensates for the offset)
-                    VStack(alignment: .leading, spacing: 24) {
-                        // 3. Day Selection (Horizontal Scroll)
-                        DaySelector(selectedDay: $selectedDay, redAccent: redAccent)
-                        
-                        // 4. Meal List Sections
-                        VStack(spacing: 24) {
-                            if let currentDay = currentDayMeals {
-                                MealSectionView(
-                                    title: "🌅 Breakfast",
-                                    mealLabel: "breakfast",
-                                    mealName: currentDay.breakfast.first?.name ?? "Hotel",
-                                    price: String(format: "₹%.2f", currentDay.breakfast.first?.price ?? 0),
-                                    redAccent: redAccent,
-                                    isSelected: selectedMeals[selectedDay]?.contains("breakfast") ?? false,
-                                    onToggle: { toggleMeal("breakfast") }
-                                )
-                                MealSectionView(
-                                    title: "☀️ Lunch",
-                                    mealLabel: "lunch",
-                                    mealName: currentDay.lunch.first?.name ?? "Hotel",
-                                    price: String(format: "₹%.2f", currentDay.lunch.first?.price ?? 0),
-                                    redAccent: redAccent,
-                                    isSelected: selectedMeals[selectedDay]?.contains("lunch") ?? false,
-                                    onToggle: { toggleMeal("lunch") }
-                                )
-                                MealSectionView(
-                                    title: "🌙 Dinner",
-                                    mealLabel: "dinner",
-                                    mealName: currentDay.dinner.first?.name ?? "Hotel",
-                                    price: String(format: "₹%.2f", currentDay.dinner.first?.price ?? 0),
-                                    redAccent: redAccent,
-                                    isSelected: selectedMeals[selectedDay]?.contains("dinner") ?? false,
-                                    onToggle: { toggleMeal("dinner") }
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        
-                        // Extra bottom padding for the sticky bar
-                        Spacer().frame(height: 100)
-                    }
-                    .offset(y: -20) // Snug up the content
-                }
-            }
-            .ignoresSafeArea(.all, edges: .top)
-            
-            // 5. Sticky Bottom Bar
-            BottomActionBar(badgeGreen: badgeGreen, totalAmount: totalAmount, onBuyTapped: { showDatePicker = true })
-            
-            // Calendar Dialog Box - Overlaid on entire view
-            if showDatePicker {
-                ZStack {
-                    // Dimmed background
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            showDatePicker = false
-                        }
-                    
-                    // Dialog popup
-                    VStack(spacing: 16) {
-                        Text("Select Start Date")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.black)
-                            .padding(.top, 16)
-                        
-                        DatePicker(
-                            "Start Date",
-                            selection: $selectedDate,
-                            in: Date()...,
-                            displayedComponents: .date
-                        )
-                        .datePickerStyle(.graphical)
-                        .padding()
-                        
-                        HStack(spacing: 12) {
-                            Button {
-                                showDatePicker = false
-                            } label: {
-                                Text("Cancel")
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundColor(.black)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
-                                    .background(Color.gray.opacity(0.1))
-                                    .cornerRadius(8)
-                            }
-                            
-                            Button {
-                                // Handle purchase with selected date
-                                showDatePicker = false
-                            } label: {
-                                Text("Confirm")
-                                    .font(.system(size: 16, weight: .semibold))
+                            // Navigation overlay
+                            HStack {
+                                Button(action: {
+                                    dismiss()
+                                }) {
+                                    Circle()
+                                        .fill(Color.black.opacity(0.4))
+                                        .frame(width: 40, height: 40)
+                                        .overlay(
+                                            Image(systemName: "arrow.left")
+                                                .foregroundColor(.white)
+                                        )
+                                }
+                                
+                                Spacer()
+                                
+                                // Top-Right Badge
+                                Text("7 Days Plan")
+                                    .font(.system(size: 14, weight: .semibold))
                                     .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
-                                    .background(Color(hex: "#158C31"))
-                                    .cornerRadius(8)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(Capsule().fill(badgeGreen))
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.top, geo.safeAreaInsets.top + 8)
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom, 16)
+                        
+                        // 2. Floating Info Card
+                        FloatingInfoCard(textGreen: textGreen)
+                            .offset(y: -40)
+                            .padding(.horizontal, 16)
+                            .zIndex(1) // Ensure it overlaps image
+                            
+                        
+                        // Content below floating card (Negative spacing compensates for the offset)
+                        VStack(alignment: .leading, spacing: 24) {
+                            // 3. Day Selection (Horizontal Scroll)
+                            DaySelector(selectedDay: $selectedDay, redAccent: redAccent)
+                            
+                            // 4. Meal List Sections
+                            VStack(spacing: 24) {
+                                if let currentDay = currentDayMeals {
+                                    MealSectionView(
+                                        title: "🌅 Breakfast",
+                                        mealLabel: "breakfast",
+                                        mealName: currentDay.breakfast.first?.name ?? "Hotel",
+                                        price: String(format: "₹%.2f", currentDay.breakfast.first?.price ?? 0),
+                                        redAccent: redAccent,
+                                        isSelected: selectedMeals[selectedDay]?.contains("breakfast") ?? false,
+                                        onToggle: { toggleMeal("breakfast") }
+                                    )
+                                    MealSectionView(
+                                        title: "☀️ Lunch",
+                                        mealLabel: "lunch",
+                                        mealName: currentDay.lunch.first?.name ?? "Hotel",
+                                        price: String(format: "₹%.2f", currentDay.lunch.first?.price ?? 0),
+                                        redAccent: redAccent,
+                                        isSelected: selectedMeals[selectedDay]?.contains("lunch") ?? false,
+                                        onToggle: { toggleMeal("lunch") }
+                                    )
+                                    MealSectionView(
+                                        title: "🌙 Dinner",
+                                        mealLabel: "dinner",
+                                        mealName: currentDay.dinner.first?.name ?? "Hotel",
+                                        price: String(format: "₹%.2f", currentDay.dinner.first?.price ?? 0),
+                                        redAccent: redAccent,
+                                        isSelected: selectedMeals[selectedDay]?.contains("dinner") ?? false,
+                                        onToggle: { toggleMeal("dinner") }
+                                    )
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            
+                            // Extra bottom padding for the sticky bar
+                            Spacer().frame(height: 100)
+                        }
+                        .offset(y: -20) // Snug up the content
                     }
-                    .background(Color.white)
-                    .cornerRadius(16)
-                    .padding(16)
-                    .frame(maxHeight: .infinity, alignment: .center)
+                }
+                .ignoresSafeArea(edges: .top)
+                
+                // 5. Sticky Bottom Bar
+                BottomActionBar(badgeGreen: badgeGreen, totalAmount: totalAmount, onBuyTapped: { showDatePicker = true })
+                
+                // Calendar Dialog Box - Overlaid on entire view
+                if showDatePicker {
+                    ZStack {
+                        // Dimmed background
+                        Color.black.opacity(0.4)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                showDatePicker = false
+                            }
+                        
+                        // Dialog popup
+                        VStack(spacing: 16) {
+                            Text("Select Start Date")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.black)
+                                .padding(.top, 16)
+                            
+                            DatePicker(
+                                "Start Date",
+                                selection: $selectedDate,
+                                in: Date()...,
+                                displayedComponents: .date
+                            )
+                            .datePickerStyle(.graphical)
+                            .padding()
+                            
+                            HStack(spacing: 12) {
+                                Button {
+                                    showDatePicker = false
+                                } label: {
+                                    Text("Cancel")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.black)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 12)
+                                        .background(Color.gray.opacity(0.1))
+                                        .cornerRadius(8)
+                                }
+                                
+                                Button {
+                                    // Handle purchase with selected date
+                                    showDatePicker = false
+                                } label: {
+                                    Text("Confirm")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 12)
+                                        .background(Color(hex: "#158C31"))
+                                        .cornerRadius(8)
+                                }
+                            }
+                            .padding(.horizontal)
+                            .padding(.bottom, 16)
+                        }
+                        .background(Color.white)
+                        .cornerRadius(16)
+                        .padding(16)
+                        .frame(maxHeight: .infinity, alignment: .center)
+                    }
                 }
             }
         }

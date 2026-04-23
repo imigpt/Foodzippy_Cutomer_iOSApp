@@ -229,11 +229,11 @@ struct AddressListView: View {
         .onAppear {
             appState.hideMainTabBar = true
         }
-        .onDisappear {
-            if !showAddAddress {
-                appState.hideMainTabBar = false
-            }
-        }
+        // .onDisappear {
+        //     if !showAddAddress {
+        //         appState.hideMainTabBar = false
+        //     }
+        // }
         .sheet(isPresented: $showEditSheet) {
             if let address = addressToEdit {
                 EditAddressSheet(address: address, isPresented: $showEditSheet) { updatedAddress in
@@ -761,3 +761,4 @@ struct EditAddressSheet: View {
         }
     }
 }
+

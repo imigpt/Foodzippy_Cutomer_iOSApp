@@ -97,70 +97,72 @@ struct HighProteinView: View {
     ]
 
     var body: some View {
-    ZStack(alignment: .top) {
-        
-        Color(hex: "#F7F7F7")
-            .ignoresSafeArea() // 🔥 Fix
-        
-        VStack(spacing: 0) {
-            header
-            
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    BannerView()
-                        .padding(.horizontal, 16)
-                        .padding(.top, 10)
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                Color(hex: "#F7F7F7")
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    header(safeAreaTop: geo.safeAreaInsets.top)
+                    
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            BannerView()
+                                .padding(.horizontal, 16)
+                                .padding(.top, 10)
 
-                    Text("High Protein Restaurants")
-                        .font(.system(size: 19, weight: .semibold))
-                        .foregroundColor(Color(hex: "#2E2E2E"))
-                        .padding(.horizontal, 16)
-                        .padding(.top, 24)
+                            Text("High Protein Restaurants")
+                                .font(.system(size: 19, weight: .semibold))
+                                .foregroundColor(Color(hex: "#2E2E2E"))
+                                .padding(.horizontal, 16)
+                                .padding(.top, 24)
 
-                    CustomTabBar(tabs: ["Restaurants"], selectedTab: .constant("Restaurants"))
-                        .padding(.horizontal, 16)
-                        .padding(.top, 12)
+                            CustomTabBar(tabs: ["Restaurants"], selectedTab: .constant("Restaurants"))
+                                .padding(.horizontal, 16)
+                                .padding(.top, 12)
 
-                    VStack(spacing: 16) {
-                        ForEach(restaurants) { restaurant in
-                            RestaurantCard(restaurant: restaurant)
+                            VStack(spacing: 16) {
+                                ForEach(restaurants) { restaurant in
+                                    RestaurantCard(restaurant: restaurant)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.top, 16)
+                            .padding(.bottom, 24)
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
-                    .padding(.bottom, 24)
                 }
+                .ignoresSafeArea(edges: .top)
             }
         }
+        .navigationBarHidden(true)
     }
-    .navigationBarHidden(true)
-}
 
-    private var header: some View {
-    HStack {
-        Button {
-            if appState.selectedTab == .highProtein {
-                appState.selectedTab = .home
-            } else {
-                dismiss()
+    private func header(safeAreaTop: CGFloat) -> some View {
+        HStack {
+            Button {
+                if appState.selectedTab == .highProtein {
+                    appState.selectedTab = .home
+                } else {
+                    dismiss()
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(Color(hex: "#222222"))
+                    .frame(width: 38, height: 38)
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
             }
-        } label: {
-            Image(systemName: "chevron.left")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(Color(hex: "#222222"))
-                .frame(width: 38, height: 38)
-                .background(Color.white)
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-        }
 
-        Spacer()
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, safeAreaTop + 8)
+        .padding(.bottom, 8)
+        .background(Color(hex: "#F7F7F7"))
     }
-    .padding(.horizontal, 16)
-    .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top ?? 44) // 🔥 FIX
-    .padding(.bottom, 8)
-    .background(Color.clear) // 🔥 FIX
-}
 }
 
 // MARK: - Responsive Banner

@@ -18,35 +18,38 @@ struct ProfileView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 0) {
-                    
-                    // 1 & 2. Navigation Bar + Profile Info Section (Top Area)
-                    headerSection
-                    
-                    VStack(spacing: 16) {
-                        // 3. Membership Banner
-                        membershipBanner
-                            .padding(.top, 8)
+            GeometryReader { geo in
+                ScrollView {
+                    VStack(spacing: 0) {
                         
-                        // 4. Quick Links Grid
-                        quickActionCards
+                        // 1 & 2. Navigation Bar + Profile Info Section (Top Area)
+                        headerSection(safeAreaTop: geo.safeAreaInsets.top)
                         
-                        // 5. Menu List Options
-                        menuItemsSection
+                        VStack(spacing: 16) {
+                            // 3. Membership Banner
+                            membershipBanner
+                                .padding(.top, 8)
+                            
+                            // 4. Quick Links Grid
+                            quickActionCards
+                            
+                            // 5. Menu List Options
+                            menuItemsSection
+                        }
+                        .padding(.bottom, 30)
                     }
-                    .padding(.bottom, 30)
                 }
+                .background(Color(UIColor.systemGroupedBackground).opacity(0.3).ignoresSafeArea()) // Light off-white base
+                .ignoresSafeArea(edges: .top)
             }
-            .background(Color(UIColor.systemGroupedBackground).opacity(0.3).ignoresSafeArea()) // Light off-white base
             .toolbar(.hidden, for: .navigationBar) // Hide default nav bar to use custom top section
             .toolbar(.hidden, for: .tabBar)        // <-- ADDED: Hides native SwiftUI Tab Bar
             .onAppear {
                 appState.hideMainTabBar = true // Hides it when Profile opens
             }
-            .onDisappear {
-                appState.hideMainTabBar = false // Restores it when Profile closes
-            }
+            // .onDisappear {
+            //     appState.hideMainTabBar = false // Restores it when Profile closes
+            // }
             .refreshable {
                 await viewModel.loadProfile()
             }
@@ -79,11 +82,12 @@ struct ProfileView: View {
     }
     
     // MARK: - 1 & 2: Header Section (Nav + Profile)
-    private var headerSection: some View {
+    private func headerSection(safeAreaTop: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             // Custom Navigation Bar
             HStack {
                 Button {
+                    appState.hideMainTabBar = false
                     dismiss()
                 } label: {
                     Image(systemName: "arrow.left")
@@ -112,7 +116,7 @@ struct ProfileView: View {
             .padding(.bottom, 10)
         }
         .padding(.horizontal)
-        .padding(.top, 10)
+        .padding(.top, safeAreaTop + 10)
         .padding(.bottom, 20)
         .background(Color(red: 1.0, green: 0.92, blue: 0.88)) // Light pastel peach/pink
         .cornerRadius(24, corners: [.bottomLeft, .bottomRight])

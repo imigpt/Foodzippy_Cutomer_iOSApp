@@ -6,86 +6,88 @@ struct FavoritesView: View {
     @State private var showMenu = false
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color(UIColor.systemGroupedBackground)
-                .ignoresSafeArea()
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    FavoritesHeaderView()
-                    
-                    // Filter & Sort Bar
-                    HStack(spacing: 12) {
-                        Button(action: {}) {
-                            HStack {
-                                Text("Filter")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.black)
-                                Image(systemName: "slider.horizontal.3")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.black)
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                            )
-                        }
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                Color(UIColor.systemGroupedBackground)
+                    .ignoresSafeArea()
+                
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        FavoritesHeaderView(safeAreaTop: geo.safeAreaInsets.top)
                         
-                        Button(action: {}) {
-                            HStack {
-                                Text("Sort By")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.black)
-                                Image(systemName: "chevron.down")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.black)
+                        // Filter & Sort Bar
+                        HStack(spacing: 12) {
+                            Button(action: {}) {
+                                HStack {
+                                    Text("Filter")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.black)
+                                    Image(systemName: "slider.horizontal.3")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.black)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                            )
+                            
+                            Button(action: {}) {
+                                HStack {
+                                    Text("Sort By")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.black)
+                                    Image(systemName: "chevron.down")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.black)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
+                            }
+                            Spacer()
                         }
+                        .padding()
+                        .background(Color.white)
+                        
+                        // List of Restaurants
+                        VStack(spacing: 16) {
+                            FavoriteRestaurantRow()
+                            // Duplicate for demo
+                            FavoriteRestaurantRow()
+                        }
+                        .padding()
+                    }
+                }
+                .ignoresSafeArea(edges: .top)
+                
+                // Back Button Overlay
+                VStack {
+                    HStack {
+                        Button(action: {
+                            appState.hideMainTabBar = false
+                            dismiss()
+                        }) {
+                            Image(systemName: "arrow.left")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .background(Color.black.opacity(0.2))
+                                .clipShape(Circle())
+                        }
+                        .padding(.leading, 16)
+                        .padding(.top, geo.safeAreaInsets.top + 8)
                         Spacer()
                     }
-                    .padding()
-                    .background(Color.white)
-                    
-                    // List of Restaurants
-                    VStack(spacing: 16) {
-                        FavoriteRestaurantRow()
-                        // Duplicate for demo
-                        FavoriteRestaurantRow()
-                    }
-                    .padding()
-                }
-            }
-            
-            // Back Button Overlay
-            VStack {
-                HStack {
-                    Button(action: {
-                        appState.hideMainTabBar = false
-                        dismiss()
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.black.opacity(0.2))
-                            .clipShape(Circle())
-                    }
-                    .padding(.leading, 16)
                     Spacer()
                 }
-                .padding(.top, 50)
-                Spacer()
             }
-            .ignoresSafeArea()
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
@@ -95,6 +97,8 @@ struct FavoritesView: View {
 }
 
 struct FavoritesHeaderView: View {
+    let safeAreaTop: CGFloat
+    
     var body: some View {
         ZStack {
             // Orange Gradient Background
@@ -110,12 +114,10 @@ struct FavoritesHeaderView: View {
                     Spacer()
                     Image("favourites")
                         .resizable()
-                        .frame(width: 200, height: 280)
-                        //.opacity(0.7)
+                        .frame(width: 200, height: 240 + safeAreaTop)
                 }
                 Spacer()
             }
-           // .ignoresSafeArea()
             
             // Text Content
             VStack(alignment: .leading, spacing: 8) {
@@ -133,7 +135,7 @@ struct FavoritesHeaderView: View {
             .padding(24)
             .padding(.bottom, 24)
         }
-        .frame(height: 280)
+        .frame(height: 240 + safeAreaTop)
     }
 }
 

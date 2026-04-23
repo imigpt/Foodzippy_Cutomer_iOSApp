@@ -8,13 +8,21 @@ struct MainTabView: View {
     @EnvironmentObject var cartManager: CartManager
 
     private var topSafeAreaColor: Color {
-        appState.selectedTab == .home
-            ? Color(red: 0.13, green: 0.02, blue: 0.24)
-            : Color.white
+        switch appState.selectedTab {
+        case .home, .flash, .highProtein, .reorder, .Subscription:
+            return Color.clear
+        default:
+            return Color.white
+        }
     }
 
     private var statusBarColorScheme: ColorScheme {
-        appState.selectedTab == .home ? .dark : .light
+        switch appState.selectedTab {
+        case .home, .flash, .Subscription:
+            return .dark
+        default:
+            return .light
+        }
     }
 
     private var selectedTabBinding: Binding<AppState.TabItem> {
@@ -39,7 +47,9 @@ struct MainTabView: View {
                 HomeView()
             }
         case .flash:
-            FlashView()
+            NavigationStack {
+                FlashView()
+            }
         case .highProtein:
             NavigationStack {
                 HighProteinView()

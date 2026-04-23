@@ -78,9 +78,9 @@ struct SubscriptionHistoryView: View {
         .onAppear {
             appState.hideMainTabBar = true
         }
-        .onDisappear {
-            appState.hideMainTabBar = false
-        }
+        // .onDisappear {
+        //     appState.hideMainTabBar = false
+        // }
     }
 
     private func fetchSubscriptions() async {

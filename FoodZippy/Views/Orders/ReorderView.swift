@@ -5,35 +5,38 @@ struct ReorderView: View {
     @EnvironmentObject var appState: AppState
 
     var body: some View {
-        ZStack {
-            Color.white.ignoresSafeArea()
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                Color.white.ignoresSafeArea()
 
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 12) {
-                    searchBar
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
+                VStack(spacing: 0) {
+                    navBar(safeAreaTop: geo.safeAreaInsets.top)
+                    
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 12) {
+                            searchBar
+                                .padding(.horizontal, 16)
+                                .padding(.top, 8)
 
-                    filterChips
-                        .padding(.top, 4)
+                            filterChips
+                                .padding(.top, 4)
 
-                    Spacer()
-                        .frame(height: 8)
+                            Spacer()
+                                .frame(height: 8)
 
-                    cardsList
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 100)
+                            cardsList
+                                .padding(.horizontal, 16)
+                                .padding(.bottom, 100)
+                        }
+                    }
                 }
             }
-        }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            navBar
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
     }
-    
-    private var navBar: some View {
+
+    private func navBar(safeAreaTop: CGFloat) -> some View {
         VStack(spacing: 0) {
             HStack {
                 Button(action: {
@@ -64,7 +67,7 @@ struct ReorderView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .padding(.top, 8)
+            .padding(.top, safeAreaTop)
             
             Divider()
                 .padding(.horizontal, 0)
