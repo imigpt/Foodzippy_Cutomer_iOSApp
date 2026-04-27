@@ -7,6 +7,7 @@ struct SplashView: View {
     @EnvironmentObject var appState: AppState
     @State private var logoScale: CGFloat = 0.5
     @State private var logoOpacity: Double = 0
+    @State private var hasScheduledNavigation = false
     
     var body: some View {
         ZStack {
@@ -38,9 +39,15 @@ struct SplashView: View {
                 logoScale = 1.0
                 logoOpacity = 1.0
             }
-            
-            // Navigate after 2.5 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+        }
+        .task {
+            guard !hasScheduledNavigation else { return }
+            hasScheduledNavigation = true
+
+            // Use a structured task instead of GCD so cancellation/lifecycle is predictable.
+            try? await Task.sleep(nanoseconds: 2_500_000_000)
+
+            await MainActor.run {
                 withAnimation {
                     appState.determineInitialScreen()
                 }

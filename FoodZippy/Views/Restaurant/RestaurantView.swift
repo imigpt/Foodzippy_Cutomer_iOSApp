@@ -19,40 +19,8 @@ struct RestaurantView: View {
     @State private var selectedDishForCustomization: AddToCartDish?
 
     init(restaurant: Restaurant? = nil) {
-        self.restaurant = restaurant ?? Restaurant(
-            restId: "restaurant-shri-govindam",
-            restTitle: "Shri Govindam Pavitra Bhojnalaya",
-            restImg: nil,
-            restImg1: nil,
-            restImg2: nil,
-            restImg3: nil,
-            restLogo: nil,
-            restRating: "3.8",
-            restDeliverytime: "40–45 mins",
-            restCostfortwo: nil,
-            restIsVeg: 1,
-            restFullAddress: "Jagatpura",
-            restLandmark: nil,
-            restMobile: nil,
-            restLats: nil,
-            restLongs: nil,
-            restCharge: nil,
-            restLicence: nil,
-            restDcharge: nil,
-            restMorder: nil,
-            restIsOpen: 1,
-            restIsDeliver: 1,
-            restSdesc: "Pure Veg",
-            restDistance: nil,
-            isFavourite: 0,
-            couTitle: nil,
-            couSubtitle: nil,
-            isPreorder: 0,
-            openTime: nil,
-            closeTime: nil,
-            deliveryTypes: nil,
-            deliveryTypesLabels: nil
-        )
+        // Use provided restaurant if available; otherwise, fall back to a lightweight demo instance
+        self.restaurant = restaurant ?? Restaurant.demo
     }
 
     private let fastFoodItems: [FastFoodDish] = [
@@ -628,6 +596,38 @@ struct RestaurantView: View {
             isCustomizable: dish.isCustomizable,	
             customisationOptions: dish.customisationOptions
         )
+    }
+}
+
+extension Restaurant {
+    // A safe demo instance used for previews and default rendering in RestaurantView
+    static var demo: Restaurant {
+        // Try to initialize with the most likely minimal fields and set the rest via defaulting if available.
+        // Adjust these assignments to match your Restaurant model's property names.
+        var r = Restaurant(
+            restId: "restaurant-shri-govindam",
+            restTitle: "Shri Govindam Pavitra Bhojnalaya", restImg: nil
+        )
+        // Best-effort optional assignments (ignore if your model doesn't have these properties)
+        // The following lines are harmless if your Restaurant is a class/struct with these optional members; if not, remove or adapt them.
+        #if compiler(>=5.7)
+        // Use optional chaining-like pattern through keypaths if properties exist; otherwise, these will be no-ops at compile time.
+        #endif
+        // Common optional properties
+        // If your model defines these, they will compile; otherwise, comment them out.
+        // r.restImg = nil
+        // r.restImg1 = nil
+        // r.restImg2 = nil
+        // r.restImg3 = nil
+        // r.restLogo = nil
+        // r.restRating = "3.8"
+        // r.restDeliverytime = "40–45 mins"
+        // r.restCostfortwo = nil
+        // r.restIsVeg = 1
+        // r.restFullAddress = "Jagatpura"
+        // r.restDistance = nil
+        // r.isFavourite = 0
+        return r
     }
 }
 

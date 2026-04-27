@@ -4,6 +4,8 @@ struct SubscriptionView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: AppState
     
+    @State private var navigateToSchedule = false
+    
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
@@ -28,7 +30,7 @@ struct SubscriptionView: View {
                                     .foregroundColor(.black)
                                     .padding(.horizontal, 16)
                                 
-                                SubscriptionCard()
+                                SubscriptionCard(navigateToSchedule: $navigateToSchedule)
                                     .padding(.horizontal, 16)
                                 
                                 Text("Subscription Restaurants")
@@ -67,6 +69,9 @@ struct SubscriptionView: View {
                         .padding(.bottom, 80)
                     }
                     .background(Color(hex: "#F7F7F7"))
+                }
+                .navigationDestination(isPresented: $navigateToSchedule) {
+                    SubscriptionScheduleView()
                 }
                 .navigationBarHidden(true)
                 .ignoresSafeArea(edges: .top)
@@ -279,6 +284,8 @@ struct BannerItemView: View {
 
 // MARK: - My Subscriptions Card
 struct SubscriptionCard: View {
+    @Binding var navigateToSchedule: Bool
+    
     var body: some View {
         VStack(spacing: 20) {
             // Header Row
@@ -323,7 +330,7 @@ struct SubscriptionCard: View {
             
             // CTA Button
             Button {
-                // Action
+                navigateToSchedule = true
             } label: {
                 HStack {
                     Text("View Schedule & Details")
@@ -572,3 +579,4 @@ struct BouncyButtonStyle: ButtonStyle {
     SubscriptionView()
         .environmentObject(AppState.shared)
 }
+

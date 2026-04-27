@@ -141,6 +141,7 @@ struct RestaurantDetailView: View {
                     .padding(.bottom, 10)
                 }
             }
+            .ignoresSafeArea(edges: .top)
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
@@ -934,17 +935,15 @@ struct FloatingCartBar: View {
 #Preview {
     NavigationStack {
         RestaurantDetailView(restaurant: Restaurant(
-            restId: "1", restTitle: "Burger Garage",
-            restImg: nil, restImg1: nil, restImg2: nil, restImg3: nil,
-            restLogo: nil, restRating: "4.5", restDeliverytime: "25 mins",
-            restCostfortwo: "400", restIsVeg: 0, restFullAddress: "Main Road",
-            restLandmark: "City Center", restMobile: nil,
-            restLats: nil, restLongs: nil, restCharge: nil, restLicence: nil,
-            restDcharge: "40", restMorder: nil, restIsOpen: 1, restIsDeliver: 1,
-            restSdesc: "Burgers, Fast Food", restDistance: "0.5 km",
-            isFavourite: 0, couTitle: nil, couSubtitle: nil,
-            isPreorder: 0, openTime: nil, closeTime: nil,
-            deliveryTypes: nil, deliveryTypesLabels: nil
+            restId: "1",
+            restTitle: "Burger Garage",
+            restImg: nil,
+            restRating: "4.5",
+            restDeliverytime: "25 mins",
+            restCostfortwo: "400",
+            restIsVeg: 0,
+            restDistance: "0.5 km",
+            restIsOpen: 1
         ))
         .environmentObject(CartManager.shared)
     }

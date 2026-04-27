@@ -16,6 +16,7 @@
 		0B18F443E153A6796887CDAB /* BuyOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B34FD07CFACB08685BD6835 /* BuyOneView.swift */; };
 		0B59C953DFCF0EB08C3DE904 /* AddToCartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B99910A3417663D14994D6 /* AddToCartViewModel.swift */; };
 		0BDD8F7CE2D90868745A9F9D /* ProfileFAQView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CA06815BF995EB3CFE0948 /* ProfileFAQView.swift */; };
+		0C6B95F8D8E14B4294A12511 /* BookTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7E2A41AC4B44D2A5E22018 /* BookTableView.swift */; };
 		0F0EF3730EC3D8440481B536 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78893E1CCFBAC3A794FDE1 /* Address.swift */; };
 		1496DBDD2EB2A9F9F8C01EBE /* RestaurantViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7094B9A804BA7976118CE64 /* RestaurantViewModel.swift */; };
 		14A9AFE4A37F30095FF8F9B6 /* RestaurantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 863C5EFD389328E1E45E214C /* RestaurantDetailView.swift */; };
@@ -23,6 +24,7 @@
 		177317E9C69C96B6D5C018AE /* SubscriptionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF4240298B7290C9E47F076 /* SubscriptionHistoryView.swift */; };
 		17A950C63901541067AD3601 /* DishDetailSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71223E1297FEE804793247FB /* DishDetailSheetView.swift */; };
 		188A19F584745BDA23F68C4E /* DeliveryLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1626D8205C25FEE702271B1 /* DeliveryLocationView.swift */; };
+		20CBB0630E6EE89E7954D400 /* SubscriptionScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB92ED1D653796F3A7E4830 /* SubscriptionScheduleView.swift */; };
 		24939001BDC56E9F81DEBDEB /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF864E3D5035B45CD18CF7D /* MenuItem.swift */; };
 		2A07242B2C31A12556E55E3E /* ServiceViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DB23DCECD0D0E311894F81 /* ServiceViews.swift */; };
 		2A4DBD6313E38BBD17FA75EC /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9082F83825F189F223FFD5E6 /* SignupView.swift */; };
@@ -127,6 +129,7 @@
 		651A6FFCB91AF2BF2B8F204A /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		6AE41BC968DECC260B39D4F1 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		6C0DA155BDA5F8870AB0057B /* OtpVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpVerificationView.swift; sourceTree = "<group>"; };
+		6CB92ED1D653796F3A7E4830 /* SubscriptionScheduleView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubscriptionScheduleView.swift; sourceTree = "<group>"; };
 		6DB630E4622792F43033F94F /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
 		6EB128CCC040902392925959 /* ParityFeatureViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParityFeatureViews.swift; sourceTree = "<group>"; };
 		6F6B6E069B267C3AC91DF8B5 /* Order.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
@@ -145,6 +148,7 @@
 		9082F83825F189F223FFD5E6 /* SignupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupView.swift; sourceTree = "<group>"; };
 		91CA06815BF995EB3CFE0948 /* ProfileFAQView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFAQView.swift; sourceTree = "<group>"; };
 		94CC99296F65CFF3F96294C0 /* FoodZippyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodZippyApp.swift; sourceTree = "<group>"; };
+		9D7E2A41AC4B44D2A5E22018 /* BookTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookTableView.swift; sourceTree = "<group>"; };
 		9DD8C49FB9AEDF257B92C0DD /* FoodZippy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FoodZippy.entitlements; sourceTree = "<group>"; };
 		A342B9CDA2C4D3A8E3CFF573 /* AddressListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressListView.swift; sourceTree = "<group>"; };
 		AB302D71AA002820E9D0F6B5 /* CustomisationSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomisationSheetView.swift; sourceTree = "<group>"; };
@@ -277,6 +281,7 @@
 				2A025B06513E8D8C7F9986A4 /* SubscriptionPlanDetailsView.swift */,
 				DB2B764FB12EFFC1B59DB254 /* SubscriptionPlansView.swift */,
 				87E5FD08D4BD3346FB5AE7B6 /* SubscriptionView.swift */,
+				6CB92ED1D653796F3A7E4830 /* SubscriptionScheduleView.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -487,6 +492,7 @@
 		ECC8E114A74B2FFB16F47A33 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				9D7E2A41AC4B44D2A5E22018 /* BookTableView.swift */,
 				327316B9CF74AD4571B8AE40 /* DineInBookingViews.swift */,
 				F37DBE32A1303CA78ED3079D /* FlashView.swift */,
 				155C7E480311D2E4EBA1BA0F /* HighProteinView.swift */,
@@ -511,8 +517,6 @@
 			dependencies = (
 			);
 			name = FoodZippy;
-			packageProductDependencies = (
-			);
 			productName = FoodZippy;
 			productReference = B3BA260A643CD959FCEA930C /* FoodZippy.app */;
 			productType = "com.apple.product-type.application";
@@ -577,6 +581,7 @@
 				55453AA254C4AC581FE1BD6D /* AddressListView.swift in Sources */,
 				15CB1DB9981C28C6A5050C5C /* AppState.swift in Sources */,
 				4A9DFE7B2484342F7BA34E7F /* AuthViewModel.swift in Sources */,
+				0C6B95F8D8E14B4294A12511 /* BookTableView.swift in Sources */,
 				0B18F443E153A6796887CDAB /* BuyOneView.swift in Sources */,
 				7530151F1A84E0E6F1501F3B /* CartItem.swift in Sources */,
 				8E4827BCF8A9F6D3FC203C34 /* CartManager.swift in Sources */,
@@ -647,6 +652,7 @@
 				4A0C68AEE0055D382DA9A191 /* TakeAwaysDetailsView.swift in Sources */,
 				C1346560AD4E9B6A3FE139C7 /* User.swift in Sources */,
 				0B0799A57524787083583725 /* WalletView.swift in Sources */,
+				20CBB0630E6EE89E7954D400 /* SubscriptionScheduleView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

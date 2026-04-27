@@ -96,6 +96,119 @@ struct Restaurant: Codable, Identifiable {
             .replacingOccurrences(of: "km", with: "")
         return Double(cleaned) ?? 0
     }
+
+    init(
+        restId: String?,
+        restTitle: String?,
+        restImg: String?,
+        restImg1: String?,
+        restImg2: String?,
+        restImg3: String?,
+        restLogo: String?,
+        restRating: String?,
+        restDeliverytime: String?,
+        restCostfortwo: String?,
+        restIsVeg: Int?,
+        restFullAddress: String?,
+        restLandmark: String?,
+        restMobile: String?,
+        restLats: String?,
+        restLongs: String?,
+        restCharge: String?,
+        restLicence: String?,
+        restDcharge: String?,
+        restMorder: String?,
+        restIsOpen: Int?,
+        restIsDeliver: Int?,
+        restSdesc: String?,
+        restDistance: String?,
+        isFavourite: Int?,
+        couTitle: String?,
+        couSubtitle: String?,
+        isPreorder: Int?,
+        openTime: String?,
+        closeTime: String?,
+        deliveryTypes: [String]?,
+        deliveryTypesLabels: [DeliveryTypeLabel]?
+    ) {
+        self.restId = restId
+        self.restTitle = restTitle
+        self.restImg = restImg
+        self.restImg1 = restImg1
+        self.restImg2 = restImg2
+        self.restImg3 = restImg3
+        self.restLogo = restLogo
+        self.restRating = restRating
+        self.restDeliverytime = restDeliverytime
+        self.restCostfortwo = restCostfortwo
+        self.restIsVeg = restIsVeg
+        self.restFullAddress = restFullAddress
+        self.restLandmark = restLandmark
+        self.restMobile = restMobile
+        self.restLats = restLats
+        self.restLongs = restLongs
+        self.restCharge = restCharge
+        self.restLicence = restLicence
+        self.restDcharge = restDcharge
+        self.restMorder = restMorder
+        self.restIsOpen = restIsOpen
+        self.restIsDeliver = restIsDeliver
+        self.restSdesc = restSdesc
+        self.restDistance = restDistance
+        self.isFavourite = isFavourite
+        self.couTitle = couTitle
+        self.couSubtitle = couSubtitle
+        self.isPreorder = isPreorder
+        self.openTime = openTime
+        self.closeTime = closeTime
+        self.deliveryTypes = deliveryTypes
+        self.deliveryTypesLabels = deliveryTypesLabels
+    }
+
+    init(
+        restId: String?,
+        restTitle: String?,
+        restImg: String?,
+        restRating: String? = nil,
+        restDeliverytime: String? = nil,
+        restCostfortwo: String? = nil,
+        restIsVeg: Int? = nil,
+        restDistance: String? = nil,
+        restIsOpen: Int? = 1
+    ) {
+        self.restId = restId
+        self.restTitle = restTitle
+        self.restImg = restImg
+        self.restImg1 = nil
+        self.restImg2 = nil
+        self.restImg3 = nil
+        self.restLogo = nil
+        self.restRating = restRating
+        self.restDeliverytime = restDeliverytime
+        self.restCostfortwo = restCostfortwo
+        self.restIsVeg = restIsVeg
+        self.restFullAddress = nil
+        self.restLandmark = nil
+        self.restMobile = nil
+        self.restLats = nil
+        self.restLongs = nil
+        self.restCharge = nil
+        self.restLicence = nil
+        self.restDcharge = nil
+        self.restMorder = nil
+        self.restIsOpen = restIsOpen
+        self.restIsDeliver = nil
+        self.restSdesc = nil
+        self.restDistance = restDistance
+        self.isFavourite = 0
+        self.couTitle = nil
+        self.couSubtitle = nil
+        self.isPreorder = nil
+        self.openTime = nil
+        self.closeTime = nil
+        self.deliveryTypes = nil
+        self.deliveryTypesLabels = nil
+    }
 }
 
 struct DeliveryTypeLabel: Codable {

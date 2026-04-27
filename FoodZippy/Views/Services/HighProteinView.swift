@@ -19,35 +19,12 @@ struct HighProteinView: View {
                 restId: "high-protein-pankh",
                 restTitle: "The Pankh Restaur...",
                 restImg: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80",
-                restImg1: nil,
-                restImg2: nil,
-                restImg3: nil,
-                restLogo: nil,
                 restRating: "3",
                 restDeliverytime: "12 mins",
                 restCostfortwo: nil,
                 restIsVeg: 0,
-                restFullAddress: "Pratap Nagar • 0.1 km",
-                restLandmark: nil,
-                restMobile: nil,
-                restLats: nil,
-                restLongs: nil,
-                restCharge: nil,
-                restLicence: nil,
-                restDcharge: nil,
-                restMorder: nil,
-                restIsOpen: 1,
-                restIsDeliver: 1,
-                restSdesc: "Fast Food, Snacks, Beverages",
                 restDistance: "0.1 km",
-                isFavourite: 0,
-                couTitle: nil,
-                couSubtitle: nil,
-                isPreorder: 0,
-                openTime: nil,
-                closeTime: nil,
-                deliveryTypes: nil,
-                deliveryTypesLabels: nil
+                restIsOpen: 1
             )
         ),
         HighProteinRestaurant(
@@ -63,35 +40,12 @@ struct HighProteinView: View {
                 restId: "high-protein-factory",
                 restTitle: "Protein Factory",
                 restImg: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80",
-                restImg1: nil,
-                restImg2: nil,
-                restImg3: nil,
-                restLogo: nil,
                 restRating: "4.2",
                 restDeliverytime: "16 mins",
                 restCostfortwo: nil,
                 restIsVeg: 1,
-                restFullAddress: "Malviya Nagar • 1.3 km",
-                restLandmark: nil,
-                restMobile: nil,
-                restLats: nil,
-                restLongs: nil,
-                restCharge: nil,
-                restLicence: nil,
-                restDcharge: nil,
-                restMorder: nil,
-                restIsOpen: 1,
-                restIsDeliver: 1,
-                restSdesc: "Healthy Food, Salads, Bowls",
                 restDistance: "1.3 km",
-                isFavourite: 0,
-                couTitle: nil,
-                couSubtitle: nil,
-                isPreorder: 0,
-                openTime: nil,
-                closeTime: nil,
-                deliveryTypes: nil,
-                deliveryTypesLabels: nil
+                restIsOpen: 1
             )
         )
     ]
@@ -402,3 +356,4 @@ struct HighProteinRestaurant: Identifiable {
             .environmentObject(AppState.shared)
     }
 }
+

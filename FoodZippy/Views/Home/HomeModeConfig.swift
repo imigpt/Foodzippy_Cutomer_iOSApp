@@ -19,43 +19,43 @@ enum HomeTopMode: String, CaseIterable {
         switch self {
         case .food:
             return HomeTopModeTheme(
-                headerStart: Color(hex: "#140326"),
-                headerEnd: Color(hex: "#3D13A4"),
+                headerStart: Color(hex: "#09041A"),
+                headerEnd: Color(hex: "#09041A"),
                 tabBackground: Color(hex: "#09041A"),
                 activeTab: Color(hex: "#3D13A4"),
                 connector: Color(hex: "#3D13A4"),
-                promoStart: Color(hex: "#25064C"),
-                promoEnd: Color(hex: "#6516C7")
+                promoStart: Color(hex: "#3D13A4"),
+                promoEnd: Color(hex: "#3D13A4")
             )
         case .takeAway:
             return HomeTopModeTheme(
-                headerStart: Color(hex: "#102A43"),
-                headerEnd: Color(hex: "#0C8AC5"),
+                headerStart: Color(hex: "#0A1F33"),
+                headerEnd: Color(hex: "#0A1F33"),
                 tabBackground: Color(hex: "#0A1F33"),
                 activeTab: Color(hex: "#0C8AC5"),
                 connector: Color(hex: "#0C8AC5"),
-                promoStart: Color(hex: "#0F4C75"),
-                promoEnd: Color(hex: "#3282B8")
+                promoStart: Color(hex: "#0C8AC5"),
+                promoEnd: Color(hex: "#0C8AC5")
             )
         case .dineIn:
             return HomeTopModeTheme(
-                headerStart: Color(hex: "#2E1A14"),
-                headerEnd: Color(hex: "#C25100"),
+                headerStart: Color(hex: "#29140F"),
+                headerEnd: Color(hex: "#29140F"),
                 tabBackground: Color(hex: "#29140F"),
                 activeTab: Color(hex: "#E26D1F"),
                 connector: Color(hex: "#E26D1F"),
-                promoStart: Color(hex: "#6E2C00"),
-                promoEnd: Color(hex: "#E67E22")
+                promoStart: Color(hex: "#E26D1F"),
+                promoEnd: Color(hex: "#E26D1F")
             )
         case .driveThru:
             return HomeTopModeTheme(
-                headerStart: Color(hex: "#0D2A1F"),
-                headerEnd: Color(hex: "#0B8457"),
+                headerStart: Color(hex: "#0B1E17"),
+                headerEnd: Color(hex: "#0B1E17"),
                 tabBackground: Color(hex: "#0B1E17"),
                 activeTab: Color(hex: "#0B8457"),
                 connector: Color(hex: "#0B8457"),
-                promoStart: Color(hex: "#114B34"),
-                promoEnd: Color(hex: "#1F8A5B")
+                promoStart: Color(hex: "#0B8457"),
+                promoEnd: Color(hex: "#0B8457")
             )
         }
     }

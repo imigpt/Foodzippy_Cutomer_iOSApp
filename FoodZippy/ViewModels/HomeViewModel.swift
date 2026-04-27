@@ -18,13 +18,18 @@ class HomeViewModel: ObservableObject {
     @Published var homeOffers: [HomeOffer] = []
     @Published var servicesBanner: ServicesBannerItem?
     @Published var offerPopup: OfferPopup?
+    @Published var spotlightBanners: [HomeBannerItem] = []
+    @Published var facilities: [Facility] = []
+    @Published var popularBrands: [Restaurant] = []
     
     // MARK: - UI State
     @Published var isLoading = true
+    @Published var isLoadingDineIn = false
     @Published var isRefreshing = false
     @Published var showOfferPopup = false
     @Published var errorMessage = ""
     @Published var showError = false
+    @Published var dineInErrorMessage = ""
     
     // MARK: - Filters
     @Published var selectedCategory: String? = nil
@@ -109,8 +114,61 @@ class HomeViewModel: ObservableObject {
     
     func refresh() async {
         isRefreshing = true
-        await loadHomeData()
+        async let homeTask: () = loadHomeData()
+        async let dineInTask: () = loadDineInData()
+        _ = await (homeTask, dineInTask)
         isRefreshing = false
+    }
+
+    // MARK: - Dine-In Phase 2 Data
+
+    func loadDineInData() async {
+        isLoadingDineIn = true
+        dineInErrorMessage = ""
+
+        async let spotlightTask = fetchSpotlightBannersSafely()
+        async let facilitiesTask = fetchFacilitiesSafely()
+        async let brandsTask = fetchPopularBrandsSafely()
+
+        let (spotlightResult, facilitiesResult, brandsResult) = await (spotlightTask, facilitiesTask, brandsTask)
+
+        spotlightBanners = spotlightResult.data
+        facilities = facilitiesResult.data
+        popularBrands = brandsResult.data
+
+        let errors = [spotlightResult.error, facilitiesResult.error, brandsResult.error]
+            .compactMap { $0?.localizedDescription }
+
+        if !errors.isEmpty {
+            // Keep UI functional with partial data while surfacing a non-fatal error.
+            dineInErrorMessage = errors.joined(separator: "\n")
+        }
+
+        isLoadingDineIn = false
+    }
+
+    private func fetchSpotlightBannersSafely() async -> SectionLoadResult<HomeBannerItem> {
+        do {
+            return SectionLoadResult(data: try await APIService.shared.getDineInSpotlightBanners(), error: nil)
+        } catch {
+            return SectionLoadResult(data: [], error: error)
+        }
+    }
+
+    private func fetchFacilitiesSafely() async -> SectionLoadResult<Facility> {
+        do {
+            return SectionLoadResult(data: try await APIService.shared.getDineInFacilities(), error: nil)
+        } catch {
+            return SectionLoadResult(data: [], error: error)
+        }
+    }
+
+    private func fetchPopularBrandsSafely() async -> SectionLoadResult<Restaurant> {
+        do {
+            return SectionLoadResult(data: try await APIService.shared.getPopularBrands(), error: nil)
+        } catch {
+            return SectionLoadResult(data: [], error: error)
+        }
     }
     
     // MARK: - Load Additional Data
@@ -227,4 +285,9 @@ class HomeViewModel: ObservableObject {
         
         filteredRestaurants = result
     }
+}
+
+private struct SectionLoadResult<T> {
+    let data: [T]
+    let error: Error?
 }

@@ -33,6 +33,7 @@ struct HomeView: View {
     @State private var navigateToFlash = false
     @State private var navigateToAddressList = false
     @State private var navigateToBuyOne = false
+    @State private var navigateToPastBookings = false
     @State private var scrollResetToken = UUID()
     @State private var selectedDishForDetail: AddToCartDish?
     @State private var selectedDishForCustomization: AddToCartDish?
@@ -241,6 +242,14 @@ struct HomeView: View {
             deliveryTypesLabels: nil
         )
     }
+
+    private var dineInNavigationRestaurant: Restaurant {
+        selectedRestaurant ?? Restaurant(
+            restId: "dine_in_default",
+            restTitle: "Dine-In Restaurant",
+            restImg: nil
+        )
+    }
     
     var body: some View {
         GeometryReader { geo in
@@ -292,15 +301,17 @@ struct HomeView: View {
                                     .padding(.top, 2)
                                     .padding(.bottom, 0)
                                 
-                                // Offer text below banner (inside purple area continues)
-                                OfferTextRow(content: topPromoContent)
-                                    .padding(.horizontal, 12)
-                                    .padding(.top, 10)
-                                
-                                // 3 yellow offer cards
-                                OfferCardsRow(content: topPromoContent)
-                                    .padding(.top, 12)
-                                    .padding(.bottom, 14)
+                                if selectedTopMode != .dineIn {
+                                    // Offer text below banner (inside purple area continues)
+                                    OfferTextRow(content: topPromoContent)
+                                        .padding(.horizontal, 12)
+                                        .padding(.top, 10)
+                                    
+                                    // 3 yellow offer cards
+                                    OfferCardsRow(content: topPromoContent)
+                                        .padding(.top, 12)
+                                        .padding(.bottom, 14)
+                                }
                             }
                             .background(
                                 LinearGradient(
@@ -513,89 +524,252 @@ struct HomeView: View {
                                     }
                                     
                                 case .dineIn:
-                                    // Dine In: Table Booking Cards + Restaurants
-                                    VStack(spacing: 16) {
-                                        Text("🍽️ Reserve Your Table")
-                                            .font(.system(size: 20, weight: .bold))
-                                            .foregroundColor(.black)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    // Dine-In: Full layout matching Android screenshots exactly
+                                    VStack(spacing: 0) {
+
+                                        // ── Your Dine-In Bookings ─────────────────────────
+                                        VStack(spacing: 0) {
+                                            HStack {
+                                                Text("Your Dine-In Bookings")
+                                                    .font(.system(size: 17, weight: .bold))
+                                                    .foregroundColor(.black)
+                                                Spacer()
+                                                Button(action: { navigateToPastBookings = true }) {
+                                                    Text("View all past")
+                                                        .font(.system(size: 13, weight: .semibold))
+                                                        .foregroundColor(Color(hex: "#E23744"))
+                                                }
+                                            }
                                             .padding(.horizontal, 16)
                                             .padding(.top, 16)
-                                        
-                                        // Featured booking cards
-                                        VStack(spacing: 12) {
-                                            ForEach(horizontalRestaurants.prefix(2), id: \.id) { restaurant in
-                                                VStack(alignment: .leading, spacing: 10) {
-                                                    RoundedRectangle(cornerRadius: 12)
-                                                        .fill(Color.hBg)
-                                                        .frame(height: 120)
-                                                        .overlay {
-                                                            Image("burger")
-                                                                .resizable()
-                                                                .scaledToFill()
-                                                                .clipped()
+                                            .padding(.bottom, 10)
+
+                                            let upcomingBookings = viewModel.allRestaurants.isEmpty
+                                                ? Array(repeating: nil as Restaurant?, count: 2)
+                                                : viewModel.allRestaurants.prefix(2).map { Optional($0) }
+                                                
+                                            VStack(spacing: 12) {
+                                                ForEach(Array(upcomingBookings.enumerated()), id: \.offset) { idx, restaurant in
+                                                    DineInBookingCard(
+                                                        restaurant: restaurant,
+                                                        bookingTime: idx == 0 ? "Today, 8:00 PM | 2 Guests" : "Tomorrow, 1:00 PM | 4 Guests",
+                                                        bookingStatus: "Confirmed",
+                                                        onTap: {
+                                                            selectedRestaurant = restaurant
+                                                            navigateToRestaurantView = true
                                                         }
-                                                    
-                                                    VStack(alignment: .leading, spacing: 4) {
-                                                        Text(restaurant.name)
-                                                            .font(.system(size: 16, weight: .bold))
-                                                        
-                                                        HStack(spacing: 12) {
-                                                            Label("⭐ \(String(format: "%.1f", restaurant.rating))", systemImage: "")
-                                                                .font(.system(size: 12, weight: .semibold))
-                                                            
-                                                            Label(restaurant.deliveryTime, systemImage: "")
-                                                                .font(.system(size: 12, weight: .medium))
-                                                                .foregroundColor(.gray)
-                                                        }
-                                                    }
-                                                    
-                                                    Button(action: {
-                                                        if let source = sourceRestaurants.first(where: { ($0.restId ?? "") == restaurant.id }) {
-                                                            selectedRestaurant = source
-                                                            navigateToRestaurant = true
-                                                        }
-                                                    }) {
-                                                        Text("Book Table")
-                                                            .font(.system(size: 13, weight: .bold))
-                                                            .foregroundColor(.white)
-                                                            .frame(maxWidth: .infinity)
-                                                            .frame(height: 40)
-                                                            .background(Color(hex: "#E26D1F"))
-                                                            .cornerRadius(8)
+                                                    )
+                                                }
+                                            }
+                                            .padding(.horizontal, 16)
+                                            .padding(.bottom, 16)
+                                        }
+                                        .background(Color.white)
+
+                                        Rectangle()
+                                            .fill(Color(hex: "#F0EFF4"))
+                                            .frame(height: 8)
+
+                                        // ── Walk-in Restaurants Nearby ──────────────────
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text("Walk-in restaurants nearby")
+                                                .font(.system(size: 17, weight: .bold))
+                                                .foregroundColor(.black)
+                                                .padding(.horizontal, 16)
+                                                .padding(.top, 16)
+                                                .padding(.bottom, 12)
+
+                                            let walkInRestaurants = viewModel.allRestaurants.isEmpty
+                                                ? Array(repeating: nil as Restaurant?, count: 3)
+                                                : viewModel.allRestaurants.prefix(6).map { Optional($0) }
+
+                                            ScrollView(.horizontal, showsIndicators: false) {
+                                                LazyHStack(spacing: 12) {
+                                                    ForEach(Array(walkInRestaurants.enumerated()), id: \.offset) { idx, restaurant in
+                                                        DineInWalkInCard(
+                                                            restaurant: restaurant,
+                                                            actionLabel: idx == 0 ? "Book Table" : "Pay Bill",
+                                                            onTap: {
+                                                                selectedRestaurant = restaurant
+                                                                navigateToRestaurantView = true
+                                                            }
+                                                        )
                                                     }
                                                 }
-                                                .padding(12)
-                                                .background(Color.white)
-                                                .cornerRadius(12)
-                                                .overlay {
-                                                    RoundedRectangle(cornerRadius: 12)
-                                                        .stroke(Color.hBg, lineWidth: 1)
+                                                .padding(.horizontal, 16)
+                                                .padding(.bottom, 16)
+                                            }
+                                        }
+                                        .background(Color.white)
+
+                                        Rectangle()
+                                            .fill(Color(hex: "#F0EFF4"))
+                                            .frame(height: 8)
+
+                                        // ── In the Spotlight ───────────────────────────
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text("In the spotlight")
+                                                .font(.system(size: 17, weight: .bold))
+                                                .foregroundColor(.black)
+                                                .padding(.horizontal, 16)
+                                                .padding(.top, 16)
+                                                .padding(.bottom, 12)
+
+                                            if viewModel.isLoadingDineIn && viewModel.spotlightBanners.isEmpty {
+                                                // Skeleton placeholders
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    LazyHStack(spacing: 12) {
+                                                        ForEach(0..<3, id: \.self) { _ in
+                                                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                                                .fill(Color(hex: "#F0F0F0"))
+                                                                .frame(width: UIScreen.main.bounds.width - 52, height: 130)
+                                                                .overlay(ProgressView().tint(.gray))
+                                                        }
+                                                    }
+                                                    .padding(.horizontal, 16)
+                                                    .padding(.bottom, 16)
+                                                }
+                                            } else if viewModel.spotlightBanners.isEmpty {
+                                                Text("No spotlight banners available")
+                                                    .font(.system(size: 13))
+                                                    .foregroundColor(Color(hex: "#9E9E9E"))
+                                                    .frame(maxWidth: .infinity, alignment: .center)
+                                                    .padding(.bottom, 20)
+                                            } else {
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    LazyHStack(spacing: 12) {
+                                                        ForEach(viewModel.spotlightBanners.prefix(5), id: \.id) { banner in
+                                                            DineInSpotlightBannerCard(banner: banner)
+                                                        }
+                                                    }
+                                                    .padding(.horizontal, 16)
+                                                    .padding(.bottom, 16)
                                                 }
                                             }
                                         }
-                                        .padding(.horizontal, 16)
-                                        
+                                        .background(Color.white)
+
                                         Rectangle()
-                                            .fill(Color.hBg)
+                                            .fill(Color(hex: "#F0EFF4"))
                                             .frame(height: 8)
-                                            .padding(.top, 8)
-                                        
-                                        AllRestaurantsSection(
-                                            viewModel: viewModel,
-                                            selectedMode: selectedTopMode,
-                                            onOpenRestaurantView: {
-                                                navigateToRestaurantView = true
-                                            },
-                                            onOpenFlash: {
-                                                navigateToFlash = true
-                                            },
-                                            onShowDishDetail: { product in
-                                                showDishDetail(for: product)
+
+                                        // ── Events & Experiences ───────────────────────
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text("Events & Experiences")
+                                                .font(.system(size: 17, weight: .bold))
+                                                .foregroundColor(.black)
+                                                .padding(.horizontal, 16)
+                                                .padding(.top, 16)
+                                                .padding(.bottom, 12)
+
+                                            if viewModel.isLoadingDineIn && viewModel.facilities.isEmpty {
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    LazyHStack(spacing: 12) {
+                                                        ForEach(0..<4, id: \.self) { _ in
+                                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                                                .fill(Color(hex: "#F0F0F0"))
+                                                                .frame(width: 120, height: 96)
+                                                                .overlay(ProgressView().tint(.gray))
+                                                        }
+                                                    }
+                                                    .padding(.horizontal, 16)
+                                                    .padding(.bottom, 20)
+                                                }
+                                            } else if viewModel.facilities.isEmpty {
+                                                Text("No facilities available")
+                                                    .font(.system(size: 13))
+                                                    .foregroundColor(Color(hex: "#9E9E9E"))
+                                                    .frame(maxWidth: .infinity, alignment: .center)
+                                                    .padding(.bottom, 20)
+                                            } else {
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    LazyHStack(spacing: 12) {
+                                                        ForEach(viewModel.facilities.prefix(8), id: \.id) { facility in
+                                                            DineInFacilityCard(facility: facility)
+                                                        }
+                                                    }
+                                                    .padding(.horizontal, 16)
+                                                    .padding(.bottom, 20)
+                                                }
                                             }
+                                        }
+                                        .background(Color.white)
+
+                                        // ── Popular Brands ──────────────────────────────
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text("POPULAR BRANDS")
+                                                .font(.system(size: 18, weight: .heavy))
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 16)
+                                                .padding(.top, 18)
+                                                .padding(.bottom, 14)
+
+                                            let brandRestaurants = viewModel.popularBrands.isEmpty
+                                                ? Array(repeating: nil as Restaurant?, count: 4)
+                                                : viewModel.popularBrands.prefix(8).map { Optional($0) }
+
+                                            ScrollView(.horizontal, showsIndicators: false) {
+                                                LazyHStack(spacing: 20) {
+                                                    ForEach(Array(brandRestaurants.enumerated()), id: \.offset) { _, restaurant in
+                                                        DineInBrandCircle(restaurant: restaurant)
+                                                    }
+                                                }
+                                                .padding(.horizontal, 16)
+                                                .padding(.bottom, 20)
+                                            }
+                                        }
+                                        .background(
+                                            LinearGradient(
+                                                gradient: Gradient(stops: [
+                                                    .init(color: Color(hex: "#2D5A27"), location: 0),
+                                                    .init(color: Color(hex: "#8B1A1A"), location: 1)
+                                                ]),
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
                                         )
+
+                                        Rectangle()
+                                            .fill(Color(hex: "#F0EFF4"))
+                                            .frame(height: 8)
+
+                                        // ── Restaurants to Explore ─────────────────────
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text("Restaurants to explore")
+                                                .font(.system(size: 17, weight: .bold))
+                                                .foregroundColor(.black)
+                                                .padding(.horizontal, 16)
+                                                .padding(.top, 16)
+                                                .padding(.bottom, 4)
+
+                                            let exploreRestaurants = viewModel.allRestaurants.isEmpty 
+                                                ? restaurantCards.map { createMockRestaurant(from: $0) }
+                                                : viewModel.allRestaurants
+
+                                            if viewModel.isLoading {
+                                                VStack(spacing: 0) {
+                                                    ForEach(0..<3, id: \.self) { _ in
+                                                        ListShimmerRow()
+                                                    }
+                                                }
+                                            } else {
+                                                LazyVStack(spacing: 0) {
+                                                    ForEach(exploreRestaurants, id: \.id) { restaurant in
+                                                        DineInRestaurantExploreCard(restaurant: restaurant)
+                                                            .onTapGesture {
+                                                                selectedRestaurant = restaurant
+                                                                navigateToRestaurant = true
+                                                            }
+                                                        Divider()
+                                                            .padding(.horizontal, 16)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        .background(Color.white)
                                         .padding(.bottom, 24)
                                     }
+                                    .background(Color(hex: "#F0EFF4"))
                                     
                                 case .driveThru:
                                     // Drive-Thru: Filter Chips + Restaurant Cards (Same as Take Away but Drive-Thru themed)
@@ -763,7 +937,11 @@ struct HomeView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .task { await viewModel.loadHomeData() }
+        .task {
+            async let homeTask: () = viewModel.loadHomeData()
+            async let dineInTask: () = viewModel.loadDineInData()
+            _ = await (homeTask, dineInTask)
+        }
         .refreshable { await viewModel.refresh() }
         .onAppear { appState.hideMainTabBar = false }
         .navigationDestination(isPresented: $navigateToRestaurant) {
@@ -779,7 +957,7 @@ struct HomeView: View {
             DineInMainView()
         }
         .navigationDestination(isPresented: $navigateToRestaurantView) {
-            RestaurantView()
+            DineInRestaurentDetailsView(restaurant: dineInNavigationRestaurant)
         }
         .navigationDestination(isPresented: $navigateToFlash) {
             FlashView()
@@ -795,6 +973,10 @@ struct HomeView: View {
                 SessionManager.shared.saveAddress(selectedAddress)
                 Task { await viewModel.refresh() }
             }
+        }
+        .navigationDestination(isPresented: $navigateToPastBookings) {
+            PastDineInBookingsView()
+                .environmentObject(appState)
         }
         // 1. Attach the first sheet to your main view
         .sheet(item: $selectedDishForDetail) { dish in
@@ -2102,48 +2284,50 @@ struct HomeView: View {
         
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
-                CategoryListView(items: categoryItems, title: categorySectionTitle)
-                    .padding(.top, 8)
-                
-                PromotionalBannerCarouselView(banners: promotionalBanners)
-                    .padding(.top, 12)
-                    .padding(.bottom, 12)
-                
-                Store99SectionView(
-                    selectedMode: selectedMode,
-                    products: storeProducts,
-                    swiggyCards: swiggyHighlights,
-                    onSeeAllTap: {
-                        onOpenRestaurantView()
-                    },
-                    onCardTap: {
-                        onOpenFlash()
-                    },
-                    onAddTap: { product in
-                        onShowDishDetail(product)
-                    }
-                )
-                .padding(.horizontal, 16)
-                .padding(.top, 6)
-                .padding(.bottom, 8)
-                
-                DeliciousYardSectionView(
-                    selectedMode: selectedMode,
-                    products: deliciousYardProducts,
-                    swiggyCards: deliciousYardCards,
-                    onSeeAllTap: {
-                        onOpenRestaurantView()
-                    },
-                    onCardTap: {
-                        onOpenFlash()
-                    },
-                    onAddTap: { product in
-                        onShowDishDetail(product)
-                    }
-                )
-                .padding(.horizontal, 16)
-                .padding(.top, 6)
-                .padding(.bottom, 8)
+                if selectedMode != .dineIn {
+                    CategoryListView(items: categoryItems, title: categorySectionTitle)
+                        .padding(.top, 8)
+                    
+                    PromotionalBannerCarouselView(banners: promotionalBanners)
+                        .padding(.top, 12)
+                        .padding(.bottom, 12)
+                    
+                    Store99SectionView(
+                        selectedMode: selectedMode,
+                        products: storeProducts,
+                        swiggyCards: swiggyHighlights,
+                        onSeeAllTap: {
+                            onOpenRestaurantView()
+                        },
+                        onCardTap: {
+                            onOpenFlash()
+                        },
+                        onAddTap: { product in
+                            onShowDishDetail(product)
+                        }
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+                    .padding(.bottom, 8)
+                    
+                    DeliciousYardSectionView(
+                        selectedMode: selectedMode,
+                        products: deliciousYardProducts,
+                        swiggyCards: deliciousYardCards,
+                        onSeeAllTap: {
+                            onOpenRestaurantView()
+                        },
+                        onCardTap: {
+                            onOpenFlash()
+                        },
+                        onAddTap: { product in
+                            onShowDishDetail(product)
+                        }
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+                    .padding(.bottom, 8)
+                }
                 
                 FilterChipsView(
                     isFilterActive: viewModel.openNow,
@@ -2172,7 +2356,7 @@ struct HomeView: View {
                     .padding(.top, 14)
                     .padding(.bottom, 14)
                 
-                if viewModel.isLoading {
+                if viewModel.isLoading && selectedMode == .food {
                     VStack(spacing: 0) {
                         ForEach(0..<3, id: \.self) { _ in
                             ListShimmerRow()
@@ -3317,8 +3501,455 @@ struct HomeView: View {
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         }
     }
-    
+        // MARK: - Dine-In Helper Sub-Views
+
+    /// Walk-in restaurant card (horizontal scroll) — matches Android card style exactly
+    private struct DineInWalkInCard: View {
+        let restaurant: Restaurant?
+        let actionLabel: String
+        let onTap: () -> Void
+
+        private func resolvedImageURL(_ raw: String?) -> URL? {
+            guard let raw = raw, !raw.isEmpty else { return nil }
+            if raw.hasPrefix("http") { return URL(string: raw) }
+            return URL(string: Constants.baseURL + raw)
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                ZStack(alignment: .topTrailing) {
+                    // Restaurant image
+                    if let url = resolvedImageURL(restaurant?.restImg) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let img):
+                                img.resizable().scaledToFill()
+                            default:
+                                Color(hex: "#F0F0F0")
+                            }
+                        }
+                        .frame(width: 180, height: 120)
+                        .clipped()
+                    } else {
+                        Color(hex: "#E8E8E8")
+                            .frame(width: 180, height: 120)
+                            .overlay(
+                                Image(systemName: "fork.knife")
+                                    .font(.system(size: 28))
+                                    .foregroundColor(Color(hex: "#BDBDBD"))
+                            )
+                    }
+
+                    // Heart favourite button
+                    Image(systemName: "heart")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(Color(hex: "#616161"))
+                        .frame(width: 32, height: 32)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.12), radius: 3, y: 1)
+                        .padding(8)
+                }
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(restaurant?.restTitle ?? "Restaurant")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 11))
+                            .foregroundColor(Color(hex: "#E23744"))
+                        Text(restaurant?.restRating ?? "4.5")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.black)
+                        Text("• \(restaurant?.restDistance ?? "1.0 km")")
+                            .font(.system(size: 12))
+                            .foregroundColor(Color(hex: "#757575"))
+                    }
+
+                    Text(restaurant?.restSdesc ?? "Multi Cuisine")
+                        .font(.system(size: 11))
+                        .foregroundColor(Color(hex: "#9E9E9E"))
+                        .lineLimit(1)
+
+                    Button(action: onTap) {
+                        Text(actionLabel)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 9)
+                            .background(Color(hex: "#E23744"))
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(12)
+            }
+            .frame(width: 180)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+        }
+    }
+
+    private struct DineInBookingCard: View {
+        let restaurant: Restaurant?
+        let bookingTime: String
+        let bookingStatus: String
+        let onTap: () -> Void
+
+        private func resolvedImageURL(_ raw: String?) -> URL? {
+            guard let raw = raw, !raw.isEmpty else { return nil }
+            if raw.hasPrefix("http") { return URL(string: raw) }
+            return URL(string: Constants.baseURL + raw)
+        }
+
+        var body: some View {
+            HStack(spacing: 12) {
+                if let url = resolvedImageURL(restaurant?.restImg) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let img):
+                            img.resizable().scaledToFill()
+                        default:
+                            Color(hex: "#F0F0F0")
+                        }
+                    }
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                } else {
+                    Color(hex: "#E8E8E8")
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay(
+                            Image(systemName: "fork.knife")
+                                .font(.system(size: 20))
+                                .foregroundColor(Color(hex: "#BDBDBD"))
+                        )
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(restaurant?.restTitle ?? "Restaurant")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+                    
+                    Text(bookingTime)
+                        .font(.system(size: 13))
+                        .foregroundColor(Color(hex: "#757575"))
+                    
+                    Text(bookingStatus)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color(hex: "#1D8B41"))
+                }
+                Spacer(minLength: 0)
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(Color(hex: "#BDBDBD"))
+                    .font(.system(size: 14, weight: .bold))
+            }
+            .padding(12)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color(hex: "#E8E8E8"), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.02), radius: 4, x: 0, y: 2)
+            .onTapGesture {
+                onTap()
+            }
+        }
+    }
+
+    /// Spotlight banner card — full-width-ish red banner card like Android screenshot
+    private struct DineInSpotlightBannerCard: View {
+        let banner: HomeBannerItem
+
+        private func resolvedImageURL(_ raw: String?) -> URL? {
+            guard let raw = raw, !raw.isEmpty else { return nil }
+            if raw.hasPrefix("http") { return URL(string: raw) }
+            return URL(string: Constants.baseURL + raw)
+        }
+
+        var body: some View {
+            ZStack(alignment: .bottomLeading) {
+                if let url = resolvedImageURL(banner.bannerImg) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            Color(hex: "#EFEFEF")
+                                .overlay(ProgressView().tint(.white))
+                        case .success(let img):
+                            img.resizable().scaledToFill()
+                        case .failure:
+                            Color(hex: "#C62828")
+                        @unknown default:
+                            Color(hex: "#C62828")
+                        }
+                    }
+                    .frame(width: UIScreen.main.bounds.width - 52, height: 130)
+                    .clipped()
+                } else {
+                    // Fallback: red gradient like Android
+                    LinearGradient(
+                        colors: [Color(hex: "#B71C1C"), Color(hex: "#E53935")],
+                        startPoint: .topLeading, endPoint: .bottomTrailing
+                    )
+                    .frame(width: UIScreen.main.bounds.width - 52, height: 130)
+                }
+
+                // Overlay text
+                if let title = banner.bannerTitle, !title.isEmpty {
+                    VStack(alignment: .leading, spacing: 2) {
+                        if let restName = banner.restaurantName {
+                            Text(restName.uppercased())
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white.opacity(0.85))
+                        }
+                        Text(title)
+                            .font(.system(size: 18, weight: .heavy))
+                            .foregroundColor(.white)
+                            .lineLimit(2)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
+                }
+            }
+            .frame(width: UIScreen.main.bounds.width - 52, height: 130)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+    }
+
+    /// Events/facilities card for Dine-In.
+    private struct DineInFacilityCard: View {
+        let facility: Facility
+
+        private func resolvedImageURL(_ raw: String?) -> URL? {
+            guard let raw = raw, !raw.isEmpty else { return nil }
+            if raw.hasPrefix("http") { return URL(string: raw) }
+            return URL(string: Constants.baseURL + raw)
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color(hex: "#ECECEC"))
+                        .frame(width: 120, height: 96)
+
+                    if let url = resolvedImageURL(facility.icon) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .empty:
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color(hex: "#ECECEC"))
+                                    .overlay(ProgressView().tint(.gray))
+                            case .success(let img):
+                                img.resizable().scaledToFill()
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(Color(hex: "#B0B0B0"))
+                            @unknown default:
+                                Image(systemName: "photo")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(Color(hex: "#B0B0B0"))
+                            }
+                        }
+                        .frame(width: 120, height: 96)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                }
+
+                Text(facility.name ?? "Facility Name")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.black)
+                    .lineLimit(1)
+                    .frame(width: 120, alignment: .center)
+            }
+        }
+    }
+
+    /// Popular brand circle — circular image + restaurant name label
+    private struct DineInBrandCircle: View {
+        let restaurant: Restaurant?
+
+        private func resolvedImageURL(_ raw: String?) -> URL? {
+            guard let raw = raw, !raw.isEmpty else { return nil }
+            if raw.hasPrefix("http") { return URL(string: raw) }
+            return URL(string: Constants.baseURL + raw)
+        }
+
+        var body: some View {
+            VStack(spacing: 8) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.15))
+                        .frame(width: 80, height: 80)
+
+                    if let url = resolvedImageURL(restaurant?.restImg) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .empty:
+                                Circle()
+                                    .fill(Color.white.opacity(0.18))
+                                    .overlay(ProgressView().tint(.white))
+                            case .success(let img):
+                                img.resizable().scaledToFill()
+                            case .failure:
+                                Image(systemName: "fork.knife")
+                                    .font(.system(size: 22))
+                                    .foregroundColor(.white.opacity(0.5))
+                            @unknown default:
+                                Image(systemName: "fork.knife")
+                                    .font(.system(size: 22))
+                                    .foregroundColor(.white.opacity(0.5))
+                            }
+                        }
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
+                    } else {
+                        Image(systemName: "fork.knife")
+                            .font(.system(size: 22))
+                            .foregroundColor(.white.opacity(0.5))
+                    }
+                }
+                .overlay(
+                    Circle()
+                        .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                )
+
+                Text(restaurant?.restTitle ?? "Restaurant")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .frame(width: 80)
+            }
+        }
+    }
+
+    /// Restaurants-to-explore card — large image + info row, exactly like Android
+    private struct DineInRestaurantExploreCard: View {
+        let restaurant: Restaurant
+
+        private func resolvedImageURL(_ raw: String?) -> URL? {
+            guard let raw = raw, !raw.isEmpty else { return nil }
+            if raw.hasPrefix("http") { return URL(string: raw) }
+            return URL(string: Constants.baseURL + raw)
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                // Image with distance badge
+                ZStack(alignment: .topTrailing) {
+                    if let url = resolvedImageURL(restaurant.restImg) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let img):
+                                img.resizable().scaledToFill()
+                            default:
+                                Color(hex: "#E8E8E8")
+                                    .overlay(
+                                        Image(systemName: "photo")
+                                            .font(.system(size: 32))
+                                            .foregroundColor(Color(hex: "#BDBDBD"))
+                                    )
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 180)
+                        .clipped()
+                    } else {
+                        Color(hex: "#E8E8E8")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 180)
+                            .overlay(
+                                Image(systemName: "photo")
+                                    .font(.system(size: 32))
+                                    .foregroundColor(Color(hex: "#BDBDBD"))
+                            )
+                    }
+
+                    // Distance badge (top-right)
+                    if let dist = restaurant.restDistance {
+                        Text("\(dist) km")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(.ultraThinMaterial)
+                            .environment(\.colorScheme, .dark)
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            .padding(10)
+                    }
+                }
+
+                // Info row
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text(restaurant.restTitle ?? "Restaurant")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                        // Veg / Non-veg indicator
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 3)
+                                .stroke(restaurant.isVeg ? Color(hex: "#22A45D") : Color(hex: "#E23744"), lineWidth: 1.5)
+                                .frame(width: 16, height: 16)
+                            Circle()
+                                .fill(restaurant.isVeg ? Color(hex: "#22A45D") : Color(hex: "#E23744"))
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+
+                    HStack(spacing: 6) {
+                        // Rating badge
+                        HStack(spacing: 3) {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(.white)
+                            Text(restaurant.restRating ?? "4.0")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(Color(hex: "#22A45D"))
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+
+                        Text("•")
+                            .foregroundColor(Color(hex: "#9E9E9E"))
+                        Text(restaurant.restDeliverytime ?? "30 mins")
+                            .font(.system(size: 12))
+                            .foregroundColor(Color(hex: "#5E5E5E"))
+                        Text("•")
+                            .foregroundColor(Color(hex: "#9E9E9E"))
+                        Text("₹\(restaurant.restCostfortwo ?? "0") for two")
+                            .font(.system(size: 12))
+                            .foregroundColor(Color(hex: "#5E5E5E"))
+                    }
+
+                    Text(restaurant.restLandmark ?? restaurant.restFullAddress ?? "Jaipur")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(hex: "#757575"))
+
+                    Text(restaurant.isOpen ? "Open" : "Closed")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(restaurant.isOpen ? Color(hex: "#22A45D") : Color(hex: "#E23744"))
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+            }
+            .background(Color.white)
+        }
+    }
+
 #if DEBUG
+
     struct HomeView_Previews: PreviewProvider {
         static var previews: some View {
             HomeView()

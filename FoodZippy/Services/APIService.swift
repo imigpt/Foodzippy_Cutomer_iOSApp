@@ -478,6 +478,128 @@ actor APIService {
         )
     }
 
+    /// Phase-2 mock endpoint for Dine-In spotlight banners.
+    func getDineInSpotlightBanners() async throws -> [HomeBannerItem] {
+        try await Task.sleep(nanoseconds: 450_000_000)
+
+        return [
+            HomeBannerItem(
+                bannerId: "spotlight_1",
+                bannerTitle: "Weekend Chef Specials",
+                bannerType: "dine_in",
+                bannerImg: "https://picsum.photos/800/360?random=301",
+                restaurantId: "101",
+                restaurantName: "Dutch Coffee House",
+                restaurantImage: nil,
+                isClickable: "1"
+            ),
+            HomeBannerItem(
+                bannerId: "spotlight_2",
+                bannerTitle: "Live Music Night",
+                bannerType: "dine_in",
+                bannerImg: "https://picsum.photos/800/360?random=302",
+                restaurantId: "102",
+                restaurantName: "Skyline Bistro",
+                restaurantImage: nil,
+                isClickable: "1"
+            ),
+            HomeBannerItem(
+                bannerId: "spotlight_3",
+                bannerTitle: "Unlimited Brunch Buffet",
+                bannerType: "dine_in",
+                bannerImg: "https://picsum.photos/800/360?random=303",
+                restaurantId: "103",
+                restaurantName: "Olive Terrace",
+                restaurantImage: nil,
+                isClickable: "1"
+            )
+        ]
+    }
+
+    /// Phase-2 mock endpoint for Dine-In event/experience facilities.
+    func getDineInFacilities() async throws -> [Facility] {
+        try await Task.sleep(nanoseconds: 520_000_000)
+
+        return [
+            Facility(
+                facilityId: "f_1",
+                name: "Live Music",
+                icon: "https://picsum.photos/320/220?random=401",
+                description: "Evening performances and acoustic sessions",
+                restaurantCount: "12"
+            ),
+            Facility(
+                facilityId: "f_2",
+                name: "Family Dining",
+                icon: "https://picsum.photos/320/220?random=402",
+                description: "Kid-friendly seating and menus",
+                restaurantCount: "18"
+            ),
+            Facility(
+                facilityId: "f_3",
+                name: "Rooftop Seating",
+                icon: "https://picsum.photos/320/220?random=403",
+                description: "Open-air premium dining",
+                restaurantCount: "8"
+            ),
+            Facility(
+                facilityId: "f_4",
+                name: "Fine Dining",
+                icon: "https://picsum.photos/320/220?random=404",
+                description: "Chef-curated tasting experiences",
+                restaurantCount: "9"
+            )
+        ]
+    }
+
+    /// Phase-2 mock endpoint for Dine-In popular brands.
+    func getPopularBrands() async throws -> [Restaurant] {
+        try await Task.sleep(nanoseconds: 600_000_000)
+
+        return [
+            Restaurant(
+                restId: "pb_1",
+                restTitle: "Urban Tandoor",
+                restImg: "https://picsum.photos/240/240?random=501",
+                restRating: "4.6",
+                restDeliverytime: "25 mins",
+                restCostfortwo: "600",
+                restIsVeg: 0,
+                restDistance: "1.0"
+            ),
+            Restaurant(
+                restId: "pb_2",
+                restTitle: "Cedar Grill",
+                restImg: "https://picsum.photos/240/240?random=502",
+                restRating: "4.4",
+                restDeliverytime: "30 mins",
+                restCostfortwo: "700",
+                restIsVeg: 1,
+                restDistance: "1.7"
+            ),
+            Restaurant(
+                restId: "pb_3",
+                restTitle: "Mocha District",
+                restImg: "https://picsum.photos/240/240?random=503",
+                restRating: "4.8",
+                restDeliverytime: "20 mins",
+                restCostfortwo: "500",
+                restIsVeg: 1,
+                restDistance: "0.9"
+            ),
+            Restaurant(
+                restId: "pb_4",
+                restTitle: "Spice Junction",
+                restImg: "https://picsum.photos/240/240?random=504",
+                restRating: "4.5",
+                restDeliverytime: "28 mins",
+                restCostfortwo: "650",
+                restIsVeg: 0,
+                restDistance: "2.4"
+            )
+        ]
+    }
+
     func bookDineTable(
         uid: String,
         restId: String,
