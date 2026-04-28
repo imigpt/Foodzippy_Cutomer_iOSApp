@@ -33,7 +33,6 @@ struct SubscriptionScheduleView: View {
     // UI State
     @State private var selectedDate: ScheduleDate?
     @State private var scrollOffset: CGFloat = 0
-    @State private var currentBannerIndex = 0
     
     // Mock Data
     private let restaurantName = "Restaurant Name"
@@ -114,25 +113,9 @@ struct SubscriptionScheduleView: View {
                 .frame(height: 0)
                 
                 VStack(spacing: 0) {
-                    // Banner Slider
-                    TabView(selection: $currentBannerIndex) {
-                        Image("burger")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .tag(0)
-                        Image("burger")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .tag(1)
-                    }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-                    .frame(height: 250) // Reduced from 500dp to fit screen better
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .padding(.horizontal, 16)
-                    .padding(.top, 90) // Space for header
-                    
-                    // Plan Overview Card
-                    planOverviewCard
+                    // Banner Carousel
+                    BannerSliderView()
+                        .padding(.top, 90) // Space for header
                         .padding(.vertical, 16)
                     
                     // Today's Meal Card
@@ -210,96 +193,6 @@ struct SubscriptionScheduleView: View {
         return window?.windows.first?.safeAreaInsets.top ?? 44
     }
     
-    private var planOverviewCard: some View {
-        VStack(spacing: 0) {
-            // Restaurant Header
-            HStack(spacing: 14) {
-                Image("burger")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 55, height: 55)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(planTitle)
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                    
-                    Text(restaurantName)
-                        .font(.system(size: 13))
-                        .foregroundColor(Color.white.opacity(0.8))
-                    
-                    Text(planDays)
-                        .font(.system(size: 12))
-                        .foregroundColor(Color.white.opacity(0.6))
-                }
-                Spacer()
-            }
-            .padding(16)
-            .background(primaryGreen)
-            
-            // Stats Grid
-            HStack(spacing: 10) {
-                statBox(value: daysRemaining, label: "Days Left", valueColor: primaryGreen)
-                statBox(value: completedDeliveries, label: "Delivered", valueColor: darkGreen)
-                statBox(value: upcomingDeliveries, label: "Upcoming", valueColor: orangeColor)
-                statBox(value: holidays, label: "Holidays", valueColor: Color(hex: "#9E9E9E"))
-            }
-            .padding(16)
-            
-            // Date Range
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Start Date")
-                        .font(.system(size: 11))
-                        .foregroundColor(Color(hex: "#666666"))
-                    Text(startDate)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(Color(hex: "#333333"))
-                }
-                
-                Spacer()
-                Rectangle()
-                    .fill(primaryGreen)
-                    .frame(height: 2)
-                    .frame(width: 40)
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("End Date")
-                        .font(.system(size: 11))
-                        .foregroundColor(Color(hex: "#666666"))
-                    Text(endDate)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(Color(hex: "#333333"))
-                }
-            }
-            .padding(14)
-            .background(Color(hex: "#F8F8F8"))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal, 16)
-            .padding(.bottom, 16)
-        }
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 16)
-        .shadow(color: .black.opacity(0.05), radius: 5, y: 3)
-    }
-    
-    private func statBox(value: String, label: String, valueColor: Color) -> some View {
-        VStack(spacing: 2) {
-            Text(value)
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(valueColor)
-            Text(label)
-                .font(.system(size: 11))
-                .foregroundColor(Color(hex: "#666666"))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(Color(hex: "#F8F8F8"))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
     
     private func todayMealsCard(for date: ScheduleDate) -> some View {
         VStack(spacing: 12) {
@@ -493,6 +386,125 @@ struct ScrollOffsetKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value += nextValue()
+    }
+}
+
+// MARK: - Banner Carousel
+
+struct BannerSliderView: View {
+    @State private var currentIndex = 76 
+    @State private var dragOffset: CGFloat = 0
+    @State private var isDragging = false
+    private let actualBannersCount = 3
+    private let fakeBannersCount = 150 
+    private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
+    var body: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            let cardWidth = width * 0.78
+            let cardSpacing: CGFloat = 14
+            let step = cardWidth + cardSpacing
+            let baseOffset = (width - cardWidth) / 2
+            ZStack {
+                Color.black.opacity(0.001) 
+                    .ignoresSafeArea()
+                
+                HStack(spacing: cardSpacing) {
+                    ForEach(0..<fakeBannersCount, id: \.self) { index in
+                        let relative = abs((CGFloat(index) - CGFloat(currentIndex)) + (dragOffset / step))
+                        let scale = max(0.92, 1 - (relative * 0.08))
+                        let realIndex = index % actualBannersCount
+
+                        BannerItemView() 
+                            .frame(width: cardWidth)
+                            .scaleEffect(scale)
+                            .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+                    }
+                }
+
+                .offset(x: baseOffset - (CGFloat(currentIndex) * step) + dragOffset)
+
+            }
+            .contentShape(Rectangle()) 
+
+            // 🛑 CRITICAL FIX: Changed from .gesture to .highPriorityGesture 🛑
+            // This stops the middle banner from swallowing your swipe!
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 15) 
+                    .onChanged { value in
+                        isDragging = true
+                        dragOffset = value.translation.width
+                    }
+                    .onEnded { value in
+                        let threshold = step * 0.20
+                        let predicted = value.predictedEndTranslation.width
+                        var nextIndex: Int = currentIndex
+                        if value.translation.width < -threshold || predicted < -threshold {
+
+                            nextIndex = currentIndex + 1
+
+                        } else if value.translation.width > threshold || predicted > threshold {
+
+                            nextIndex = currentIndex - 1
+                        }
+                        withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
+                            currentIndex = nextIndex
+                            dragOffset = 0
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            isDragging = false
+                        }
+                    }
+            )
+        }
+        .frame(height: 380) 
+        .onReceive(timer) { _ in
+            guard !isDragging else { return } 
+            withAnimation(.spring(response: 0.42, dampingFraction: 0.86)) {
+                currentIndex += 1 
+            }
+        }
+    }
+}
+
+struct BannerItemView: View {
+    var body: some View {
+        NavigationLink(destination: RestaurantView()) {
+            ZStack(alignment: .bottomLeading) {
+                // Background & Illustration (Replace with actual asset image from design)
+                Color(hex: "#162820") // Dark green background
+                    .overlay(
+                        // Placeholder for the complex illustration
+                        VStack {
+                            Spacer()
+                            Image(systemName: "photo.on.rectangle.angled")
+                                .font(.system(size: 60))
+                                .foregroundColor(.white.opacity(0.2))
+                            Spacer()
+                        }
+                    )
+                
+                // Overlaid Text exactly as seen in target UI
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Page 2 Banner")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
+                    
+                    Text("100% Satisfaction")
+                        .font(.system(size: 20, weight: .semibold, design: .serif)) // Script mimic
+                        .foregroundColor(.gray)
+                    
+                    Text("Page 2 Banner")
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundColor(.white.opacity(0.9))
+                }
+                .padding(20)
+                .padding(.bottom, 24)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 }
 

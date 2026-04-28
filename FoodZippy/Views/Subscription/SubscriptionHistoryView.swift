@@ -84,7 +84,7 @@ struct SubscriptionHistoryView: View {
     }
 
     private func fetchSubscriptions() async {
-        let uid = SessionManager.shared.currentUser?.id ?? ""
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""
         do {
             let response = try await APIService.shared.getUserSubscriptions(userId: uid)
             subscriptions = response.activeOrders ?? []

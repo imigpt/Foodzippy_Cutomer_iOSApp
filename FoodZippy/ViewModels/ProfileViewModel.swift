@@ -41,7 +41,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Load Profile
     
     func loadProfile() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         isLoading = true
         
@@ -50,9 +50,24 @@ class ProfileViewModel: ObservableObject {
             if let userData = response.userData {
                 user = userData
                 SessionManager.shared.saveUser(userData)
-                if let wallet = userData.wallet {
-                    SessionManager.shared.walletBalance = wallet
-                    walletBalance = wallet
+                if let walletAny = userData.wallet {
+                    // userData.wallet may be an AnyCodableValue or a loosely typed value; coerce to String
+                    let walletString: String
+                    if let s = walletAny as? String {
+                        walletString = s
+                    } else if let n = walletAny as? NSNumber {
+                        walletString = n.stringValue
+                    } else if let i = walletAny as? Int {
+                        walletString = String(i)
+                    } else if let d = walletAny as? Double {
+                        walletString = String(d)
+                    } else if let f = walletAny as? Float {
+                        walletString = String(f)
+                    } else {
+                        walletString = String(describing: walletAny)
+                    }
+                    SessionManager.shared.walletBalance = walletString
+                    walletBalance = walletString
                 }
             }
         } catch {
@@ -65,7 +80,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Order History
     
     func loadOrderHistory() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         isLoadingOrders = true
         
@@ -103,7 +118,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Wallet
     
     func loadWallet() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         do {
             let response = try await APIService.shared.getWalletReport(uid: uid)
@@ -120,7 +135,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Favourites
     
     func loadFavourites() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         let lat = SessionManager.shared.currentAddress?.latMap ?? LocationManager.shared.latitude
         let lng = SessionManager.shared.currentAddress?.longMap ?? LocationManager.shared.longitude
         
@@ -157,7 +172,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Referral
     
     func loadReferralData() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         do {
             let response = try await APIService.shared.getReferralData(uid: uid)
@@ -170,7 +185,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Refunds
     
     func loadRefunds() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         do {
             let response = try await APIService.shared.getRefundList(uid: uid)
@@ -183,7 +198,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Edit Profile
     
     func updateName(_ name: String) async -> Bool {
-        guard let uid = SessionManager.shared.currentUser?.id else { return false }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return false }
         
         do {
             let response = try await APIService.shared.editProfile(uid: uid, name: name)
@@ -200,7 +215,7 @@ class ProfileViewModel: ObservableObject {
     // MARK: - Logout
     
     func logout() async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         do {
             _ = try await APIService.shared.logout(userId: uid)

@@ -176,6 +176,8 @@ struct FlashView: View {
     @State private var selectedDishForDetail: AddToCartDish?
     @State private var selectedDishForCustomization: AddToCartDish?
     @State private var queuedCustomizationDish: AddToCartDish?
+    @State private var searchText = ""
+    @State private var isSearchActive = false
 
     private var heroHeight: CGFloat {
         horizontalSizeClass == .regular ? 280 : 248
@@ -214,19 +216,23 @@ struct FlashView: View {
     ]
 
     private var filteredItems: [FlashStoreItem] {
-        viewModel.filteredItems(
+        let items = viewModel.filteredItems(
             category: selectedCategory,
             priceFilter: selectedPriceFilter,
             dietFilter: selectedDietFilter
         )
+        if searchText.isEmpty { return items }
+        return items.filter { $0.title.localizedCaseInsensitiveContains(searchText) || $0.restaurantName.localizedCaseInsensitiveContains(searchText) }
     }
 
     private var filteredTrendingItems: [FlashStoreItem] {
-        viewModel.trendingItems(
+        let items = viewModel.trendingItems(
             category: selectedCategory,
             priceFilter: selectedPriceFilter,
             dietFilter: selectedDietFilter
         )
+        if searchText.isEmpty { return items }
+        return items.filter { $0.title.localizedCaseInsensitiveContains(searchText) || $0.restaurantName.localizedCaseInsensitiveContains(searchText) }
     }
 
     private var flashRestaurantSections: [FlashRestaurantSection] {
@@ -268,11 +274,16 @@ var body: some View {
             
             ScrollView(showsIndicators: false) {
                 LazyVStack(spacing: 20) {
-                    heroBanner(safeAreaTop: geo.safeAreaInsets.top) // अपडेटेड बैनर
-                    brandsSection
-                    categoriesSection
-                    bannersSection
-                    flashRestaurantsSection
+                    heroBanner(safeAreaTop: geo.safeAreaInsets.top)
+                    
+                    if isSearchActive && !searchText.isEmpty {
+                        searchResultsSection
+                    } else {
+                        brandsSection
+                        categoriesSection
+                        bannersSection
+                        flashRestaurantsSection
+                    }
                 }
                 .padding(.bottom, 24)
             }
@@ -321,27 +332,64 @@ private func heroBanner(safeAreaTop: CGFloat) -> some View {
     VStack(spacing: 0) {
         VStack(spacing: 0) {
             HStack {
-                Button(action: { 
-                    appState.selectedTab = .home
-                    dismiss() 
-                }) {
-                    Image(systemName: "arrow.left")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(Color.black.opacity(0.2))
-                        .clipShape(Circle())
-                }
+                if isSearchActive {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(Color.gray)
+                        TextField("Search items or restaurants...", text: $searchText)
+                            .foregroundColor(.black)
+                            .autocapitalization(.none)
+                        
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(Color.gray)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(Color.white)
+                    .cornerRadius(22)
 
-                Spacer()
+                    Button(action: {
+                        withAnimation {
+                            isSearchActive = false
+                            searchText = ""
+                        }
+                    }) {
+                        Text("Cancel")
+                            .foregroundColor(.white)
+                            .fontWeight(.semibold)
+                    }
+                    .padding(.leading, 8)
+                } else {
+                    Button(action: { 
+                        appState.selectedTab = .home
+                        dismiss() 
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Color.black.opacity(0.2))
+                            .clipShape(Circle())
+                    }
 
-                Button(action: {}) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(Color.black.opacity(0.2))
-                        .clipShape(Circle())
+                    Spacer()
+
+                    Button(action: {
+                        withAnimation {
+                            isSearchActive = true
+                        }
+                    }) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Color.black.opacity(0.2))
+                            .clipShape(Circle())
+                    }
                 }
             }
             .padding(.horizontal, 16)
@@ -536,6 +584,45 @@ private func heroBanner(safeAreaTop: CGFloat) -> some View {
             }
         }
         .padding(.horizontal, 12)
+    }
+
+    private var searchResultsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Search Results for \"\(searchText)\"")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("\(filteredItems.count) found")
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(.gray)
+            }
+            .padding(.horizontal, horizontalPadding)
+
+            if filteredItems.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 48))
+                        .foregroundColor(.gray.opacity(0.3))
+                    Text("No items found matching your search")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
+            } else {
+                LazyVGrid(columns: gridColumns, spacing: 16) {
+                    ForEach(filteredItems) { item in
+                        DishCardView(item: item, style: .grid) {
+                            addToCart(item)
+                        }
+                    }
+                }
+                .padding(.horizontal, horizontalPadding)
+            }
+        }
     }
 
     private func toAddToCartDish(_ dish: FlashDish, restaurant: FlashRestaurantSection) -> AddToCartDish {

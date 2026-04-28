@@ -69,7 +69,7 @@ class CartViewModel: ObservableObject {
         isLoading = true
         
         // Load addresses
-        if let uid = SessionManager.shared.currentUser?.id {
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""; if !uid.isEmpty {
             do {
                 let addressResponse = try await APIService.shared.getAddressList(uid: uid)
                 if let list = addressResponse.addressList {
@@ -176,7 +176,7 @@ class CartViewModel: ObservableObject {
     // MARK: - Coupon
     
     func applyCouponCode(_ code: String) async {
-        guard let uid = SessionManager.shared.currentUser?.id else { return }
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         let restId = CartManager.shared.currentRestaurantId ?? ""
         
         do {
@@ -210,7 +210,7 @@ class CartViewModel: ObservableObject {
     // MARK: - Place Order
     
     func placeOrder() async {
-        guard let uid = SessionManager.shared.currentUser?.id else {
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else {
             showErrorMessage("Please login to place order")
             return
         }

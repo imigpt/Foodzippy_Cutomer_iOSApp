@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>ExampleApp</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.example.app</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.foodzippy.app</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>app-1-904807828502-ios-549296ccc694cd6e683937</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

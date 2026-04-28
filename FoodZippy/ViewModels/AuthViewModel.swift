@@ -8,6 +8,7 @@ import Combine
 class AuthViewModel: ObservableObject {
     @Published var mobile = ""
     @Published var name = ""
+    @Published var email = ""
     @Published var password = ""
     @Published var confirmPassword = ""
     @Published var referralCode = ""
@@ -29,6 +30,11 @@ class AuthViewModel: ObservableObject {
     @Published var navigateToSignup = false
     @Published var navigateToForgot = false
     @Published var navigateToHome = false
+    
+    private var firebaseVerificationID: String {
+        get { UserDefaults.standard.string(forKey: "firebase_verification_id") ?? "" }
+        set { UserDefaults.standard.set(newValue, forKey: "firebase_verification_id") }
+    }
     
     enum AuthFlow {
         case login
@@ -85,40 +91,65 @@ class AuthViewModel: ObservableObject {
     // MARK: - Signup
     
     func checkMobileForSignup() async {
-        guard validateSignup() else { return }
+        print("🧪 DEBUG: checkMobileForSignup started")
+        guard validateSignup() else { 
+            print("🧪 DEBUG: validateSignup failed")
+            return 
+        }
         
         isLoading = true
         defer { isLoading = false }
         
         do {
+            print("🧪 DEBUG: Checking mobile \(selectedCountryCode)\(mobile)")
             let response = try await APIService.shared.checkMobile(
                 mobile: mobile,
                 ccode: selectedCountryCode
             )
             
+            print("🧪 DEBUG: checkMobile response success: \(response.isSuccess), msg: \(response.responseMsg ?? "nil")")
+            
             if response.isSuccess {
                 showErrorMessage("Mobile number already registered. Please login.")
             } else {
                 currentFlow = .signup
+                print("🧪 DEBUG: Mobile not registered, proceeding to OTP")
                 navigateToOtp = true
                 await sendOtp()
             }
         } catch {
+            print("🧪 DEBUG: checkMobile error: \(error.localizedDescription)")
             showErrorMessage(error.localizedDescription)
         }
     }
     
+    
     // MARK: - OTP
     
     func sendOtp() async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        let fullPhone = "\(selectedCountryCode)\(mobile)"
         do {
-            _ = try await APIService.shared.sendOtp(
+            // 1. Send OTP via Firebase
+            let vID = try await FirebaseAuthHelper.shared.sendVerificationCode(to: fullPhone)
+            self.firebaseVerificationID = vID
+            
+            #if DEBUG
+            print("🧪 DEBUG: Received verificationID: \(vID)")
+            #endif
+            
+            // 2. Optional: Notify backend (already done in current flow if needed)
+            _ = try? await APIService.shared.sendOtp(
                 mobile: mobile,
                 ccode: selectedCountryCode
             )
+            
             startOtpTimer()
+            navigateToOtp = true
         } catch {
-            showErrorMessage("Failed to send OTP")
+            showErrorMessage("Firebase: \(error.localizedDescription)")
         }
     }
     
@@ -128,22 +159,55 @@ class AuthViewModel: ObservableObject {
             showErrorMessage("Please enter complete OTP")
             return
         }
-        
+
         isLoading = true
         defer { isLoading = false }
-        
-        switch currentFlow {
-        case .login:
-            await performLogin()
-        case .signup:
-            await performSignup()
-        case .forgotPassword:
-            navigateToHome = false
-            // Navigate to change password
-            successMessage = "OTP verified. Please set new password."
-            showSuccess = true
-        case .walletActivation:
-            break
+
+        #if DEBUG
+        // DEBUG bypass: allow development without Firebase setup.
+        if otp == "000000" {
+            switch currentFlow {
+            case .login:
+                await performLogin()
+            case .signup:
+                await performSignup()
+            case .forgotPassword:
+                navigateToHome = false
+                successMessage = "OTP verified (debug). Please set new password."
+                showSuccess = true
+            case .walletActivation:
+                break
+            }
+            return
+        }
+        #endif
+
+        do {
+            // 1. Verify with Firebase
+            let uid = try await FirebaseAuthHelper.shared.signIn(
+                verificationID: firebaseVerificationID,
+                verificationCode: otp
+            )
+            print("✅ Firebase Auth success. UID: \(uid)")
+
+            // 2. Proceed with backend login/signup
+            switch currentFlow {
+            case .login:
+                await performLogin()
+            case .signup:
+                await performSignup()
+            case .forgotPassword:
+                navigateToHome = false
+                successMessage = "OTP verified. Please set new password."
+                showSuccess = true
+            case .walletActivation:
+                break
+            }
+        } catch {
+            // Provide clearer error context
+            let message = "Verification Failed: \(error.localizedDescription)"
+            print("❌ Firebase verification error: \(message)")
+            showErrorMessage(message)
         }
     }
     
@@ -155,19 +219,7 @@ class AuthViewModel: ObservableObject {
             )
             
             if response.isSuccess, let user = response.userLogin {
-                SessionManager.shared.saveUser(user)
-                if let wallet = user.wallet {
-                    SessionManager.shared.walletBalance = wallet
-                }
-                SessionManager.shared.isIntroShown = true
-                
-                // Sync FCM token
-                let token = SessionManager.shared.fcmToken
-                if !token.isEmpty {
-                    try? await APIService.shared.saveToken(userId: user.id ?? "", token: token)
-                }
-                
-                AppState.shared.currentScreen = .home
+                handleAuthSuccess(user)
             } else {
                 showErrorMessage(response.responseMsg ?? "Login failed")
             }
@@ -177,55 +229,54 @@ class AuthViewModel: ObservableObject {
     }
     
     private func performSignup() async {
+        print("🧪 DEBUG: Starting performSignup for \(mobile)")
+        print("🧪 DEBUG: Signup Data - Name: \(name), Email: \(email), Password: \(password), CCode: \(selectedCountryCode)")
         do {
             let response = try await APIService.shared.register(
-                name: name,
+                name: name.isEmpty ? "Customer" : name,
+                email: email,
                 mobile: mobile,
                 ccode: selectedCountryCode,
                 password: password,
                 referCode: referralCode
             )
             
+            print("🧪 DEBUG: Registration response success: \(response.isSuccess), message: \(response.responseMsg ?? "N/A")")
+            
             if response.isSuccess, let user = response.userLogin {
-                SessionManager.shared.saveUser(user)
-                if let wallet = user.wallet {
-                    SessionManager.shared.walletBalance = wallet
-                }
-                SessionManager.shared.isIntroShown = true
-                AppState.shared.currentScreen = .home
+                print("🧪 DEBUG: Registration successful, handling auth success")
+                handleAuthSuccess(user)
+            } else if response.responseMsg?.lowercased().contains("already used") == true {
+                print("🧪 DEBUG: Mobile already used, falling back to login")
+                await performLogin()
             } else {
+                print("🧪 DEBUG: Registration failed with message: \(response.responseMsg ?? "unknown")")
                 showErrorMessage(response.responseMsg ?? "Registration failed")
             }
         } catch {
+            print("🧪 DEBUG: Registration catch error: \(error.localizedDescription)")
             showErrorMessage(error.localizedDescription)
         }
     }
     
-    // MARK: - Forgot Password
-    
-    func requestForgotPassword() async {
-        guard validateMobile() else { return }
+    private func handleAuthSuccess(_ user: User) {
+        SessionManager.shared.saveUser(user)
+        if let wallet = user.wallet {
+            SessionManager.shared.walletBalance = wallet.stringValue ?? "0"
+        }
+        SessionManager.shared.isIntroShown = true
         
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            let response = try await APIService.shared.forgotPassword(
-                mobile: mobile,
-                ccode: selectedCountryCode
-            )
-            
-            if response.isSuccess {
-                currentFlow = .forgotPassword
-                navigateToOtp = true
-                await sendOtp()
-            } else {
-                showErrorMessage("Mobile number not found")
+        // Sync FCM token
+        let token = SessionManager.shared.fcmToken
+        if !token.isEmpty {
+            Task {
+                try? await APIService.shared.saveToken(userId: user.id?.stringValue ?? "", token: token)
             }
-        } catch {
-            showErrorMessage(error.localizedDescription)
         }
+        
+        AppState.shared.currentScreen = .home
     }
+    
     
     // MARK: - Guest Mode
     
@@ -273,6 +324,14 @@ class AuthViewModel: ObservableObject {
             showErrorMessage("Please enter your name")
             return false
         }
+        if email.isEmpty {
+            showErrorMessage("Please enter your email")
+            return false
+        }
+        if !email.isValidEmail {
+            showErrorMessage("Please enter a valid email address")
+            return false
+        }
         if !validateMobile() { return false }
         if password.isEmpty {
             showErrorMessage("Please enter password")
@@ -280,6 +339,10 @@ class AuthViewModel: ObservableObject {
         }
         if password.count < 6 {
             showErrorMessage("Password must be at least 6 characters")
+            return false
+        }
+        if password != confirmPassword {
+            showErrorMessage("Passwords do not match")
             return false
         }
         return true
@@ -290,3 +353,4 @@ class AuthViewModel: ObservableObject {
         showError = true
     }
 }
+

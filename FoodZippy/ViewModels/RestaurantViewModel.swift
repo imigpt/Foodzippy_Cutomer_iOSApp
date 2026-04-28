@@ -41,7 +41,7 @@ class RestaurantViewModel: ObservableObject {
     func loadRestaurant(restId: String) async {
         isLoading = true
         let session = SessionManager.shared
-        let uid = session.currentUser?.id ?? "0"
+        let uid = session.currentUser?.id?.stringValue ?? "0"
         let lat = session.currentAddress?.latMap ?? LocationManager.shared.latitude
         let lng = session.currentAddress?.longMap ?? LocationManager.shared.longitude
         
@@ -74,7 +74,7 @@ class RestaurantViewModel: ObservableObject {
     
     func toggleFavourite() async {
         guard let restId = restaurant?.restId,
-              let uid = SessionManager.shared.currentUser?.id else { return }
+              let uid = SessionManager.shared.currentUser?.id?.stringValue else { return }
         
         isFavourite.toggle()
         

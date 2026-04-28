@@ -1878,7 +1878,7 @@ struct HomeView: View {
                                             .fill(sel
                                                   ? Color(hex: "#E23744").opacity(0.12)
                                                   : Color(hex: "#F5F5F5"))
-                                            .frame(width: 58, height: 58)
+                                            .frame(width: 50, height: 50)
                                         
                                         if let img = cat.catImg, let url = URL(string: img) {
                                             AsyncImage(url: url) { i in i.resizable().scaledToFill() }

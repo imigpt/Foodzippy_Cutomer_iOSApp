@@ -82,6 +82,12 @@ actor APIService {
             let decoded = try decoder.decode(T.self, from: data)
             return decoded
         } catch {
+            #if DEBUG
+            print("❌ Decoding Error in \(endpoint): \(error)")
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📥 Raw Response: \(jsonString)")
+            }
+            #endif
             throw APIError.decodingError(error)
         }
     }
@@ -95,11 +101,12 @@ actor APIService {
         )
     }
     
-    func register(name: String, mobile: String, ccode: String, password: String, referCode: String = "") async throws -> LoginResponse {
+    func register(name: String, email: String, mobile: String, ccode: String, password: String, referCode: String = "") async throws -> LoginResponse {
         return try await request(
             endpoint: Constants.Endpoints.register,
             body: [
                 "name": name,
+                "email": email,
                 "mobile": mobile,
                 "ccode": ccode,
                 "password": password,
@@ -689,6 +696,20 @@ actor APIService {
         )
     }
 
+    func getHolidayRequests(userId: String) async throws -> HolidayRequestsResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.holidayRequests,
+            body: ["user_id": userId]
+        )
+    }
+
+    func getSubscriptionBanners() async throws -> SubscriptionBannerResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.subscriptionBanners,
+            method: "GET"
+        )
+    }
+
     // MARK: - Rewards OTP APIs
 
     func sendCorporateOtp(email: String) async throws -> GenericResponse {
@@ -716,6 +737,120 @@ actor APIService {
         return try await request(
             endpoint: Constants.Endpoints.studentCashbackVerifyOtp,
             body: ["email": email, "otp": otp]
+        )
+    }
+
+    // MARK: - Membership Service APIs
+
+    func getMembershipPlans() async throws -> MembershipPlansResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.membershipPlans,
+            method: "GET"
+        )
+    }
+
+    func purchaseMembership(userId: String, planId: String, transactionId: String?) async throws -> GenericResponse {
+        var body: [String: Any] = [
+            "user_id": userId,
+            "plan_id": planId
+        ]
+        if let txId = transactionId {
+            body["transaction_id"] = txId
+        }
+        return try await request(
+            endpoint: Constants.Endpoints.purchaseMembership,
+            body: body
+        )
+    }
+
+    func checkUserMembership(userId: String) async throws -> CheckUserMembershipResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.checkUserMembership,
+            body: ["user_id": userId]
+        )
+    }
+
+    func getMembershipHistory(userId: String) async throws -> MembershipHistoryResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.membershipHistory,
+            body: ["user_id": userId]
+        )
+    }
+
+    func cancelMembership(userId: String, orderId: String) async throws -> GenericResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.cancelMembership,
+            body: [
+                "user_id": userId,
+                "order_id": orderId
+            ]
+        )
+    }
+
+    // MARK: - SBI Payment / Wallet integrations
+
+    func sbiAddMoney(userId: String, amount: String) async throws -> GenericResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.sbiAddMoney,
+            body: [
+                "user_id": userId,
+                "amount": amount
+            ]
+        )
+    }
+
+    func sbiPaymentVerify(userId: String, paymentId: String, orderId: String) async throws -> GenericResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.sbiPaymentVerify,
+            body: [
+                "user_id": userId,
+                "payment_id": paymentId,
+                "order_id": orderId
+            ]
+        )
+    }
+
+    // MARK: - Miscellaneous
+
+    func getGuestHomeBanners() async throws -> HomeBannerResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.homeBanners,
+            method: "POST"
+        )
+    }
+
+    func verifyCoupon(userId: String, couponId: String) async throws -> GenericResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.verifyCoupon,
+            body: [
+                "user_id": userId,
+                "coupon_id": couponId
+            ]
+        )
+    }
+
+    func getRestaurantRegisterLink() async throws -> GenericResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.registerRestaurantLink,
+            method: "GET"
+        )
+    }
+
+    func trackOfferClick(userId: String, offerId: String) async throws -> GenericResponse {
+        return try await request(
+            endpoint: Constants.Endpoints.trackOfferClick,
+            body: [
+                "user_id": userId,
+                "offer_id": offerId
+            ]
+        )
+    }
+
+    func getRestaurantOffer(restId: String) async throws -> GenericResponse {
+        let endpoint = Constants.Endpoints.restaurantOffer(restId: restId)
+        return try await request(
+            endpoint: endpoint,
+            method: "GET"
         )
     }
 }

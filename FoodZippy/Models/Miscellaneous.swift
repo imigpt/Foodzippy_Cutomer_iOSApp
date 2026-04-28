@@ -403,3 +403,272 @@ enum ProfileMenuAction {
     case registerRestaurant
     case language
 }
+
+// MARK: - Holiday Requests
+struct HolidayRequestItem: Codable, Identifiable {
+    var id: String { requestId ?? UUID().uuidString }
+    
+    let requestId: String?
+    let orderId: String?
+    let startDate: String?
+    let endDate: String?
+    let status: String?
+    let requestDate: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case requestId = "request_id"
+        case orderId = "order_id"
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case status
+        case requestDate = "request_date"
+    }
+}
+
+struct HolidayRequestsResponse: Codable {
+    let responseCode: String?
+    let result: String?
+    let requests: [HolidayRequestItem]?
+    
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "ResponseCode"
+        case result = "Result"
+        case requests = "HolidayRequests"
+    }
+}
+
+// MARK: - Subscription Banners
+struct SubscriptionBannerResponse: Codable {
+    let responseCode: String?
+    let result: String?
+    let banners: [HomeBannerItem]?
+    
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "ResponseCode"
+        case result = "Result"
+        case banners = "Banners"
+    }
+}
+
+// MARK: - Membership
+struct MembershipPlan: Codable, Identifiable {
+    var id: String { String(planId ?? 0) }
+    
+    let planId: Int?
+    let planName: String?
+    let planSubtitle: String?
+    let durationMonths: Int?
+    let originalPrice: Int?
+    let offerPrice: Int?
+    let savings: Int?
+    let freeDelivery: Bool?
+    let minOrderAmount: Int?
+    let discountPercentage: Int?
+    let maxDiscount: Int?
+    let noSurgeFee: Bool?
+    let prebookOffer: PrebookOffer?
+    let hasCoupon: Bool?
+    let couponText: String?
+    let colorStart: String?
+    let colorEnd: String?
+    let icon: String?
+    let benefitsByCategory: [BenefitsByCategory]?
+    
+    enum CodingKeys: String, CodingKey {
+        case planId = "id"
+        case planName = "plan_name"
+        case planSubtitle = "plan_subtitle"
+        case durationMonths = "duration_months"
+        case originalPrice = "original_price"
+        case offerPrice = "offer_price"
+        case savings
+        case freeDelivery = "free_delivery"
+        case minOrderAmount = "min_order_amount"
+        case discountPercentage = "discount_percentage"
+        case maxDiscount = "max_discount"
+        case noSurgeFee = "no_surge_fee"
+        case prebookOffer = "prebook_offer"
+        case hasCoupon = "has_coupon"
+        case couponText = "coupon_text"
+        case colorStart = "color_start"
+        case colorEnd = "color_end"
+        case icon
+        case benefitsByCategory = "benefits_by_category"
+    }
+}
+
+struct MembershipPlansResponse: Codable {
+    let responseCode: String?
+    let result: String?
+    let responseMsg: String?
+    let plans: [MembershipPlan]?
+    
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "ResponseCode"
+        case result = "Result"
+        case responseMsg = "ResponseMsg"
+        case plans = "MembershipPlans"
+    }
+}
+
+struct CheckUserMembershipResponse: Codable {
+    let responseCode: String?
+    let result: String?
+    let hasMembership: Bool?
+    let membershipDetails: UserMembershipDetails?
+    
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "ResponseCode"
+        case result = "Result"
+        case hasMembership = "has_membership"
+        case membershipDetails = "membership_details"
+    }
+}
+
+struct UserMembershipDetails: Codable {
+    let planId: String?
+    let planTitle: String?
+    let startDate: String?
+    let endDate: String?
+    let daysRemaining: Int?
+    let status: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case planId = "plan_id"
+        case planTitle = "plan_title"
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case daysRemaining = "days_remaining"
+        case status
+    }
+}
+
+struct MembershipHistoryItem: Codable, Identifiable {
+    var id: String { orderId ?? UUID().uuidString }
+    
+    let orderId: String?
+    let planTitle: String?
+    let amount: String?
+    let purchaseDate: String?
+    let status: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case orderId = "order_id"
+        case planTitle = "plan_title"
+        case amount
+        case purchaseDate = "purchase_date"
+        case status
+    }
+}
+
+struct MembershipHistoryResponse: Codable {
+    let responseCode: String?
+    let result: String?
+    let history: [MembershipHistoryItem]?
+    
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "ResponseCode"
+        case result = "Result"
+        case history = "MembershipHistory"
+    }
+}
+
+// MARK: - Coupon Item
+struct CouponItem: Codable, Identifiable {
+    var id: String { couponId ?? UUID().uuidString }
+    
+    let couponId: String?
+    let couponTitle: String?
+    let subtitle: String?
+    let couponCode: String?
+    let couponDescription: String?
+    let couponValue: String?
+    let minAmount: String?
+    let couponImg: String?
+    let cdate: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case couponId = "id"
+        case couponTitle = "coupon_title"
+        case subtitle
+        case couponCode = "coupon_code"
+        case couponDescription = "c_desc"
+        case couponValue = "c_value"
+        case minAmount = "min_amt"
+        case couponImg = "c_img"
+        case cdate
+    }
+}
+
+// MARK: - Meal Card
+struct MealCard: Codable, Identifiable {
+    var id: String { mealId ?? UUID().uuidString }
+    
+    let mealId: String?
+    let mealName: String?
+    let description: String?
+    let backgroundColor: String?
+    let imageUrl: String?
+    let mealType: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case mealId = "id"
+        case mealName = "meal_name"
+        case description
+        case backgroundColor = "background_color"
+        case imageUrl = "image_url"
+        case mealType = "meal_type"
+    }
+}
+
+struct MealCardsResponse: Codable {
+    let responseCode: String?
+    let result: String?
+    let mealCards: [MealCard]?
+    
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "ResponseCode"
+        case result = "Result"
+        case mealCards = "MealCards"
+    }
+}
+
+// MARK: - Membership Benefits
+struct MembershipBenefit: Codable, Identifiable {
+    var id: Int { benefitId ?? 0 }
+    
+    let benefitId: Int?
+    let title: String?
+    let description: String?
+    let icon: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case benefitId = "id"
+        case title, description, icon
+    }
+}
+
+struct BenefitsByCategory: Codable {
+    let category: String?
+    let benefits: [MembershipBenefit]?
+}
+
+struct PrebookOffer: Codable {
+    let title: String?
+    let description: String?
+    let icon: String?
+}
+
+// MARK: - Affected Models (for Holidays)
+struct AffectedMeal: Codable, Identifiable {
+    var id: String { mealId ?? UUID().uuidString }
+    let mealId: String?
+    let mealName: String?
+    let date: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case mealId = "meal_id"
+        case mealName = "meal_name"
+        case date
+    }
+}

@@ -93,7 +93,7 @@ struct WalletActivationView: View {
     }
 
     private func activateWallet() async {
-        guard let uid = SessionManager.shared.currentUser?.id, !uid.isEmpty else {
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue, !uid.isEmpty else {
             message = "Please login first"
             showMessage = true
             return

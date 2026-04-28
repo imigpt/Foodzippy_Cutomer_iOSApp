@@ -20,7 +20,7 @@ struct SubscriptionView: View {
                     // Main Scrollable Content
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 24) {
-                            BannerSliderView()
+                            SubscriptionBannerSliderView()
                                 .padding(.horizontal, 16)
                                 .padding(.top, 40) // Space for floating search bar
                             
@@ -156,22 +156,15 @@ struct SearchBarView: View {
     }
 }
 
-// MARK: - Auto-Scrolling Banner Carousel (Original UI Restored
+// MARK: - Banner Carousel
 
-import SwiftUI
-
-import SwiftUI
-
-struct BannerSliderView: View {
+struct SubscriptionBannerSliderView: View {
     @State private var currentIndex = 76 
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging = false
-
     private let actualBannersCount = 3
     private let fakeBannersCount = 150 
-    
     private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
-
     var body: some View {
         GeometryReader { proxy in
             let width = proxy.size.width
@@ -179,7 +172,6 @@ struct BannerSliderView: View {
             let cardSpacing: CGFloat = 14
             let step = cardWidth + cardSpacing
             let baseOffset = (width - cardWidth) / 2
-
             ZStack {
                 Color.black.opacity(0.001) 
                     .ignoresSafeArea()
@@ -188,19 +180,20 @@ struct BannerSliderView: View {
                     ForEach(0..<fakeBannersCount, id: \.self) { index in
                         let relative = abs((CGFloat(index) - CGFloat(currentIndex)) + (dragOffset / step))
                         let scale = max(0.92, 1 - (relative * 0.08))
-
                         let realIndex = index % actualBannersCount
 
-                        BannerItemView() 
+                        SubscriptionBannerItemView() 
                             .frame(width: cardWidth)
                             .scaleEffect(scale)
                             .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
                     }
                 }
+
                 .offset(x: baseOffset - (CGFloat(currentIndex) * step) + dragOffset)
+
             }
             .contentShape(Rectangle()) 
-            
+
             // 🛑 CRITICAL FIX: Changed from .gesture to .highPriorityGesture 🛑
             // This stops the middle banner from swallowing your swipe!
             .highPriorityGesture(
@@ -213,18 +206,18 @@ struct BannerSliderView: View {
                         let threshold = step * 0.20
                         let predicted = value.predictedEndTranslation.width
                         var nextIndex: Int = currentIndex
-
                         if value.translation.width < -threshold || predicted < -threshold {
+
                             nextIndex = currentIndex + 1
+
                         } else if value.translation.width > threshold || predicted > threshold {
+
                             nextIndex = currentIndex - 1
                         }
-
                         withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
                             currentIndex = nextIndex
                             dragOffset = 0
                         }
-
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
                             isDragging = false
                         }
@@ -241,7 +234,7 @@ struct BannerSliderView: View {
     }
 }
 
-struct BannerItemView: View {
+struct SubscriptionBannerItemView: View {
     var body: some View {
         NavigationLink(destination: RestaurantView()) {
             ZStack(alignment: .bottomLeading) {

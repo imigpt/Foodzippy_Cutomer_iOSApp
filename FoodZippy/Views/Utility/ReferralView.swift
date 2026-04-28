@@ -106,7 +106,7 @@ struct ReferralView: View {
         .navigationTitle("Refer & Earn")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            let uid = SessionManager.shared.currentUser?.id ?? ""
+            let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""
             do {
                 let response = try await APIService.shared.getReferralData(uid: uid)
                 referralCode = response.referData?.referCode ?? ""

@@ -13,6 +13,7 @@ class HomeViewModel: ObservableObject {
     @Published var filteredRestaurants: [Restaurant] = []
     @Published var popularRestaurants: [Restaurant] = []
     @Published var importantRestaurants: [Restaurant] = []
+    @Published var zippyCafeItems: [ZippyCafeItem] = []
     @Published var zippyCafeRestaurants: [Restaurant] = []
     @Published var homeBanners: [HomeBannerItem] = []
     @Published var homeOffers: [HomeOffer] = []
@@ -71,7 +72,7 @@ class HomeViewModel: ObservableObject {
     
     func loadHomeData() async {
         let session = SessionManager.shared
-        let uid = session.currentUser?.id ?? "0"
+        let uid = session.currentUser?.id?.stringValue ?? "0"
         let lat = session.currentAddress?.latMap ?? LocationManager.shared.latitude
         let lng = session.currentAddress?.longMap ?? LocationManager.shared.longitude
         
@@ -91,7 +92,8 @@ class HomeViewModel: ObservableObject {
                 allRestaurants = data.restuarantData ?? []
                 popularRestaurants = data.popularRestuarant ?? []
                 importantRestaurants = data.importantRestaurant ?? []
-                zippyCafeRestaurants = data.zippyCafe ?? []
+                zippyCafeItems = data.zippyCafe ?? []
+                zippyCafeRestaurants = zippyCafeItems.compactMap { $0.asRestaurant() }
                 
                 applyFilters()
             }
@@ -201,7 +203,7 @@ class HomeViewModel: ObservableObject {
     }
     
     private func loadOfferPopup() async {
-        let uid = SessionManager.shared.currentUser?.id ?? "0"
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? "0"
         do {
             let response = try await APIService.shared.getOfferPopup(uid: uid)
             if let popup = response.offerPopup {
@@ -291,3 +293,19 @@ private struct SectionLoadResult<T> {
     let data: [T]
     let error: Error?
 }
+extension ZippyCafeItem {
+    func asRestaurant() -> Restaurant? {
+        return Restaurant(
+            restId: restaurantId ?? foodId,
+            restTitle: foodName,
+            restImg: foodImage,
+            restRating: rating,
+            restDeliverytime: "15-20 mins", // Default for Cafe
+            restCostfortwo: newPrice,
+            restIsVeg: (isVeg == "1" || isVeg == "true") ? 1 : 0,
+            restDistance: "0.5 km",
+            restIsOpen: 1
+        )
+    }
+}
+

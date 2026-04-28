@@ -56,7 +56,7 @@ struct FavouritesView: View {
     }
     
     private func loadFavourites() async {
-        let uid = SessionManager.shared.currentUser?.id ?? ""
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""
         let lat = SessionManager.shared.currentAddress?.latMap ?? LocationManager.shared.latitude
         let lng = SessionManager.shared.currentAddress?.longMap ?? LocationManager.shared.longitude
         do {

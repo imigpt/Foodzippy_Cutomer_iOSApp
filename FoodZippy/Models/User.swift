@@ -4,18 +4,18 @@
 import Foundation
 
 struct User: Codable, Identifiable {
-    let id: String?
+    let id: AnyCodableValue?
     let name: String?
     let mobile: String?
     let email: String?
-    let ccode: String?
+    let ccode: AnyCodableValue?
     let password: String?
-    let code: String?
-    let wallet: String?
+    let code: AnyCodableValue?
+    let wallet: AnyCodableValue?
     let rdate: String?
     let refercode: AnyCodableValue?
-    let status: String?
-    let isVerify: Int?
+    let status: AnyCodableValue?
+    let isVerify: AnyCodableValue?
     
     enum CodingKeys: String, CodingKey {
         case id, name, mobile, email, ccode, password, code, wallet, rdate, refercode, status
@@ -24,9 +24,9 @@ struct User: Codable, Identifiable {
 }
 
 struct LoginResponse: Codable {
-    let responseCode: String?
+    let responseCode: AnyCodableValue?
     let responseMsg: String?
-    let result: String?
+    let result: AnyCodableValue?
     let userLogin: User?
     
     enum CodingKeys: String, CodingKey {
@@ -37,7 +37,9 @@ struct LoginResponse: Codable {
     }
     
     var isSuccess: Bool {
-        return responseCode == "200" && result == "true"
+        let code = responseCode?.stringValue ?? ""
+        let res = result?.stringValue ?? ""
+        return (code == "200" || code == "1") && (res == "true" || res == "1" || res == "Success")
     }
 }
 
@@ -62,9 +64,9 @@ struct CountryCodeResponse: Codable {
 }
 
 struct MobileCheckResponse: Codable {
-    let responseCode: String?
+    let responseCode: AnyCodableValue?
     let responseMsg: String?
-    let result: String?
+    let result: AnyCodableValue?
     
     enum CodingKeys: String, CodingKey {
         case responseCode = "ResponseCode"
@@ -73,7 +75,9 @@ struct MobileCheckResponse: Codable {
     }
     
     var isSuccess: Bool {
-        return responseCode == "200" && result == "true"
+        let code = responseCode?.stringValue ?? ""
+        let res = result?.stringValue ?? ""
+        return (code == "200" || code == "1") && (res == "true" || res == "1" || res == "Success")
     }
 }
 
@@ -92,7 +96,7 @@ struct ProfileResponse: Codable {
 }
 
 // MARK: - AnyCodableValue for flexible JSON types
-enum AnyCodableValue: Codable {
+enum AnyCodableValue: Codable, Equatable, Hashable {
     case string(String)
     case int(Int)
     case double(Double)

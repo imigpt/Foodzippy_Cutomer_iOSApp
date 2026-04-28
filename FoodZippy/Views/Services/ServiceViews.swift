@@ -297,7 +297,7 @@ final class DineInMainViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
 
-        let uid = SessionManager.shared.currentUser?.id ?? "0"
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? "0"
         let lat = SessionManager.shared.currentAddress?.latMap ?? LocationManager.shared.latitude
         let lng = SessionManager.shared.currentAddress?.longMap ?? LocationManager.shared.longitude
 

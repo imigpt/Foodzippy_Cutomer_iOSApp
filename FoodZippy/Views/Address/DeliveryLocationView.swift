@@ -354,7 +354,7 @@ struct DeliveryLocationView: View {
 
     private func saveAddressDirectly() {
         isSaving = true
-        guard let uid = SessionManager.shared.currentUser?.id else {
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else {
             isSaving = false
             return
         }

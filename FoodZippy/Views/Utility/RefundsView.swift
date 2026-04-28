@@ -76,7 +76,7 @@ struct RefundsView: View {
     
     // MARK: - API Call
     private func loadRefunds() async {
-        let uid = SessionManager.shared.currentUser?.id ?? ""
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""
         do {
             let response = try await APIService.shared.getRefundList(uid: uid)
             refunds = response.refundList ?? []

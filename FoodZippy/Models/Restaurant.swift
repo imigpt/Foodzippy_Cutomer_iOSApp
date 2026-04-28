@@ -259,6 +259,10 @@ struct RestaurantDetailData: Codable {
     let restuarantData: [Restaurant]?
     let galleryData: [GalleryImage]?
     let reviewData: [Review]?
+    let menuImages: [String]?
+    let menuitemData: [MenuItem]?
+    let offersData: [OffersDatum]?
+    let coupon: [CouponItem]?
     
     enum CodingKeys: String, CodingKey {
         case catlist = "Catlist"
@@ -266,6 +270,32 @@ struct RestaurantDetailData: Codable {
         case restuarantData = "restuarant_data"
         case galleryData = "Gallery_Data"
         case reviewData = "Review_Data"
+        case menuImages = "Menu_Images"
+        case menuitemData = "Menuitem_Data"
+        case offersData = "Offers_Data"
+        case coupon = "Coupon"
+    }
+}
+
+struct OffersDatum: Codable, Identifiable {
+    var id: String { offerId ?? UUID().uuidString }
+    
+    let offerId: String?
+    let restId: String?
+    let title: String?
+    let description: String?
+    let image: String?
+    let startDate: String?
+    let endDate: String?
+    let isGlobal: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case offerId = "id"
+        case restId = "rest_id"
+        case title, description, image
+        case startDate = "start_date"
+        case endDate = "end_date"
+        case isGlobal = "is_global"
     }
 }
 

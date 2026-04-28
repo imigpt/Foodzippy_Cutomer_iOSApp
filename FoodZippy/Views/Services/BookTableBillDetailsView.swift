@@ -260,7 +260,7 @@ struct BookTableBillDetailsView: View {
         defer { submitting = false }
         
         let restId = restaurant.restId ?? SessionManager.shared.restaurantId
-        let uid = SessionManager.shared.currentUser?.id ?? "0"
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? "0"
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
         

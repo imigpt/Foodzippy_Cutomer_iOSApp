@@ -246,7 +246,7 @@ struct AddressListView: View {
     }
 
     private func loadAddresses() async {
-        guard let uid = SessionManager.shared.currentUser?.id else {
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else {
             isLoading = false
             return
         }
@@ -606,7 +606,7 @@ struct AddressPickerView: View {
 
     private func saveAddress() {
         isSaving = true
-        guard let uid = SessionManager.shared.currentUser?.id else {
+        guard let uid = SessionManager.shared.currentUser?.id?.stringValue else {
             isSaving = false
             return
         }

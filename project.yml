@@ -9,7 +9,7 @@ options:
 
 settings:
   base:
-    PRODUCT_BUNDLE_IDENTIFIER: com.foodzippy.customer
+    PRODUCT_BUNDLE_IDENTIFIER: foodzippy-ios-2025
     SWIFT_VERSION: "5.9"
     IPHONEOS_DEPLOYMENT_TARGET: "16.0"
     TARGETED_DEVICE_FAMILY: "1,2"
@@ -27,12 +27,23 @@ targets:
     resources:
       - path: FoodZippy/Assets.xcassets
       - path: FoodZippy/Info.plist
+      - path: FoodZippy/GoogleService-Info.plist
     info:
       path: FoodZippy/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UIUserInterfaceStyle: Light
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+        NSLocationWhenInUseUsageDescription: We use your location to show nearby restaurants
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLSchemes:
+              - app-1-904807828502-ios-549296ccc694cd6e683937
     settings:
       base:
         PRODUCT_NAME: FoodZippy
-        PRODUCT_BUNDLE_IDENTIFIER: com.foodzippy.customer
+        PRODUCT_BUNDLE_IDENTIFIER: foodzippy-ios-2025
         INFOPLIST_FILE: FoodZippy/Info.plist
         SWIFT_VERSION: "5.9"
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
@@ -45,5 +56,16 @@ targets:
       - sdk: CoreLocation.framework
         embed: false
         implicit: true
+      - package: Firebase
+        product: FirebaseAuth
+      - package: Firebase
+        product: FirebaseMessaging
+      - package: Firebase
+        product: FirebaseDatabase
+      - package: Firebase
+        product: FirebaseAnalytics
 
-packages: {}
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk.git
+    from: 10.0.0

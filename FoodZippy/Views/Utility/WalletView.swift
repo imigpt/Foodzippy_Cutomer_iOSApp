@@ -191,7 +191,7 @@ struct WalletView: View {
     
     // MARK: - API Logic
     private func loadWallet() async {
-        let uid = SessionManager.shared.currentUser?.id ?? ""
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""
         do {
             let response = try await APIService.shared.getWalletReport(uid: uid)
             balance = Double(response.wallet ?? "0") ?? 0
@@ -202,7 +202,7 @@ struct WalletView: View {
     
     private func addMoney() async {
         guard let amount = Double(addAmount), amount > 0 else { return }
-        let uid = SessionManager.shared.currentUser?.id ?? ""
+        let uid = SessionManager.shared.currentUser?.id?.stringValue ?? ""
         do {
             let transactionId = UUID().uuidString
             let _ = try await APIService.shared.addMoney(uid: uid, amount: addAmount, transactionId: transactionId)

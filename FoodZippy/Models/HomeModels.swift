@@ -28,7 +28,7 @@ struct HomeData: Codable {
     let restuarantData: [Restaurant]?
     let popularRestuarant: [Restaurant]?
     let importantRestaurant: [Restaurant]?
-    let zippyCafe: [Restaurant]?
+    let zippyCafe: [ZippyCafeItem]?
     
     enum CodingKeys: String, CodingKey {
         case total
@@ -39,6 +39,34 @@ struct HomeData: Codable {
         case popularRestuarant = "popular_restuarant"
         case importantRestaurant = "ImportantRestaurant"
         case zippyCafe = "ZippyCafe"
+    }
+}
+
+// MARK: - Zippy Cafe Item
+struct ZippyCafeItem: Codable, Identifiable {
+    var id: String { foodId ?? UUID().uuidString }
+    
+    let foodId: String?
+    let foodName: String?
+    let foodImage: String?
+    let oldPrice: String?
+    let newPrice: String?
+    let rating: String?
+    let reviews: String?
+    let restaurantName: String?
+    let restaurantId: String?
+    let isVeg: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case foodId = "id"
+        case foodName = "name"
+        case foodImage = "image"
+        case oldPrice = "old_price"
+        case newPrice = "new_price"
+        case rating, reviews
+        case restaurantName = "restaurant_name"
+        case restaurantId = "restaurant_id"
+        case isVeg = "is_veg"
     }
 }
 

@@ -7,6 +7,9 @@ struct SignupView: View {
     @ObservedObject var viewModel: AuthViewModel
     @Environment(\.dismiss) private var dismiss
     
+    @State private var isPasswordVisible = false
+    @State private var isConfirmPasswordVisible = false
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -31,11 +34,28 @@ struct SignupView: View {
                 // Form Fields
                 VStack(spacing: 16) {
                     // Name
-                    TextField("Full Name", text: $viewModel.name)
-                        .textContentType(.name)
-                        .padding()
-                        .background(Color.appGrayBg)
-                        .cornerRadius(10)
+                    HStack {
+                        Image(systemName: "person")
+                            .foregroundColor(.gray)
+                        TextField("Full Name", text: $viewModel.name)
+                            .textContentType(.name)
+                    }
+                    .padding()
+                    .background(Color.appGrayBg)
+                    .cornerRadius(10)
+                    
+                    // Email
+                    HStack {
+                        Image(systemName: "envelope")
+                            .foregroundColor(.gray)
+                        TextField("Email Address", text: $viewModel.email)
+                            .keyboardType(.emailAddress)
+                            .textContentType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                    }
+                    .padding()
+                    .background(Color.appGrayBg)
+                    .cornerRadius(10)
                     
                     // Country Code + Mobile
                     HStack(spacing: 12) {
@@ -48,57 +68,95 @@ struct SignupView: View {
                         } label: {
                             HStack {
                                 Text(viewModel.selectedCountryCode)
-                                    .foregroundColor(.appBlack)
                                 Image(systemName: "chevron.down")
                                     .font(.caption)
-                                    .foregroundColor(.gray)
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 16)
+                            .foregroundColor(.appBlack)
+                            .padding()
                             .background(Color.appGrayBg)
                             .cornerRadius(10)
                         }
                         
-                        TextField("Mobile Number", text: $viewModel.mobile)
-                            .keyboardType(.phonePad)
-                            .padding()
-                            .background(Color.appGrayBg)
-                            .cornerRadius(10)
+                        HStack {
+                            Image(systemName: "phone")
+                                .foregroundColor(.gray)
+                            TextField("Mobile Number", text: $viewModel.mobile)
+                                .keyboardType(.phonePad)
+                                .textContentType(.telephoneNumber)
+                        }
+                        .padding()
+                        .background(Color.appGrayBg)
+                        .cornerRadius(10)
                     }
                     
                     // Password
-                    SecureField("Password", text: $viewModel.password)
-                        .textContentType(.newPassword)
-                        .padding()
-                        .background(Color.appGrayBg)
-                        .cornerRadius(10)
+                    HStack {
+                        Image(systemName: "lock")
+                            .foregroundColor(.gray)
+                        if isPasswordVisible {
+                            TextField("Password", text: $viewModel.password)
+                        } else {
+                            SecureField("Password", text: $viewModel.password)
+                        }
+                        Button(action: { isPasswordVisible.toggle() }) {
+                            Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding()
+                    .background(Color.appGrayBg)
+                    .cornerRadius(10)
+                    
+                    // Confirm Password
+                    HStack {
+                        Image(systemName: "lock.shield")
+                            .foregroundColor(.gray)
+                        if isConfirmPasswordVisible {
+                            TextField("Confirm Password", text: $viewModel.confirmPassword)
+                        } else {
+                            SecureField("Confirm Password", text: $viewModel.confirmPassword)
+                        }
+                        Button(action: { isConfirmPasswordVisible.toggle() }) {
+                            Image(systemName: isConfirmPasswordVisible ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding()
+                    .background(Color.appGrayBg)
+                    .cornerRadius(10)
                     
                     // Referral Code
-                    TextField("Referral Code (Optional)", text: $viewModel.referralCode)
-                        .padding()
-                        .background(Color.appGrayBg)
-                        .cornerRadius(10)
-                    
-                    // Sign Up Button
-                    Button(action: {
-                        Task { await viewModel.checkMobileForSignup() }
-                    }) {
-                        HStack {
-                            if viewModel.isLoading {
-                                ProgressView().tint(.white)
-                            }
-                            Text("SIGN UP")
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.appPrimary)
-                        .cornerRadius(12)
+                    HStack {
+                        Image(systemName: "tag")
+                            .foregroundColor(.gray)
+                        TextField("Referral Code (Optional)", text: $viewModel.referralCode)
                     }
-                    .disabled(viewModel.isLoading)
+                    .padding()
+                    .background(Color.appGrayBg)
+                    .cornerRadius(10)
                 }
                 .padding(.horizontal, 24)
+                
+                // Signup Button
+                Button(action: {
+                    Task { await viewModel.checkMobileForSignup() }
+                }) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Text("Sign Up")
+                            .fontWeight(.bold)
+                    }
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.appPrimary)
+                .cornerRadius(12)
+                .padding(.horizontal, 24)
+                .padding(.top, 10)
+                .disabled(viewModel.isLoading)
                 
                 // Login Link
                 HStack {
@@ -108,19 +166,26 @@ struct SignupView: View {
                         dismiss()
                     }
                     .foregroundColor(.appPrimary)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
                 }
-                .padding(.top, 12)
+                .font(.subheadline)
+                .padding(.top, 10)
+                
+                Spacer()
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
         .navigationDestination(isPresented: $viewModel.navigateToOtp) {
             OtpVerificationView(viewModel: viewModel)
         }
-        .alert("Error", isPresented: $viewModel.showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(viewModel.errorMessage)
-        }
+        .overlay(
+            VStack {
+                if viewModel.showError {
+                    ToastView(message: viewModel.errorMessage, isError: true) {
+                        viewModel.showError = false
+                    }
+                }
+            }
+        )
     }
 }

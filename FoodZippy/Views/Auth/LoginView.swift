@@ -105,6 +105,7 @@ struct LoginView: View {
                 }
                 .padding(.horizontal, 24)
                 
+                
                 // Guest Mode
                 Button("Continue as Guest") {
                     viewModel.continueAsGuest()
@@ -112,13 +113,6 @@ struct LoginView: View {
                 .foregroundColor(.gray)
                 .padding(.top, 8)
                 
-                // Forgot Password
-                NavigationLink(destination: ForgotPasswordView(viewModel: viewModel)) {
-                    Text("Forgot Password?")
-                        .font(.subheadline)
-                        .foregroundColor(.appAccent)
-                }
-                .padding(.top, 4)
                 
                 Spacer()
             }
